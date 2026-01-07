@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe - Business Idea Builder</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #10b981;
+            --background: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --ai-bg: #f0f9ff;
+            --ai-border: #bae6fd;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding: 16px;
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .progress-step::after {
+            content: '';
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: var(--border);
+            z-index: 0;
+        }
+
+        .progress-step:last-child::after {
+            display: none;
+        }
+
+        .progress-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            z-index: 1;
+            transition: all 0.3s;
+        }
+
+        .progress-step.active .progress-dot {
+            background: var(--primary);
+            color: white;
+        }
+
+        .progress-step.completed .progress-dot {
+            background: var(--success);
+            color: white;
+        }
+
+        .progress-step.completed::after {
+            background: var(--success);
+        }
+
+        .progress-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        .progress-step.active .progress-label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: var(--text-muted);
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Forms */
+        textarea, input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        textarea {
+            min-height: 120px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .hint {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-primary:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--background);
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        /* AI Response Box */
+        .ai-box {
+            background: var(--ai-bg);
+            border: 2px solid var(--ai-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .ai-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .ai-content {
+            color: var(--text);
+        }
+
+        .ai-content p {
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+
+        .ai-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .ai-suggestion {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            font-style: italic;
+            border-left: 3px solid var(--primary);
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: typing 1s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Lists */
+        ul, ol {
+            padding-left: 24px;
+            margin-bottom: 16px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        /* Review Section */
+        .review-section {
+            background: var(--background);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .review-section h3 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .edit-btn {
+            font-size: 14px;
+            color: var(--primary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .edit-btn:hover {
+            text-decoration: underline;
+        }
+
+        .review-content {
+            margin-top: 8px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        /* Example Box */
+        .example-box {
+            background: #fefce8;
+            border: 2px solid #fde047;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .example-header {
+            font-weight: 600;
+            color: #854d0e;
+            margin-bottom: 8px;
+        }
+
+        .example-content {
+            color: #713f12;
+            font-size: 14px;
+        }
+
+        /* Objective/KR Items */
+        .item-card {
+            background: var(--background);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .item-number {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        /* Success Message */
+        .success-box {
+            background: #ecfdf5;
+            border: 2px solid #10b981;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin: 16px 0;
+        }
+
+        .success-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 32px;
+            color: white;
+        }
+
+        /* Reflection */
+        .reflection-prompt {
+            background: #faf5ff;
+            border: 2px solid #d8b4fe;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .reflection-prompt h4 {
+            color: #7c3aed;
+            margin-bottom: 8px;
+        }
+
+        /* Export */
+        .export-preview {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .progress-label {
+                font-size: 8px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn-group .btn {
+                width: 100%;
+            }
+        }
+
+        /* Hide/Show helpers */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-step active" data-step="intro">
+                <div class="progress-dot">1</div>
+                <div class="progress-label">Start</div>
+            </div>
+            <div class="progress-step" data-step="mission">
+                <div class="progress-dot">2</div>
+                <div class="progress-label">Mission</div>
+            </div>
+            <div class="progress-step" data-step="objectives">
+                <div class="progress-dot">3</div>
+                <div class="progress-label">Goals</div>
+            </div>
+            <div class="progress-step" data-step="keyresults">
+                <div class="progress-dot">4</div>
+                <div class="progress-label">Actions</div>
+            </div>
+            <div class="progress-step" data-step="review">
+                <div class="progress-dot">5</div>
+                <div class="progress-label">Review</div>
+            </div>
+            <div class="progress-step" data-step="reflection">
+                <div class="progress-dot">6</div>
+                <div class="progress-label">Done</div>
+            </div>
+        </div>
+
+        <!-- Section 1: Intro -->
+        <div class="section active" id="intro">
+            <div class="card">
+                <h1>Turn Your Business Idea Into a Plan</h1>
+                <p>In the next 30-45 minutes, you'll work through a simple process to clarify your business idea and create a plan you can actually use.</p>
+
+                <h3>What You'll Create:</h3>
+                <ul>
+                    <li><strong>Mission</strong> - What your business does and who it helps</li>
+                    <li><strong>Goals</strong> - 3 things you want to achieve</li>
+                    <li><strong>Actions</strong> - Specific steps to measure your progress</li>
+                </ul>
+
+                <div class="ai-box">
+                    <div class="ai-header">
+                        <div class="ai-icon">AI</div>
+                        <span>Your AI Assistant</span>
+                    </div>
+                    <div class="ai-content">
+                        <p>I'm here to help you think through your idea. I'll ask questions, offer suggestions, and help you put your thoughts into words.</p>
+                        <p>There are no wrong answers here - this is about <em>your</em> idea and <em>your</em> vision.</p>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-header">Example: Maria's Meal Prep Business</div>
+                    <div class="example-content">
+                        Throughout this process, you'll see how Maria used these steps to plan her meal prep service for busy families. Her example can help guide your thinking.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Before We Start</h3>
+                <p>Do you have a business idea you'd like to work on? It can be something you're already doing, thinking about starting, or just exploring.</p>
+                <p>It doesn't need to be perfect - even a rough idea works!</p>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="goToSection('mission')">Yes, Let's Go!</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Mission -->
+        <div class="section" id="mission">
+            <div class="card">
+                <h2>Step 1: Your Mission</h2>
+                <p>Let's start by capturing what your business is about. A good mission statement explains:</p>
+                <ul>
+                    <li><strong>Who</strong> you help</li>
+                    <li><strong>What</strong> you do for them</li>
+                    <li><strong>Why</strong> it matters</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="form-group">
+                    <label for="ideaInput">Tell me about your business idea</label>
+                    <textarea id="ideaInput" placeholder="Describe your business idea in your own words. What do you want to do? Who would you help?"></textarea>
+                    <p class="hint">Don't worry about making it perfect - just get your thoughts down.</p>
+                </div>
+
+                <button class="btn btn-primary" onclick="generateMissionHelp()" id="missionHelpBtn">Get AI Feedback</button>
+
+                <div id="missionAIResponse" class="ai-box hidden">
+                    <div class="ai-header">
+                        <div class="ai-icon">AI</div>
+                        <span>AI Assistant</span>
+                    </div>
+                    <div class="ai-content" id="missionAIContent">
+                        <div class="typing-indicator">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="missionRefineCard" class="card hidden">
+                <div class="example-box">
+                    <div class="example-header">Maria's Mission</div>
+                    <div class="example-content">
+                        "I help busy working parents in my neighborhood eat healthier by preparing affordable, homemade meals they can pick up weekly - because families deserve good food without the stress of cooking every night."
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="missionStatement">Write Your Mission Statement</label>
+                    <textarea id="missionStatement" placeholder="Who do you help? What do you do for them? Why does it matter?"></textarea>
+                    <p class="hint">Try to keep it to 1-2 sentences.</p>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="goToSection('intro')">Back</button>
+                    <button class="btn btn-primary" onclick="saveMissionAndContinue()">Continue to Goals</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Objectives -->
+        <div class="section" id="objectives">
+            <div class="card">
+                <h2>Step 2: Your Goals</h2>
+                <p>Now let's think about what you want to achieve. Good goals are:</p>
+                <ul>
+                    <li><strong>Specific</strong> - Clear about what you'll do</li>
+                    <li><strong>Meaningful</strong> - Important to your success</li>
+                    <li><strong>Achievable</strong> - Something you can actually do</li>
+                </ul>
+                <p>Most businesses focus on 3 main goals to start.</p>
+            </div>
+
+            <div class="card">
+                <div class="ai-box">
+                    <div class="ai-header">
+                        <div class="ai-icon">AI</div>
+                        <span>Based on Your Mission</span>
+                    </div>
+                    <div class="ai-content" id="objectivesAISuggestion">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-header">Maria's 3 Goals</div>
+                    <div class="example-content">
+                        1. Build my meal prep skills and recipes<br>
+                        2. Find my first paying customers<br>
+                        3. Set up reliable operations (kitchen, supplies, schedule)
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Goal 1: What's your first priority?</label>
+                    <input type="text" id="objective1" placeholder="e.g., Learn the skills I need...">
+                </div>
+
+                <div class="form-group">
+                    <label>Goal 2: What else matters for success?</label>
+                    <input type="text" id="objective2" placeholder="e.g., Find my first customers...">
+                </div>
+
+                <div class="form-group">
+                    <label>Goal 3: What foundation do you need?</label>
+                    <input type="text" id="objective3" placeholder="e.g., Set up my workspace...">
+                </div>
+
+                <button class="btn btn-primary" onclick="getObjectivesFeedback()" id="objectivesFeedbackBtn">Get AI Feedback</button>
+
+                <div id="objectivesAIResponse" class="ai-box hidden">
+                    <div class="ai-header">
+                        <div class="ai-icon">AI</div>
+                        <span>AI Feedback</span>
+                    </div>
+                    <div class="ai-content" id="objectivesAIContent">
+                        <div class="typing-indicator">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="objectivesContinueCard" class="card hidden">
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="goToSection('mission')">Back</button>
+                    <button class="btn btn-primary" onclick="saveObjectivesAndContinue()">Continue to Actions</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Key Results -->
+        <div class="section" id="keyresults">
+            <div class="card">
+                <h2>Step 3: Your Actions</h2>
+                <p>For each goal, let's define 2-3 specific actions you can measure. These help you know if you're making progress.</p>
+                <p>Good actions answer: <strong>"How will I know I've done this?"</strong></p>
+            </div>
+
+            <!-- Goal 1 Key Results -->
+            <div class="card">
+                <div class="item-number">Goal 1</div>
+                <h3 id="kr1GoalTitle">Your First Goal</h3>
+
+                <div class="example-box">
+                    <div class="example-header">Maria's Actions for "Build meal prep skills"</div>
+                    <div class="example-content">
+                        • Complete 3 batch cooking tutorials<br>
+                        • Test 10 recipes with family feedback<br>
+                        • Get food handler certification
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Action 1:</label>
+                    <input type="text" id="kr1_1" placeholder="What specific thing will you do?">
+                </div>
+                <div class="form-group">
+                    <label>Action 2:</label>
+                    <input type="text" id="kr1_2" placeholder="What else will show progress?">
+                </div>
+            </div>
+
+            <!-- Goal 2 Key Results -->
+            <div class="card">
+                <div class="item-number">Goal 2</div>
+                <h3 id="kr2GoalTitle">Your Second Goal</h3>
+
+                <div class="form-group">
+                    <label>Action 1:</label>
+                    <input type="text" id="kr2_1" placeholder="What specific thing will you do?">
+                </div>
+                <div class="form-group">
+                    <label>Action 2:</label>
+                    <input type="text" id="kr2_2" placeholder="What else will show progress?">
+                </div>
+            </div>
+
+            <!-- Goal 3 Key Results -->
+            <div class="card">
+                <div class="item-number">Goal 3</div>
+                <h3 id="kr3GoalTitle">Your Third Goal</h3>
+
+                <div class="form-group">
+                    <label>Action 1:</label>
+                    <input type="text" id="kr3_1" placeholder="What specific thing will you do?">
+                </div>
+                <div class="form-group">
+                    <label>Action 2:</label>
+                    <input type="text" id="kr3_2" placeholder="What else will show progress?">
+                </div>
+            </div>
+
+            <div class="card">
+                <button class="btn btn-primary" onclick="getKeyResultsFeedback()" id="krFeedbackBtn">Get AI Feedback</button>
+
+                <div id="krAIResponse" class="ai-box hidden">
+                    <div class="ai-header">
+                        <div class="ai-icon">AI</div>
+                        <span>AI Feedback</span>
+                    </div>
+                    <div class="ai-content" id="krAIContent">
+                        <div class="typing-indicator">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="krContinueSection" class="hidden">
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="goToSection('objectives')">Back</button>
+                        <button class="btn btn-primary" onclick="saveKeyResultsAndContinue()">Review My Plan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 5: Review -->
+        <div class="section" id="review">
+            <div class="card">
+                <h2>Your Business Plan</h2>
+                <p>Here's everything you've created. Take a moment to review and make any changes.</p>
+            </div>
+
+            <div class="card">
+                <div class="review-section">
+                    <h3>
+                        Mission
+                        <button class="edit-btn" onclick="goToSection('mission')">Edit</button>
+                    </h3>
+                    <div class="review-content" id="reviewMission">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="review-section">
+                    <h3>
+                        Goals & Actions
+                        <button class="edit-btn" onclick="goToSection('objectives')">Edit</button>
+                    </h3>
+                    <div class="review-content" id="reviewGoals">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="ai-box">
+                    <div class="ai-header">
+                        <div class="ai-icon">AI</div>
+                        <span>Overall Assessment</span>
+                    </div>
+                    <div class="ai-content" id="reviewAIContent">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="goToSection('keyresults')">Back</button>
+                    <button class="btn btn-primary" onclick="goToSection('reflection')">Complete & Reflect</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 6: Reflection -->
+        <div class="section" id="reflection">
+            <div class="card">
+                <div class="success-box">
+                    <div class="success-icon">✓</div>
+                    <h2>You Did It!</h2>
+                    <p>You've created a business plan. This is a real accomplishment - most people never get this far with their ideas.</p>
+                </div>
+            </div>
+
+            <div class="card" style="background: #eff6ff; border: 2px solid #3b82f6;">
+                <h3 style="color: #1d4ed8;">Help Us Improve This Tool</h3>
+                <p>We'd love to hear about your experience! Your feedback helps us make this better for others.</p>
+                <p style="margin-bottom: 0;"><strong>Takes about 3-5 minutes.</strong></p>
+                <div class="btn-group">
+                    <a href="https://forms.gle/WoyRPG3CFne6weQY6" target="_blank" class="btn btn-primary" style="text-decoration: none;">Share Your Feedback</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Take a Moment to Reflect</h3>
+
+                <div class="reflection-prompt">
+                    <h4>What surprised you?</h4>
+                    <p style="margin-bottom: 0;">Was there anything about your idea that became clearer as you worked through this?</p>
+                </div>
+
+                <div class="form-group">
+                    <textarea id="reflection1" placeholder="Share your thoughts..."></textarea>
+                </div>
+
+                <div class="reflection-prompt">
+                    <h4>What's your very next step?</h4>
+                    <p style="margin-bottom: 0;">Of all the actions you listed, which ONE will you do first? When?</p>
+                </div>
+
+                <div class="form-group">
+                    <textarea id="reflection2" placeholder="I will... by..."></textarea>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Save Your Plan</h3>
+                <p>Copy the text below or take a screenshot to keep your plan.</p>
+
+                <div class="export-preview" id="exportPreview">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <div class="btn-group" style="margin-top: 16px;">
+                    <button class="btn btn-primary" onclick="copyToClipboard()">Copy to Clipboard</button>
+                </div>
+                <p id="copyConfirm" class="hidden" style="text-align: center; color: var(--success); margin-top: 12px;">Copied!</p>
+            </div>
+
+            <div class="card">
+                <h3>What's Next?</h3>
+                <div class="ai-box">
+                    <div class="ai-header">
+                        <div class="ai-icon">AI</div>
+                        <span>Suggestions</span>
+                    </div>
+                    <div class="ai-content">
+                        <p><strong>This week:</strong> Take that first action you identified. Even small progress matters.</p>
+                        <p><strong>In 2 weeks:</strong> Come back and review your plan. What's working? What needs to change?</p>
+                        <p><strong>Remember:</strong> Plans change as you learn. That's not failure - that's how business works.</p>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="startOver()">Start Over with New Idea</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let userData = {
+            idea: '',
+            mission: '',
+            objectives: ['', '', ''],
+            keyResults: [
+                ['', ''],
+                ['', ''],
+                ['', '']
+            ],
+            reflections: ['', '']
+        };
+
+        // Section navigation
+        function goToSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+
+            // Show target section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Update progress bar
+            updateProgress(sectionId);
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+
+            // Special handling for certain sections
+            if (sectionId === 'objectives') {
+                populateObjectivesSuggestion();
+            } else if (sectionId === 'keyresults') {
+                populateKeyResultsTitles();
+            } else if (sectionId === 'review') {
+                populateReview();
+            } else if (sectionId === 'reflection') {
+                populateExport();
+            }
+        }
+
+        function updateProgress(currentSection) {
+            const steps = ['intro', 'mission', 'objectives', 'keyresults', 'review', 'reflection'];
+            const currentIndex = steps.indexOf(currentSection);
+
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index < currentIndex) {
+                    step.classList.add('completed');
+                } else if (index === currentIndex) {
+                    step.classList.add('active');
+                }
+            });
+        }
+
+        // Simulated AI responses with typing effect
+        function simulateTyping(elementId, content, callback) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+
+            setTimeout(() => {
+                element.innerHTML = content;
+                if (callback) callback();
+            }, 1500);
+        }
+
+        // Mission Section
+        function generateMissionHelp() {
+            const idea = document.getElementById('ideaInput').value.trim();
+            if (!idea) {
+                alert('Please describe your business idea first.');
+                return;
+            }
+
+            userData.idea = idea;
+
+            document.getElementById('missionAIResponse').classList.remove('hidden');
+            document.getElementById('missionHelpBtn').disabled = true;
+
+            // Simulated AI response based on input
+            const response = generateMissionResponse(idea);
+
+            simulateTyping('missionAIContent', response, () => {
+                document.getElementById('missionRefineCard').classList.remove('hidden');
+                document.getElementById('missionHelpBtn').disabled = false;
+            });
+        }
+
+        function generateMissionResponse(idea) {
+            // Simple keyword-based response simulation
+            const ideaLower = idea.toLowerCase();
+            let response = '<p>Thanks for sharing your idea! Let me help you think through this.</p>';
+
+            if (ideaLower.includes('food') || ideaLower.includes('meal') || ideaLower.includes('cook') || ideaLower.includes('bake')) {
+                response += '<p><strong>I notice this is food-related.</strong> Great choice - food businesses can start small and grow. Think about: Who specifically needs this? What makes your food special?</p>';
+            } else if (ideaLower.includes('clean') || ideaLower.includes('house') || ideaLower.includes('home')) {
+                response += '<p><strong>Home services are in demand.</strong> People are busy and need help. Think about: What specific problem are you solving? Who values this most?</p>';
+            } else if (ideaLower.includes('child') || ideaLower.includes('kid') || ideaLower.includes('care') || ideaLower.includes('babysit')) {
+                response += '<p><strong>Childcare is so needed.</strong> Parents are always looking for trustworthy help. Think about: What ages? What makes you reliable?</p>';
+            } else {
+                response += '<p><strong>I can see the potential here.</strong> Let\'s make it clearer. Think about: Who exactly would pay for this? What problem does it solve for them?</p>';
+            }
+
+            response += '<div class="ai-suggestion"><strong>Try this format:</strong><br>"I help [who] do [what] by [how] because [why it matters]"</div>';
+
+            return response;
+        }
+
+        function saveMissionAndContinue() {
+            const mission = document.getElementById('missionStatement').value.trim();
+            if (!mission) {
+                alert('Please write your mission statement before continuing.');
+                return;
+            }
+            userData.mission = mission;
+            goToSection('objectives');
+        }
+
+        // Objectives Section
+        function populateObjectivesSuggestion() {
+            const suggestion = `
+                <p>Based on your mission:</p>
+                <p><em>"${userData.mission || 'Your mission statement'}"</em></p>
+                <p>Most new businesses need to focus on:</p>
+                <ul style="margin-top: 8px; margin-bottom: 0;">
+                    <li><strong>Building capability</strong> - What skills or products do you need?</li>
+                    <li><strong>Finding customers</strong> - Who will pay you and how will they find you?</li>
+                    <li><strong>Setting up operations</strong> - What do you need to actually run this?</li>
+                </ul>
+            `;
+            document.getElementById('objectivesAISuggestion').innerHTML = suggestion;
+        }
+
+        function getObjectivesFeedback() {
+            const obj1 = document.getElementById('objective1').value.trim();
+            const obj2 = document.getElementById('objective2').value.trim();
+            const obj3 = document.getElementById('objective3').value.trim();
+
+            if (!obj1 && !obj2 && !obj3) {
+                alert('Please enter at least one goal.');
+                return;
+            }
+
+            document.getElementById('objectivesAIResponse').classList.remove('hidden');
+            document.getElementById('objectivesFeedbackBtn').disabled = true;
+
+            let response = '<p>Looking good! Here are some thoughts:</p>';
+
+            if (obj1) {
+                response += `<p><strong>Goal 1:</strong> "${obj1}" - `;
+                if (obj1.length < 20) {
+                    response += 'This is pretty brief. Can you be more specific about what you\'ll actually do?</p>';
+                } else {
+                    response += 'Good level of detail. Make sure you can tell when it\'s done.</p>';
+                }
+            }
+
+            if (obj2) {
+                response += `<p><strong>Goal 2:</strong> "${obj2}" - `;
+                response += 'Ask yourself: How will you know when you\'ve achieved this?</p>';
+            }
+
+            if (obj3) {
+                response += `<p><strong>Goal 3:</strong> "${obj3}" - `;
+                response += 'Foundation matters! This will support your other goals.</p>';
+            }
+
+            if (!obj1 || !obj2 || !obj3) {
+                response += '<p><em>Tip: Having 3 goals helps you stay focused without being overwhelmed.</em></p>';
+            }
+
+            simulateTyping('objectivesAIContent', response, () => {
+                document.getElementById('objectivesContinueCard').classList.remove('hidden');
+                document.getElementById('objectivesFeedbackBtn').disabled = false;
+            });
+        }
+
+        function saveObjectivesAndContinue() {
+            userData.objectives[0] = document.getElementById('objective1').value.trim();
+            userData.objectives[1] = document.getElementById('objective2').value.trim();
+            userData.objectives[2] = document.getElementById('objective3').value.trim();
+
+            if (!userData.objectives[0] && !userData.objectives[1] && !userData.objectives[2]) {
+                alert('Please enter at least one goal before continuing.');
+                return;
+            }
+
+            goToSection('keyresults');
+        }
+
+        // Key Results Section
+        function populateKeyResultsTitles() {
+            document.getElementById('kr1GoalTitle').textContent = userData.objectives[0] || 'Goal 1';
+            document.getElementById('kr2GoalTitle').textContent = userData.objectives[1] || 'Goal 2';
+            document.getElementById('kr3GoalTitle').textContent = userData.objectives[2] || 'Goal 3';
+        }
+
+        function getKeyResultsFeedback() {
+            document.getElementById('krAIResponse').classList.remove('hidden');
+            document.getElementById('krFeedbackBtn').disabled = true;
+
+            let response = '<p>Let me check your actions:</p>';
+
+            const kr1_1 = document.getElementById('kr1_1').value.trim();
+            const kr1_2 = document.getElementById('kr1_2').value.trim();
+
+            if (kr1_1 || kr1_2) {
+                response += '<p><strong>For Goal 1:</strong> ';
+                if (kr1_1 && kr1_2) {
+                    response += 'Great - you have specific actions. Make sure you can measure these.</p>';
+                } else {
+                    response += 'Try to add one more action so you have multiple ways to track progress.</p>';
+                }
+            }
+
+            response += '<p><strong>Good actions include numbers.</strong> Instead of "get customers," try "get 5 customers." Instead of "learn recipes," try "master 10 recipes."</p>';
+
+            response += '<div class="ai-suggestion"><strong>Ask yourself:</strong> At the end of the month, how will I know if I made progress? That\'s your action.</div>';
+
+            simulateTyping('krAIContent', response, () => {
+                document.getElementById('krContinueSection').classList.remove('hidden');
+                document.getElementById('krFeedbackBtn').disabled = false;
+            });
+        }
+
+        function saveKeyResultsAndContinue() {
+            userData.keyResults[0][0] = document.getElementById('kr1_1').value.trim();
+            userData.keyResults[0][1] = document.getElementById('kr1_2').value.trim();
+            userData.keyResults[1][0] = document.getElementById('kr2_1').value.trim();
+            userData.keyResults[1][1] = document.getElementById('kr2_2').value.trim();
+            userData.keyResults[2][0] = document.getElementById('kr3_1').value.trim();
+            userData.keyResults[2][1] = document.getElementById('kr3_2').value.trim();
+
+            goToSection('review');
+        }
+
+        // Review Section
+        function populateReview() {
+            // Mission
+            document.getElementById('reviewMission').innerHTML = `
+                <p style="margin: 0; color: var(--text);"><strong>${userData.mission || 'No mission statement entered'}</strong></p>
+            `;
+
+            // Goals and Actions
+            let goalsHtml = '';
+            userData.objectives.forEach((obj, i) => {
+                if (obj) {
+                    goalsHtml += `<div style="margin-bottom: 16px;">`;
+                    goalsHtml += `<p style="margin: 0 0 8px 0; color: var(--text);"><strong>Goal ${i + 1}:</strong> ${obj}</p>`;
+
+                    const krs = userData.keyResults[i].filter(kr => kr);
+                    if (krs.length > 0) {
+                        goalsHtml += '<ul style="margin: 0; padding-left: 20px;">';
+                        krs.forEach(kr => {
+                            goalsHtml += `<li style="color: var(--text-muted);">${kr}</li>`;
+                        });
+                        goalsHtml += '</ul>';
+                    }
+                    goalsHtml += '</div>';
+                }
+            });
+
+            document.getElementById('reviewGoals').innerHTML = goalsHtml || '<p style="margin: 0;">No goals entered</p>';
+
+            // AI Assessment
+            let assessment = '<p>Here\'s what I see in your plan:</p>';
+
+            const objectiveCount = userData.objectives.filter(o => o).length;
+            const krCount = userData.keyResults.flat().filter(kr => kr).length;
+
+            if (objectiveCount >= 3 && krCount >= 4) {
+                assessment += '<p><strong>Strong foundation!</strong> You have clear goals with specific actions. This gives you a real roadmap to follow.</p>';
+            } else if (objectiveCount >= 2) {
+                assessment += '<p><strong>Good start!</strong> You have the basics. Consider adding more specific actions so you know exactly what to do.</p>';
+            } else {
+                assessment += '<p><strong>It\'s a beginning!</strong> You might want to go back and add more detail. More specific goals = easier to achieve.</p>';
+            }
+
+            assessment += '<p><em>Remember: The best plan is one you\'ll actually use. Simple and doable beats perfect and overwhelming.</em></p>';
+
+            document.getElementById('reviewAIContent').innerHTML = assessment;
+        }
+
+        // Reflection & Export
+        function populateExport() {
+            const date = new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            let exportText = `MY BUSINESS PLAN\nCreated: ${date}\n`;
+            exportText += `${'='.repeat(40)}\n\n`;
+
+            exportText += `MISSION\n${'-'.repeat(20)}\n`;
+            exportText += `${userData.mission || 'Not entered'}\n\n`;
+
+            exportText += `GOALS & ACTIONS\n${'-'.repeat(20)}\n`;
+
+            userData.objectives.forEach((obj, i) => {
+                if (obj) {
+                    exportText += `\nGoal ${i + 1}: ${obj}\n`;
+                    const krs = userData.keyResults[i].filter(kr => kr);
+                    if (krs.length > 0) {
+                        krs.forEach(kr => {
+                            exportText += `  • ${kr}\n`;
+                        });
+                    }
+                }
+            });
+
+            exportText += `\n${'='.repeat(40)}\n`;
+            exportText += `Created with Vibe Business Idea Builder\n`;
+
+            document.getElementById('exportPreview').textContent = exportText;
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('exportPreview').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                document.getElementById('copyConfirm').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('copyConfirm').classList.add('hidden');
+                }, 2000);
+            }).catch(err => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                document.getElementById('copyConfirm').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('copyConfirm').classList.add('hidden');
+                }, 2000);
+            });
+        }
+
+        function startOver() {
+            if (confirm('Start over with a new business idea? Your current plan will be cleared.')) {
+                // Reset data
+                userData = {
+                    idea: '',
+                    mission: '',
+                    objectives: ['', '', ''],
+                    keyResults: [['', ''], ['', ''], ['', '']],
+                    reflections: ['', '']
+                };
+
+                // Clear all inputs
+                document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+
+                // Hide dynamic elements
+                document.querySelectorAll('.hidden').forEach(el => el.classList.add('hidden'));
+                document.getElementById('missionAIResponse').classList.add('hidden');
+                document.getElementById('missionRefineCard').classList.add('hidden');
+                document.getElementById('objectivesAIResponse').classList.add('hidden');
+                document.getElementById('objectivesContinueCard').classList.add('hidden');
+                document.getElementById('krAIResponse').classList.add('hidden');
+                document.getElementById('krContinueSection').classList.add('hidden');
+
+                // Go to start
+                goToSection('intro');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateProgress('intro');
+        });
+    </script>
+</body>
+</html>
