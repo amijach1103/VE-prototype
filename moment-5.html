@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moment 5: Your Plan - Vibe</title>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Progress Bar -->
+        <div id="progress-container"></div>
+
+        <!-- Header -->
+        <div id="header-container"></div>
+
+        <!-- Success Message -->
+        <div class="success-box">
+            <div class="success-icon">✓</div>
+            <h2>You Did It!</h2>
+            <p style="color: #065f46;">You've created a business plan. This is a real accomplishment — most people never get this far with their ideas.</p>
+        </div>
+
+        <!-- Plan Review -->
+        <div class="card">
+            <h3>Your Business Plan</h3>
+
+            <div class="item-card">
+                <div class="item-number">Mission</div>
+                <p id="review-mission" style="margin: 0;"></p>
+                <button class="quick-reply-btn" style="margin-top: 8px;" onclick="window.location.href='moment-2.html'">Edit</button>
+            </div>
+
+            <div id="goals-review">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+
+        <!-- First Step Commitment -->
+        <div class="card">
+            <h3>What's Your Very First Step?</h3>
+            <p>Of all the actions you listed, which ONE will you do first? When?</p>
+
+            <div class="form-group">
+                <textarea
+                    id="firstStep"
+                    data-field="firstStep"
+                    placeholder="I will... by..."
+                    style="min-height: 80px;"
+                ></textarea>
+            </div>
+        </div>
+
+        <!-- Chat Interface -->
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="chat-header-icon">AI</div>
+                <div class="chat-header-title">AI Coach</div>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="chat-message assistant">
+                    <div class="chat-avatar">AI</div>
+                    <div class="chat-bubble">
+                        <p style="margin: 0;">Congratulations on finishing your plan! Take a moment to review it. What's the ONE thing you'll do this week to get started?</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Replies -->
+            <div class="quick-replies" style="padding: 0 16px;">
+                <button class="quick-reply-btn" onclick="askQuestion('What should I do first?')">What should I do first?</button>
+                <button class="quick-reply-btn" onclick="askQuestion('Review my plan')">Review my plan</button>
+                <button class="quick-reply-btn" onclick="askQuestion('What\'s risky?')">What's risky?</button>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" id="chat-input" placeholder="Ask me anything..." onkeypress="handleKeyPress(event)">
+                <button class="chat-send-btn" onclick="sendMessage()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="card">
+            <h3>Save Your Plan</h3>
+            <p>Copy the text below or take a screenshot to keep your plan.</p>
+
+            <div class="export-preview" id="export-preview">
+                <!-- Populated dynamically -->
+            </div>
+
+            <div class="btn-group" style="margin-top: 16px;">
+                <button class="btn btn-secondary" onclick="copyToClipboard()">Copy to Clipboard</button>
+            </div>
+            <p id="copy-confirm" class="hidden" style="text-align: center; color: var(--success); margin-top: 12px;">Copied!</p>
+        </div>
+
+        <!-- Feedback Request -->
+        <div class="card" style="background: #eff6ff; border: 2px solid #3b82f6;">
+            <h3 style="color: #1d4ed8;">Help Us Improve This Tool</h3>
+            <p>We'd love to hear about your experience! Your feedback helps us make this better for others.</p>
+            <p style="margin-bottom: 0;"><strong>Takes about 3-5 minutes.</strong></p>
+            <div class="btn-group">
+                <a href="https://forms.gle/WoyRPG3CFne6weQY6" target="_blank" class="btn btn-primary" style="text-decoration: none;">Share Your Feedback</a>
+            </div>
+        </div>
+
+        <!-- What's Next -->
+        <div class="card">
+            <h3>What's Next?</h3>
+            <ul>
+                <li><strong>This week:</strong> Take that first action you identified. Even small progress matters.</li>
+                <li><strong>In 2 weeks:</strong> Come back and review your plan. What's working? What needs to change?</li>
+                <li><strong>Remember:</strong> Plans change as you learn. That's not failure — that's how business works.</li>
+            </ul>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="startOver()">Start New Plan</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/session.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        const MOMENT_ID = 5;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            Navigation.init(MOMENT_ID);
+
+            // Populate review
+            populateReview();
+
+            // Generate export
+            populateExport();
+
+            // Load saved first step
+            const savedFirstStep = Session.getField('firstStep');
+            if (savedFirstStep) {
+                document.getElementById('firstStep').value = savedFirstStep;
+            }
+
+            // Load chat history
+            loadChatHistory();
+
+            // Auto-save
+            document.getElementById('firstStep').addEventListener('input', (e) => {
+                Session.saveField('firstStep', e.target.value);
+            });
+
+            // Mark moment 5 complete
+            Session.completeMoment(MOMENT_ID);
+        });
+
+        function populateReview() {
+            // Mission
+            const mission = Session.getField('mission');
+            document.getElementById('review-mission').textContent = mission || 'No mission saved';
+
+            // Goals and actions
+            const goalsContainer = document.getElementById('goals-review');
+            let goalsHtml = '';
+
+            for (let i = 0; i < 3; i++) {
+                const goal = Session.getField(`objectives.${i}`);
+                if (goal) {
+                    goalsHtml += `
+                        <div class="item-card">
+                            <div class="item-number">Goal ${i + 1}</div>
+                            <p style="margin-bottom: 12px; font-weight: 600;">${goal}</p>
+                    `;
+
+                    const actions = [];
+                    for (let j = 0; j < 2; j++) {
+                        const action = Session.getField(`keyResults.${i}.${j}`);
+                        if (action) {
+                            actions.push(action);
+                        }
+                    }
+
+                    if (actions.length > 0) {
+                        goalsHtml += '<ul style="margin: 0; padding-left: 20px;">';
+                        actions.forEach(action => {
+                            goalsHtml += `<li style="color: var(--text);">${action}</li>`;
+                        });
+                        goalsHtml += '</ul>';
+                    }
+
+                    goalsHtml += `
+                            <button class="quick-reply-btn" style="margin-top: 8px;" onclick="window.location.href='moment-${i < 2 ? '3' : '4'}.html'">Edit</button>
+                        </div>
+                    `;
+                }
+            }
+
+            goalsContainer.innerHTML = goalsHtml;
+        }
+
+        function populateExport() {
+            const exportText = Session.generateExport();
+            document.getElementById('export-preview').textContent = exportText;
+        }
+
+        function loadChatHistory() {
+            const history = Session.getChatHistory(MOMENT_ID);
+            history.forEach(msg => {
+                addMessageToChat(msg.role, msg.content, false);
+            });
+        }
+
+        function addMessageToChat(role, content, save = true) {
+            const container = document.getElementById('chat-messages');
+            const isUser = role === 'user';
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${role}`;
+            messageDiv.innerHTML = `
+                <div class="chat-avatar">${isUser ? 'You' : 'AI'}</div>
+                <div class="chat-bubble">
+                    <p style="margin: 0;">${content}</p>
+                </div>
+            `;
+
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+
+            if (save) {
+                Session.saveChatMessage(MOMENT_ID, role, content);
+            }
+        }
+
+        function showTyping() {
+            const container = document.getElementById('chat-messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-message assistant';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="chat-avatar">AI</div>
+                <div class="chat-bubble">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(typingDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) typing.remove();
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            addMessageToChat('user', message);
+            input.value = '';
+            generateResponse(message);
+        }
+
+        function askQuestion(question) {
+            addMessageToChat('user', question);
+            generateResponse(question);
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function generateResponse(userMessage) {
+            showTyping();
+
+            const messageLower = userMessage.toLowerCase();
+            const session = Session.load();
+            const data = session.data;
+
+            setTimeout(() => {
+                hideTyping();
+
+                let response = '';
+
+                if (messageLower.includes('first') || messageLower.includes('start')) {
+                    // Collect all actions
+                    const actions = [];
+                    for (let i = 0; i < 3; i++) {
+                        for (let j = 0; j < 2; j++) {
+                            const action = data.keyResults[i][j];
+                            if (action) {
+                                actions.push({ goal: data.objectives[i], action });
+                            }
+                        }
+                    }
+
+                    if (actions.length > 0) {
+                        response = "Looking at your actions, I'd suggest starting with something that:<br><br>" +
+                            "1. <strong>You can do this week</strong> — not someday, but NOW<br>" +
+                            "2. <strong>Doesn't need money</strong> — use what you have<br>" +
+                            "3. <strong>Gets you real feedback</strong> — talk to potential customers<br><br>" +
+                            "From your list, consider: <em>\"" + actions[0].action + "\"</em><br><br>" +
+                            "What's stopping you from starting that today?";
+                    } else {
+                        response = "It looks like you haven't added specific actions yet. Go back to Moment 4 to add them!";
+                    }
+                } else if (messageLower.includes('review') || messageLower.includes('plan')) {
+                    const goalCount = data.objectives.filter(o => o).length;
+                    const actionCount = data.keyResults.flat().filter(kr => kr).length;
+
+                    response = `Here's what I see in your plan:<br><br>` +
+                        `• <strong>Mission:</strong> ${data.mission ? '✓ Set' : '○ Missing'}<br>` +
+                        `• <strong>Goals:</strong> ${goalCount}/3 defined<br>` +
+                        `• <strong>Actions:</strong> ${actionCount} specific actions<br><br>`;
+
+                    if (goalCount >= 2 && actionCount >= 3) {
+                        response += "<strong>Strong foundation!</strong> You have clear goals with specific actions. This gives you a real roadmap.<br><br>" +
+                            "The best plan is one you'll actually use. Start with one action this week.";
+                    } else {
+                        response += "Consider adding more detail. More specific plans = easier to follow.<br><br>" +
+                            "You can always go back and edit any section.";
+                    }
+                } else if (messageLower.includes('risk')) {
+                    response = "Every new business has risks. Here are the biggest ones to watch:<br><br>" +
+                        "<strong>1. Waiting too long to start</strong><br>" +
+                        "Don't perfect your plan forever. Test it with real people.<br><br>" +
+                        "<strong>2. Spending money before you have customers</strong><br>" +
+                        "Start scrappy. Get paying customers first, then invest.<br><br>" +
+                        "<strong>3. Not talking to potential customers</strong><br>" +
+                        "Your assumptions might be wrong. Find out fast by asking people.<br><br>" +
+                        "The biggest risk is usually <em>not starting at all</em>. What's holding you back?";
+                } else {
+                    response = "You've done great work! Here's my advice:<br><br>" +
+                        "• <strong>Pick ONE action</strong> and do it this week<br>" +
+                        "• <strong>Talk to real people</strong> who might be customers<br>" +
+                        "• <strong>Keep it simple</strong> — you can always add complexity later<br><br>" +
+                        "Plans change as you learn. That's normal and healthy. The key is to start!";
+                }
+
+                addMessageToChat('assistant', response);
+            }, 1000 + Math.random() * 500);
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('export-preview').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                document.getElementById('copy-confirm').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('copy-confirm').classList.add('hidden');
+                }, 2000);
+            }).catch(err => {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                document.getElementById('copy-confirm').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('copy-confirm').classList.add('hidden');
+                }, 2000);
+            });
+        }
+
+        function startOver() {
+            if (confirm('Start over with a new business idea? Your current plan will be saved until you create a new one.')) {
+                Session.clear();
+                Session.start();
+                window.location.href = 'moment-1.html';
+            }
+        }
+    </script>
+</body>
+</html>

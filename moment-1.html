@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moment 1: Your Idea - Vibe</title>
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        .path-choice {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .path-btn {
+            padding: 20px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: var(--card);
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        .path-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .path-btn.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .path-btn h4 {
+            margin: 0 0 4px 0;
+            color: var(--text);
+        }
+        .path-btn p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        .discovery-section {
+            display: none;
+        }
+        .discovery-section.active {
+            display: block;
+        }
+        .skill-tag {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 4px;
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .skill-tag:hover, .skill-tag.selected {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .skill-tags-container {
+            margin: 12px 0;
+        }
+        .idea-suggestion {
+            padding: 16px;
+            margin: 8px 0;
+            background: var(--background);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .idea-suggestion:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .idea-suggestion h4 {
+            margin: 0 0 4px 0;
+            color: var(--text);
+        }
+        .idea-suggestion p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Progress Bar -->
+        <div id="progress-container"></div>
+
+        <!-- Header -->
+        <div id="header-container"></div>
+
+        <!-- Path Choice (Initial) -->
+        <div class="card" id="path-choice-card">
+            <h3>Let's start with your business idea</h3>
+            <p>Which describes you better?</p>
+
+            <div class="path-choice">
+                <button class="path-btn" onclick="choosePath('have-idea')">
+                    <h4>I have an idea in mind</h4>
+                    <p>I know what I want to do, I just need help planning it</p>
+                </button>
+                <button class="path-btn" onclick="choosePath('need-help')">
+                    <h4>I need help finding an idea</h4>
+                    <p>I want to start something but I'm not sure what</p>
+                </button>
+            </div>
+        </div>
+
+        <!-- Discovery Flow (Hidden Initially) -->
+        <div class="discovery-section" id="discovery-section">
+            <div class="card">
+                <h3>Let's discover what you could do</h3>
+                <p>Answer a few questions and I'll suggest business ideas that match your skills and situation.</p>
+            </div>
+
+            <!-- Skills Question -->
+            <div class="card">
+                <h4>What are you good at?</h4>
+                <p>Select all that apply, or add your own:</p>
+
+                <div class="skill-tags-container" id="skills-container">
+                    <span class="skill-tag" data-skill="cooking">Cooking/Baking</span>
+                    <span class="skill-tag" data-skill="cleaning">Cleaning/Organizing</span>
+                    <span class="skill-tag" data-skill="driving">Driving</span>
+                    <span class="skill-tag" data-skill="childcare">Childcare</span>
+                    <span class="skill-tag" data-skill="handyman">Fixing things</span>
+                    <span class="skill-tag" data-skill="crafts">Crafts/Making things</span>
+                    <span class="skill-tag" data-skill="computers">Computers/Tech</span>
+                    <span class="skill-tag" data-skill="writing">Writing</span>
+                    <span class="skill-tag" data-skill="talking">Talking to people</span>
+                    <span class="skill-tag" data-skill="pets">Working with animals</span>
+                    <span class="skill-tag" data-skill="yard">Yard work/Gardening</span>
+                    <span class="skill-tag" data-skill="beauty">Hair/Beauty/Nails</span>
+                </div>
+
+                <div class="form-group" style="margin-top: 16px;">
+                    <input type="text" id="other-skills" placeholder="Other skills (type and press Enter)">
+                </div>
+            </div>
+
+            <!-- Time/Resources Question -->
+            <div class="card">
+                <h4>What's your situation?</h4>
+
+                <div class="form-group">
+                    <label>How much time could you spend on this per week?</label>
+                    <div class="skill-tags-container" id="time-container">
+                        <span class="skill-tag" data-time="few-hours">A few hours</span>
+                        <span class="skill-tag" data-time="part-time">10-20 hours</span>
+                        <span class="skill-tag" data-time="full-time">Full time</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Do you have money to invest upfront?</label>
+                    <div class="skill-tags-container" id="money-container">
+                        <span class="skill-tag" data-money="none">No, start with $0</span>
+                        <span class="skill-tag" data-money="little">A little ($50-200)</span>
+                        <span class="skill-tag" data-money="some">Some ($200-1000)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generate Ideas Button -->
+            <div class="card">
+                <button class="btn btn-primary" style="width: 100%;" onclick="generateIdeas()">
+                    Show Me Business Ideas
+                </button>
+            </div>
+
+            <!-- Ideas Results (Hidden until generated) -->
+            <div class="card hidden" id="ideas-results">
+                <h4>Business ideas for you:</h4>
+                <p>Based on your skills and situation, here are some ideas. Tap one to use it:</p>
+                <div id="ideas-container"></div>
+
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                    <p style="font-size: 14px; color: var(--text-muted);">Don't see what you're looking for?</p>
+                    <button class="btn btn-secondary" style="width: 100%;" onclick="choosePath('have-idea')">
+                        I'll describe my own idea
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Have Idea Flow (Hidden Initially) -->
+        <div class="discovery-section" id="have-idea-section">
+            <div class="card">
+                <h3>What's your business idea?</h3>
+                <p>Describe what you want to do in your own words. Don't worry about making it perfect.</p>
+
+                <div class="form-group">
+                    <label for="idea">Your idea:</label>
+                    <textarea
+                        id="idea"
+                        data-field="idea"
+                        placeholder="Example: I want to make homemade meals for busy families in my neighborhood who don't have time to cook..."
+                    ></textarea>
+                    <p class="hint">Think about: What would you do? Who would you help? What problem would you solve?</p>
+                </div>
+            </div>
+
+            <!-- Chat Interface -->
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div class="chat-header-icon">AI</div>
+                    <div class="chat-header-title">AI Coach</div>
+                </div>
+                <div class="chat-messages" id="chat-messages">
+                    <div class="chat-message assistant">
+                        <div class="chat-avatar">AI</div>
+                        <div class="chat-bubble">
+                            <p style="margin: 0;">Great! Tell me about your idea and I'll help you think it through. What are you hoping to do?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Replies -->
+                <div class="quick-replies" id="quick-replies" style="padding: 0 16px;">
+                    <button class="quick-reply-btn" onclick="askQuestion('Give me an example')">Give me an example</button>
+                    <button class="quick-reply-btn" onclick="askQuestion('What makes a good idea?')">What makes a good idea?</button>
+                    <button class="quick-reply-btn" onclick="askQuestion('Is my idea too broad?')">Is my idea too broad?</button>
+                </div>
+
+                <!-- Chat Input -->
+                <div class="chat-input-container">
+                    <input
+                        type="text"
+                        class="chat-input"
+                        id="chat-input"
+                        placeholder="Ask me anything..."
+                        onkeypress="handleKeyPress(event)"
+                    >
+                    <button class="chat-send-btn" onclick="sendMessage()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Example -->
+            <div class="example-box">
+                <div class="example-header">Maria's Idea</div>
+                <div class="example-content">
+                    "I want to cook healthy meals for busy parents in my neighborhood. They're always stressed about feeding their kids good food but don't have time to cook. I love cooking and I'm good at making big batches."
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="card">
+                <div id="nav-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/session.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        const MOMENT_ID = 1;
+
+        // Discovery state
+        let selectedSkills = [];
+        let selectedTime = null;
+        let selectedMoney = null;
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            Navigation.init(MOMENT_ID);
+
+            // Check if user already has an idea saved
+            const savedIdea = Session.getField('idea');
+            if (savedIdea) {
+                // Go straight to idea section
+                choosePath('have-idea');
+                document.getElementById('idea').value = savedIdea;
+            }
+
+            // Setup skill tag clicks
+            document.querySelectorAll('.skill-tag[data-skill]').forEach(tag => {
+                tag.addEventListener('click', () => toggleSkill(tag));
+            });
+
+            // Setup time tag clicks
+            document.querySelectorAll('.skill-tag[data-time]').forEach(tag => {
+                tag.addEventListener('click', () => selectTime(tag));
+            });
+
+            // Setup money tag clicks
+            document.querySelectorAll('.skill-tag[data-money]').forEach(tag => {
+                tag.addEventListener('click', () => selectMoney(tag));
+            });
+
+            // Setup other skills input
+            document.getElementById('other-skills').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addCustomSkill(e.target.value);
+                    e.target.value = '';
+                }
+            });
+
+            // Setup auto-save for idea
+            document.getElementById('idea').addEventListener('input', (e) => {
+                Session.saveField('idea', e.target.value);
+            });
+
+            // Load chat history
+            loadChatHistory();
+        });
+
+        function choosePath(path) {
+            document.getElementById('path-choice-card').style.display = 'none';
+
+            if (path === 'have-idea') {
+                document.getElementById('discovery-section').classList.remove('active');
+                document.getElementById('have-idea-section').classList.add('active');
+                Navigation.renderNavButtons('nav-container', MOMENT_ID, {
+                    nextLabel: 'Save & Continue to Moment 2',
+                    showBack: false,
+                    onNext: 'saveAndContinue()'
+                });
+            } else {
+                document.getElementById('have-idea-section').classList.remove('active');
+                document.getElementById('discovery-section').classList.add('active');
+            }
+        }
+
+        function toggleSkill(tag) {
+            const skill = tag.dataset.skill;
+            if (tag.classList.contains('selected')) {
+                tag.classList.remove('selected');
+                selectedSkills = selectedSkills.filter(s => s !== skill);
+            } else {
+                tag.classList.add('selected');
+                selectedSkills.push(skill);
+            }
+        }
+
+        function addCustomSkill(skill) {
+            if (!skill.trim()) return;
+
+            const container = document.getElementById('skills-container');
+            const tag = document.createElement('span');
+            tag.className = 'skill-tag selected';
+            tag.dataset.skill = skill.toLowerCase();
+            tag.textContent = skill;
+            tag.addEventListener('click', () => toggleSkill(tag));
+            container.appendChild(tag);
+            selectedSkills.push(skill.toLowerCase());
+        }
+
+        function selectTime(tag) {
+            document.querySelectorAll('.skill-tag[data-time]').forEach(t => t.classList.remove('selected'));
+            tag.classList.add('selected');
+            selectedTime = tag.dataset.time;
+        }
+
+        function selectMoney(tag) {
+            document.querySelectorAll('.skill-tag[data-money]').forEach(t => t.classList.remove('selected'));
+            tag.classList.add('selected');
+            selectedMoney = tag.dataset.money;
+        }
+
+        function generateIdeas() {
+            if (selectedSkills.length === 0) {
+                alert('Please select at least one skill first.');
+                return;
+            }
+
+            const ideas = getIdeasForSkills(selectedSkills, selectedTime, selectedMoney);
+
+            const container = document.getElementById('ideas-container');
+            container.innerHTML = '';
+
+            ideas.forEach(idea => {
+                const div = document.createElement('div');
+                div.className = 'idea-suggestion';
+                div.innerHTML = `
+                    <h4>${idea.title}</h4>
+                    <p>${idea.description}</p>
+                `;
+                div.addEventListener('click', () => selectIdea(idea));
+                container.appendChild(div);
+            });
+
+            document.getElementById('ideas-results').classList.remove('hidden');
+        }
+
+        function getIdeasForSkills(skills, time, money) {
+            const ideas = [];
+
+            // Cooking ideas
+            if (skills.includes('cooking')) {
+                ideas.push({
+                    title: 'Meal Prep Service',
+                    description: 'Cook weekly meals for busy families in your area. They pay, you cook, they pick up.',
+                    fullIdea: 'I want to start a meal prep service for busy families in my neighborhood. I would cook healthy, homemade meals that they can pick up weekly.'
+                });
+                ideas.push({
+                    title: 'Baked Goods Business',
+                    description: 'Sell homemade cookies, cakes, or bread to neighbors and at local events.',
+                    fullIdea: 'I want to sell homemade baked goods like cookies and cakes to people in my community for special occasions and everyday treats.'
+                });
+            }
+
+            // Cleaning ideas
+            if (skills.includes('cleaning')) {
+                ideas.push({
+                    title: 'House Cleaning Service',
+                    description: 'Clean homes for busy people who don\'t have time. Start with neighbors.',
+                    fullIdea: 'I want to offer house cleaning services to busy professionals and families in my area who need help keeping their homes clean.'
+                });
+                ideas.push({
+                    title: 'Move-Out Cleaning',
+                    description: 'Deep clean apartments when people move out. Landlords and renters both need this.',
+                    fullIdea: 'I want to specialize in move-out cleaning for renters and landlords who need apartments cleaned between tenants.'
+                });
+            }
+
+            // Childcare ideas
+            if (skills.includes('childcare')) {
+                ideas.push({
+                    title: 'Babysitting Service',
+                    description: 'Watch kids in your home or theirs. Parents always need reliable sitters.',
+                    fullIdea: 'I want to offer reliable babysitting services for parents in my neighborhood who need someone trustworthy to watch their kids.'
+                });
+                ideas.push({
+                    title: 'After-School Care',
+                    description: 'Pick up kids from school, help with homework, watch them until parents get home.',
+                    fullIdea: 'I want to provide after-school care for working parents, picking up their kids and helping with homework until they get home from work.'
+                });
+            }
+
+            // Handyman ideas
+            if (skills.includes('handyman')) {
+                ideas.push({
+                    title: 'Small Repairs Service',
+                    description: 'Fix things around the house that people can\'t or won\'t do themselves.',
+                    fullIdea: 'I want to help homeowners with small repairs and fixes they can\'t do themselves, like leaky faucets, squeaky doors, and minor installations.'
+                });
+            }
+
+            // Crafts ideas
+            if (skills.includes('crafts')) {
+                ideas.push({
+                    title: 'Custom Crafts Business',
+                    description: 'Make and sell handmade items like jewelry, decorations, or personalized gifts.',
+                    fullIdea: 'I want to create and sell handmade crafts and personalized gifts for people who want unique, custom items for themselves or as presents.'
+                });
+            }
+
+            // Yard work ideas
+            if (skills.includes('yard')) {
+                ideas.push({
+                    title: 'Lawn Care Service',
+                    description: 'Mow lawns, trim hedges, do basic yard work for neighbors.',
+                    fullIdea: 'I want to help homeowners maintain their yards by offering lawn mowing, hedge trimming, and basic landscaping services.'
+                });
+            }
+
+            // Pet ideas
+            if (skills.includes('pets')) {
+                ideas.push({
+                    title: 'Pet Sitting / Dog Walking',
+                    description: 'Take care of pets when owners are away or walk dogs during the day.',
+                    fullIdea: 'I want to offer pet sitting and dog walking services for pet owners who work long hours or travel and need someone to care for their animals.'
+                });
+            }
+
+            // Driving ideas
+            if (skills.includes('driving')) {
+                ideas.push({
+                    title: 'Errand Running Service',
+                    description: 'Pick up groceries, prescriptions, or packages for people who can\'t get out.',
+                    fullIdea: 'I want to help busy people or seniors by running errands for them, like grocery shopping, picking up prescriptions, and delivering packages.'
+                });
+            }
+
+            // Beauty ideas
+            if (skills.includes('beauty')) {
+                ideas.push({
+                    title: 'Mobile Hair/Beauty Services',
+                    description: 'Do hair, nails, or makeup at clients\' homes.',
+                    fullIdea: 'I want to offer mobile beauty services, going to clients\' homes to do their hair, nails, or makeup for special occasions or regular appointments.'
+                });
+            }
+
+            // If no specific matches, offer generic ideas
+            if (ideas.length === 0) {
+                ideas.push({
+                    title: 'Personal Assistant Services',
+                    description: 'Help busy people with tasks they don\'t have time for.',
+                    fullIdea: 'I want to help busy people by handling tasks they don\'t have time for, like scheduling, organizing, and running errands.'
+                });
+                ideas.push({
+                    title: 'Tutoring or Teaching',
+                    description: 'Teach others a skill you know well.',
+                    fullIdea: 'I want to teach others something I\'m good at, helping them learn new skills through one-on-one or small group sessions.'
+                });
+            }
+
+            // Adjust based on time/money constraints
+            if (money === 'none') {
+                // Filter to low-cost ideas (all of the above are relatively low-cost)
+            }
+
+            return ideas.slice(0, 4); // Return top 4 ideas
+        }
+
+        function selectIdea(idea) {
+            // Switch to the have-idea section with the selected idea
+            document.getElementById('idea').value = idea.fullIdea;
+            Session.saveField('idea', idea.fullIdea);
+            choosePath('have-idea');
+
+            // Add a message to chat about the selected idea
+            setTimeout(() => {
+                addMessageToChat('assistant',
+                    `Great choice! "${idea.title}" is a solid business idea. I can see you wrote: "${idea.fullIdea.substring(0, 80)}..."<br><br>` +
+                    `This is a good start! In the next moment, we'll turn this into a clear mission statement. Feel free to edit what's written above if you want to make it more "you."`
+                );
+            }, 500);
+        }
+
+        // Chat functions (same as before)
+        function loadChatHistory() {
+            const history = Session.getChatHistory(MOMENT_ID);
+            history.forEach(msg => {
+                addMessageToChat(msg.role, msg.content, false);
+            });
+        }
+
+        function addMessageToChat(role, content, save = true) {
+            const container = document.getElementById('chat-messages');
+            const isUser = role === 'user';
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${role}`;
+            messageDiv.innerHTML = `
+                <div class="chat-avatar">${isUser ? 'You' : 'AI'}</div>
+                <div class="chat-bubble">
+                    <p style="margin: 0;">${content}</p>
+                </div>
+            `;
+
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+
+            if (save) {
+                Session.saveChatMessage(MOMENT_ID, role, content);
+            }
+        }
+
+        function showTyping() {
+            const container = document.getElementById('chat-messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-message assistant';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="chat-avatar">AI</div>
+                <div class="chat-bubble">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(typingDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) typing.remove();
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            addMessageToChat('user', message);
+            input.value = '';
+            generateResponse(message);
+        }
+
+        function askQuestion(question) {
+            addMessageToChat('user', question);
+            generateResponse(question);
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function generateResponse(userMessage) {
+            showTyping();
+
+            const idea = document.getElementById('idea').value.trim();
+            const messageLower = userMessage.toLowerCase();
+
+            setTimeout(() => {
+                hideTyping();
+
+                let response = '';
+
+                if (messageLower.includes('example')) {
+                    response = "Here are some ideas that work well for getting started:<br><br>" +
+                        "• <strong>Food/meals</strong> - Meal prep, baked goods, specialty items<br>" +
+                        "• <strong>Services</strong> - Cleaning, organizing, yard work, pet care<br>" +
+                        "• <strong>Childcare</strong> - Babysitting, tutoring, after-school help<br>" +
+                        "• <strong>Crafts</strong> - Handmade items, custom gifts, alterations<br><br>" +
+                        "What matters most is that it's something you can actually do and people will pay for.";
+                } else if (messageLower.includes('good idea') || messageLower.includes('what makes')) {
+                    response = "A good business idea usually has three things:<br><br>" +
+                        "1. <strong>A real problem</strong> - People need something they can't easily get<br>" +
+                        "2. <strong>Your ability</strong> - You can actually provide it (skills, time, resources)<br>" +
+                        "3. <strong>Willing buyers</strong> - People will pay money for it<br><br>" +
+                        "It doesn't need to be unique or revolutionary. Many successful businesses do ordinary things really well.";
+                } else if (messageLower.includes('too broad') || messageLower.includes('narrow')) {
+                    if (idea) {
+                        response = `Looking at your idea: "${idea.substring(0, 100)}..."<br><br>` +
+                            "Ask yourself:<br>" +
+                            "• Can you describe your customer in one sentence?<br>" +
+                            "• Is there one main thing you'd do for them?<br>" +
+                            "• Could you start this week if you had to?<br><br>" +
+                            "If any answer is 'no', try narrowing down. Who SPECIFICALLY would you help? What EXACTLY would you do?";
+                    } else {
+                        response = "Write your idea above first, and I can help you figure out if it needs to be more focused!";
+                    }
+                } else if (idea) {
+                    response = `Thanks for sharing! Based on what you wrote, I have a few thoughts:<br><br>` +
+                        `Your idea seems to be about helping people with something they need. That's a great start!<br><br>` +
+                        `<strong>Questions to consider:</strong><br>` +
+                        `• Who exactly would pay for this?<br>` +
+                        `• What specific problem are you solving for them?<br>` +
+                        `• How would you deliver this to them?<br><br>` +
+                        `In the next moment, we'll turn this into a clear mission statement.`;
+                } else {
+                    response = "I'm here to help! Try writing your business idea in the text box above, then ask me questions about it. Or ask me for examples if you're still brainstorming.";
+                }
+
+                addMessageToChat('assistant', response);
+            }, 1000 + Math.random() * 500);
+        }
+
+        function saveAndContinue() {
+            const idea = document.getElementById('idea').value.trim();
+
+            if (!idea) {
+                alert('Please describe your business idea before continuing.');
+                document.getElementById('idea').focus();
+                return;
+            }
+
+            Session.saveField('idea', idea);
+            Session.completeMoment(MOMENT_ID);
+            window.location.href = 'moment-2.html';
+        }
+    </script>
+</body>
+</html>

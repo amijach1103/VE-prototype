@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe - Business Idea Builder</title>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Resume Card (shown if session exists) -->
+        <div id="resume-card" class="resume-card hidden">
+            <h3>Welcome Back!</h3>
+            <p id="resume-progress">You've made progress on your business plan.</p>
+            <div class="btn-group" style="margin-top: 16px;">
+                <button class="btn btn-secondary" onclick="startFresh()">Start Over</button>
+                <button class="btn btn-primary" onclick="resumeSession()">Continue</button>
+            </div>
+        </div>
+
+        <!-- Hero Section -->
+        <div class="card">
+            <div class="landing-hero">
+                <h1>Turn Your Business Idea Into a Plan</h1>
+                <p>In 5 short moments, you'll create a clear plan for your business idea. Each moment takes just a few minutes.</p>
+            </div>
+
+            <!-- Moment Preview -->
+            <div class="moment-preview" id="moment-preview">
+                <div class="moment-preview-item" data-moment="1">
+                    <div class="moment-preview-number">1</div>
+                    <div class="moment-preview-info">
+                        <div class="moment-preview-name">Your Idea</div>
+                        <div class="moment-preview-duration">3-5 minutes</div>
+                    </div>
+                </div>
+                <div class="moment-preview-item" data-moment="2">
+                    <div class="moment-preview-number">2</div>
+                    <div class="moment-preview-info">
+                        <div class="moment-preview-name">Your Mission</div>
+                        <div class="moment-preview-duration">5-7 minutes</div>
+                    </div>
+                </div>
+                <div class="moment-preview-item" data-moment="3">
+                    <div class="moment-preview-number">3</div>
+                    <div class="moment-preview-info">
+                        <div class="moment-preview-name">Your Goals</div>
+                        <div class="moment-preview-duration">5-7 minutes</div>
+                    </div>
+                </div>
+                <div class="moment-preview-item" data-moment="4">
+                    <div class="moment-preview-number">4</div>
+                    <div class="moment-preview-info">
+                        <div class="moment-preview-name">Your Actions</div>
+                        <div class="moment-preview-duration">7-10 minutes</div>
+                    </div>
+                </div>
+                <div class="moment-preview-item" data-moment="5">
+                    <div class="moment-preview-number">5</div>
+                    <div class="moment-preview-info">
+                        <div class="moment-preview-name">Your Plan</div>
+                        <div class="moment-preview-duration">3-5 minutes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Why Moments -->
+        <div class="card">
+            <h3>Why 5 Short Moments?</h3>
+            <ul>
+                <li><strong>Fits your schedule</strong> - Complete one moment on a lunch break, another while waiting</li>
+                <li><strong>Your progress is saved</strong> - Close the app anytime, pick up where you left off</li>
+                <li><strong>Less overwhelming</strong> - Small steps feel more doable than one big task</li>
+            </ul>
+        </div>
+
+        <!-- AI Coach Info -->
+        <div class="card">
+            <div class="chat-header" style="border-radius: 12px; border: none;">
+                <div class="chat-header-icon">AI</div>
+                <div class="chat-header-title">Your AI Coach</div>
+            </div>
+            <p style="margin-top: 16px;">I'll be with you through each moment. Ask me questions, get suggestions, and think through your ideas together.</p>
+            <p style="margin-bottom: 0;"><em>There are no wrong answers - this is about your idea and your vision.</em></p>
+        </div>
+
+        <!-- Example -->
+        <div class="example-box">
+            <div class="example-header">Example: Maria's Meal Prep Business</div>
+            <div class="example-content">
+                Throughout these moments, you'll see how Maria used this process to plan her meal prep service for busy families. Her example can help guide your thinking.
+            </div>
+        </div>
+
+        <!-- Start Button -->
+        <div class="card" id="start-card">
+            <h3>Ready to Begin?</h3>
+            <p>Do you have a business idea you'd like to work on? It can be something you're already doing, thinking about starting, or just exploring.</p>
+            <button class="btn btn-primary" style="width: 100%;" onclick="startSession()">Start Moment 1</button>
+        </div>
+    </div>
+
+    <script src="js/session.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        // Check for existing session on load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkExistingSession();
+        });
+
+        function checkExistingSession() {
+            if (Session.hasExistingSession()) {
+                const session = Session.load();
+                const progress = Session.getProgress();
+
+                // Show resume card
+                document.getElementById('resume-card').classList.remove('hidden');
+                document.getElementById('resume-progress').textContent =
+                    `You're ${progress}% done. Currently on Moment ${session.currentMoment}.`;
+
+                // Update moment preview to show progress
+                updateMomentPreview(session);
+
+                // Update start button text
+                document.querySelector('#start-card h3').textContent = 'Or Start Fresh';
+                document.querySelector('#start-card p').textContent =
+                    'Want to work on a different idea? You can start over with a clean slate.';
+                document.querySelector('#start-card .btn').textContent = 'Start New Plan';
+            }
+        }
+
+        function updateMomentPreview(session) {
+            const items = document.querySelectorAll('.moment-preview-item');
+            items.forEach(item => {
+                const momentId = parseInt(item.dataset.moment);
+
+                if (session.completedMoments.includes(momentId)) {
+                    item.classList.add('completed');
+                    item.querySelector('.moment-preview-number').textContent = '✓';
+                } else if (momentId === session.currentMoment) {
+                    item.classList.add('current');
+                }
+            });
+        }
+
+        function startSession() {
+            Session.start();
+            window.location.href = 'moment-1.html';
+        }
+
+        function resumeSession() {
+            const session = Session.load();
+            const currentMoment = session.currentMoment;
+            window.location.href = `moment-${currentMoment}.html`;
+        }
+
+        function startFresh() {
+            if (confirm('Start over with a new idea? Your current progress will be cleared.')) {
+                Session.clear();
+                Session.start();
+                window.location.href = 'moment-1.html';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moment 3: Your Goals - Vibe</title>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Progress Bar -->
+        <div id="progress-container"></div>
+
+        <!-- Header -->
+        <div id="header-container"></div>
+
+        <!-- Main Content -->
+        <div class="card">
+            <h3>Set Your 3 Goals</h3>
+            <p>What do you need to achieve to make your mission real? Most new businesses focus on 3 main areas:</p>
+            <ul>
+                <li><strong>Building capability</strong> - What skills or products do you need?</li>
+                <li><strong>Finding customers</strong> - Who will pay and how will they find you?</li>
+                <li><strong>Setting up operations</strong> - What do you need to actually run this?</li>
+            </ul>
+        </div>
+
+        <!-- Mission Reminder -->
+        <div class="card" style="background: var(--background);">
+            <p style="margin-bottom: 8px; font-size: 14px; color: var(--text-muted);">Your mission:</p>
+            <p id="mission-reminder" style="margin-bottom: 0; font-style: italic;"></p>
+        </div>
+
+        <!-- Goals Input -->
+        <div class="card">
+            <div class="form-group">
+                <label for="objectives_0">Goal 1: What's your first priority?</label>
+                <input
+                    type="text"
+                    id="objectives_0"
+                    data-field="objectives.0"
+                    placeholder="e.g., Learn the skills I need to..."
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="objectives_1">Goal 2: What else matters for success?</label>
+                <input
+                    type="text"
+                    id="objectives_1"
+                    data-field="objectives.1"
+                    placeholder="e.g., Find my first customers by..."
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="objectives_2">Goal 3: What foundation do you need?</label>
+                <input
+                    type="text"
+                    id="objectives_2"
+                    data-field="objectives.2"
+                    placeholder="e.g., Set up my workspace for..."
+                >
+            </div>
+        </div>
+
+        <!-- Chat Interface -->
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="chat-header-icon">AI</div>
+                <div class="chat-header-title">AI Coach</div>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="chat-message assistant">
+                    <div class="chat-avatar">AI</div>
+                    <div class="chat-bubble">
+                        <p style="margin: 0;">Let's figure out your 3 main goals. These should be high-level — we'll break them into specific actions in the next moment.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Replies -->
+            <div class="quick-replies" style="padding: 0 16px;">
+                <button class="quick-reply-btn" onclick="askQuestion('Are these goals realistic?')">Are these realistic?</button>
+                <button class="quick-reply-btn" onclick="askQuestion('What am I missing?')">What am I missing?</button>
+                <button class="quick-reply-btn" onclick="askQuestion('Give me examples')">Give me examples</button>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-container">
+                <input
+                    type="text"
+                    class="chat-input"
+                    id="chat-input"
+                    placeholder="Ask me anything..."
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button class="chat-send-btn" onclick="sendMessage()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Example -->
+        <div class="example-box">
+            <div class="example-header">Maria's 3 Goals</div>
+            <div class="example-content">
+                1. Build my meal prep skills and recipe collection<br>
+                2. Find my first paying customers<br>
+                3. Set up reliable operations (kitchen, supplies, schedule)
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="card">
+            <div id="nav-container"></div>
+        </div>
+    </div>
+
+    <script src="js/session.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        const MOMENT_ID = 3;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            Navigation.init(MOMENT_ID);
+            Navigation.renderNavButtons('nav-container', MOMENT_ID, {
+                nextLabel: 'Save & Continue to Moment 4',
+                onNext: 'saveAndContinue()'
+            });
+
+            // Show mission reminder
+            const mission = Session.getField('mission');
+            document.getElementById('mission-reminder').textContent = mission || 'No mission saved';
+
+            // Load saved objectives
+            for (let i = 0; i < 3; i++) {
+                const saved = Session.getField(`objectives.${i}`);
+                if (saved) {
+                    document.getElementById(`objectives_${i}`).value = saved;
+                }
+            }
+
+            // Load chat history
+            loadChatHistory();
+
+            // Auto-save for all inputs
+            document.querySelectorAll('input[data-field]').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    Session.saveField(e.target.dataset.field, e.target.value);
+                });
+            });
+        });
+
+        function loadChatHistory() {
+            const history = Session.getChatHistory(MOMENT_ID);
+            history.forEach(msg => {
+                addMessageToChat(msg.role, msg.content, false);
+            });
+        }
+
+        function addMessageToChat(role, content, save = true) {
+            const container = document.getElementById('chat-messages');
+            const isUser = role === 'user';
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${role}`;
+            messageDiv.innerHTML = `
+                <div class="chat-avatar">${isUser ? 'You' : 'AI'}</div>
+                <div class="chat-bubble">
+                    <p style="margin: 0;">${content}</p>
+                </div>
+            `;
+
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+
+            if (save) {
+                Session.saveChatMessage(MOMENT_ID, role, content);
+            }
+        }
+
+        function showTyping() {
+            const container = document.getElementById('chat-messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-message assistant';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="chat-avatar">AI</div>
+                <div class="chat-bubble">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(typingDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) typing.remove();
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            addMessageToChat('user', message);
+            input.value = '';
+            generateResponse(message);
+        }
+
+        function askQuestion(question) {
+            addMessageToChat('user', question);
+            generateResponse(question);
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function generateResponse(userMessage) {
+            showTyping();
+
+            const goals = [
+                document.getElementById('objectives_0').value.trim(),
+                document.getElementById('objectives_1').value.trim(),
+                document.getElementById('objectives_2').value.trim()
+            ];
+            const filledGoals = goals.filter(g => g);
+            const messageLower = userMessage.toLowerCase();
+
+            setTimeout(() => {
+                hideTyping();
+
+                let response = '';
+
+                if (messageLower.includes('realistic')) {
+                    if (filledGoals.length > 0) {
+                        response = "Let me check your goals:<br><br>";
+                        goals.forEach((goal, i) => {
+                            if (goal) {
+                                const isShort = goal.length < 15;
+                                const hasTimeframe = goal.match(/\b(week|month|day|year)\b/i);
+
+                                response += `<strong>Goal ${i + 1}:</strong> "${goal}"<br>`;
+                                if (isShort) {
+                                    response += "→ This is pretty brief. Can you add more detail?<br><br>";
+                                } else if (!hasTimeframe) {
+                                    response += "→ Consider adding a timeframe — when would you achieve this?<br><br>";
+                                } else {
+                                    response += "→ This looks clear and focused!<br><br>";
+                                }
+                            }
+                        });
+                        response += "Remember: Goals should be challenging but achievable. Can you make progress on this in the next 3 months?";
+                    } else {
+                        response = "Enter your goals above first, and I'll help you check if they're realistic!";
+                    }
+                } else if (messageLower.includes('missing')) {
+                    const hasCapability = goals.some(g => g.toLowerCase().match(/skill|learn|build|create|develop/));
+                    const hasCustomers = goals.some(g => g.toLowerCase().match(/customer|client|sell|market|find/));
+                    const hasOperations = goals.some(g => g.toLowerCase().match(/set up|operation|system|process|schedule/));
+
+                    response = "Let me see what areas you've covered:<br><br>";
+
+                    if (hasCapability) {
+                        response += "✓ <strong>Building capability</strong> — covered<br>";
+                    } else {
+                        response += "○ <strong>Building capability</strong> — consider: What skills or products do you need to develop?<br>";
+                    }
+
+                    if (hasCustomers) {
+                        response += "✓ <strong>Finding customers</strong> — covered<br>";
+                    } else {
+                        response += "○ <strong>Finding customers</strong> — consider: How will people find out about you?<br>";
+                    }
+
+                    if (hasOperations) {
+                        response += "✓ <strong>Setting up operations</strong> — covered<br>";
+                    } else {
+                        response += "○ <strong>Setting up operations</strong> — consider: What do you need to actually deliver?<br>";
+                    }
+
+                    if (filledGoals.length < 3) {
+                        response += "<br>You have room for " + (3 - filledGoals.length) + " more goal(s). Consider filling in the gaps above!";
+                    }
+                } else if (messageLower.includes('example')) {
+                    const idea = Session.getField('idea').toLowerCase();
+
+                    if (idea.includes('food') || idea.includes('meal') || idea.includes('cook')) {
+                        response = "For a food business, consider:<br><br>" +
+                            "• <strong>Capability:</strong> Perfect 10 recipes customers love<br>" +
+                            "• <strong>Customers:</strong> Get 5 paying customers in my neighborhood<br>" +
+                            "• <strong>Operations:</strong> Set up a weekly cooking and delivery schedule";
+                    } else if (idea.includes('clean') || idea.includes('service')) {
+                        response = "For a service business, consider:<br><br>" +
+                            "• <strong>Capability:</strong> Get trained/certified in my service area<br>" +
+                            "• <strong>Customers:</strong> Land my first 3 regular clients<br>" +
+                            "• <strong>Operations:</strong> Set up scheduling and payment systems";
+                    } else {
+                        response = "Some goal examples:<br><br>" +
+                            "• <strong>Capability:</strong> 'Build/learn the core skills I need'<br>" +
+                            "• <strong>Customers:</strong> 'Find my first 5 paying customers'<br>" +
+                            "• <strong>Operations:</strong> 'Set up the basics to run reliably'<br><br>" +
+                            "What type of business are you thinking about? I can give more specific examples.";
+                    }
+                } else {
+                    response = "Great question! Here's what makes good goals:<br><br>" +
+                        "• <strong>Specific</strong> — Clear about what you'll achieve<br>" +
+                        "• <strong>Meaningful</strong> — Actually matters for your business<br>" +
+                        "• <strong>Achievable</strong> — You can make progress in 3 months<br><br>" +
+                        "Would you like me to review your goals or give you examples?";
+                }
+
+                addMessageToChat('assistant', response);
+            }, 1000 + Math.random() * 500);
+        }
+
+        function saveAndContinue() {
+            const goals = [
+                document.getElementById('objectives_0').value.trim(),
+                document.getElementById('objectives_1').value.trim(),
+                document.getElementById('objectives_2').value.trim()
+            ];
+
+            const filledGoals = goals.filter(g => g);
+            if (filledGoals.length === 0) {
+                alert('Please enter at least one goal before continuing.');
+                document.getElementById('objectives_0').focus();
+                return;
+            }
+
+            goals.forEach((goal, i) => {
+                Session.saveField(`objectives.${i}`, goal);
+            });
+
+            Session.completeMoment(MOMENT_ID);
+            window.location.href = 'moment-4.html';
+        }
+    </script>
+</body>
+</html>

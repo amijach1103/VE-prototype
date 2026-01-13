@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moment 2: Your Mission - Vibe</title>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Progress Bar -->
+        <div id="progress-container"></div>
+
+        <!-- Header -->
+        <div id="header-container"></div>
+
+        <!-- Formula Card -->
+        <div class="card">
+            <h3>Create Your Mission Statement</h3>
+            <p>A mission statement is a clear sentence that explains what your business does. Use this formula:</p>
+
+            <div class="formula-box">
+                <strong>I help [WHO] do [WHAT] by [HOW] because [WHY IT MATTERS]</strong>
+            </div>
+        </div>
+
+        <!-- Your Idea Reminder -->
+        <div class="card" style="background: var(--background);">
+            <p style="margin-bottom: 8px; font-size: 14px; color: var(--text-muted);">Your idea from Moment 1:</p>
+            <p id="idea-reminder" style="margin-bottom: 0; font-style: italic;"></p>
+        </div>
+
+        <!-- Mission Input -->
+        <div class="card">
+            <div class="form-group">
+                <label for="mission">Your mission statement:</label>
+                <textarea
+                    id="mission"
+                    data-field="mission"
+                    placeholder="I help [who] do [what] by [how] because [why it matters]..."
+                ></textarea>
+                <p class="hint">Keep it to 1-2 sentences. It's okay if it's not perfect - you can always refine it later.</p>
+            </div>
+        </div>
+
+        <!-- Chat Interface -->
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="chat-header-icon">AI</div>
+                <div class="chat-header-title">AI Coach</div>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="chat-message assistant">
+                    <div class="chat-avatar">AI</div>
+                    <div class="chat-bubble">
+                        <p style="margin: 0;">Let's turn your idea into a clear mission statement. Use the formula above - I can help you with any part that feels tricky.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Replies -->
+            <div class="quick-replies" id="quick-replies" style="padding: 0 16px;">
+                <button class="quick-reply-btn" onclick="askQuestion('Help me with the WHO')">Help me with WHO</button>
+                <button class="quick-reply-btn" onclick="askQuestion('Help me with the WHAT')">Help me with WHAT</button>
+                <button class="quick-reply-btn" onclick="askQuestion('Is this clear enough?')">Is this clear?</button>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-container">
+                <input
+                    type="text"
+                    class="chat-input"
+                    id="chat-input"
+                    placeholder="Ask me anything..."
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button class="chat-send-btn" onclick="sendMessage()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Example -->
+        <div class="example-box">
+            <div class="example-header">Maria's Mission Statement</div>
+            <div class="example-content">
+                "I help <strong>busy working parents</strong> eat healthier <strong>by preparing affordable homemade meals they can pick up weekly</strong> — because <strong>families deserve good food without the stress of cooking every night</strong>."
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="card">
+            <div id="nav-container"></div>
+        </div>
+    </div>
+
+    <script src="js/session.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        const MOMENT_ID = 2;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            Navigation.init(MOMENT_ID);
+            Navigation.renderNavButtons('nav-container', MOMENT_ID, {
+                nextLabel: 'Save & Continue to Moment 3',
+                onNext: 'saveAndContinue()'
+            });
+
+            // Show idea from moment 1
+            const idea = Session.getField('idea');
+            document.getElementById('idea-reminder').textContent = idea || 'No idea saved from Moment 1';
+
+            // Load saved mission
+            const savedMission = Session.getField('mission');
+            if (savedMission) {
+                document.getElementById('mission').value = savedMission;
+            }
+
+            // Load chat history
+            loadChatHistory();
+
+            // Auto-save
+            document.getElementById('mission').addEventListener('input', (e) => {
+                Session.saveField('mission', e.target.value);
+            });
+        });
+
+        function loadChatHistory() {
+            const history = Session.getChatHistory(MOMENT_ID);
+            history.forEach(msg => {
+                addMessageToChat(msg.role, msg.content, false);
+            });
+        }
+
+        function addMessageToChat(role, content, save = true) {
+            const container = document.getElementById('chat-messages');
+            const isUser = role === 'user';
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${role}`;
+            messageDiv.innerHTML = `
+                <div class="chat-avatar">${isUser ? 'You' : 'AI'}</div>
+                <div class="chat-bubble">
+                    <p style="margin: 0;">${content}</p>
+                </div>
+            `;
+
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+
+            if (save) {
+                Session.saveChatMessage(MOMENT_ID, role, content);
+            }
+        }
+
+        function showTyping() {
+            const container = document.getElementById('chat-messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-message assistant';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="chat-avatar">AI</div>
+                <div class="chat-bubble">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(typingDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) typing.remove();
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            addMessageToChat('user', message);
+            input.value = '';
+            generateResponse(message);
+        }
+
+        function askQuestion(question) {
+            addMessageToChat('user', question);
+            generateResponse(question);
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function generateResponse(userMessage) {
+            showTyping();
+
+            const idea = Session.getField('idea');
+            const mission = document.getElementById('mission').value.trim();
+            const messageLower = userMessage.toLowerCase();
+
+            setTimeout(() => {
+                hideTyping();
+
+                let response = '';
+
+                if (messageLower.includes('who')) {
+                    response = "The <strong>WHO</strong> is your target customer. Be specific!<br><br>" +
+                        "Instead of 'everyone' or 'people', think about:<br>" +
+                        "• What's their situation? (busy parents, new graduates, retirees)<br>" +
+                        "• What's their struggle? (no time, limited budget, lack of skills)<br>" +
+                        "• Where are they? (your neighborhood, online, local businesses)<br><br>" +
+                        "For example: 'busy working parents' is better than just 'parents'.";
+                } else if (messageLower.includes('what')) {
+                    response = "The <strong>WHAT</strong> is the outcome or benefit they get.<br><br>" +
+                        "Don't describe what YOU do - describe what THEY get:<br>" +
+                        "• What problem goes away?<br>" +
+                        "• What becomes easier?<br>" +
+                        "• What do they achieve?<br><br>" +
+                        "'Eat healthier' is about them. 'I cook meals' is about you. Focus on them.";
+                } else if (messageLower.includes('clear') || messageLower.includes('review')) {
+                    if (mission) {
+                        // Analyze the mission
+                        const hasWho = mission.toLowerCase().includes('help') ||
+                                       mission.match(/for\s+\w+/i) ||
+                                       mission.match(/\b(parents|families|people|customers|clients)\b/i);
+                        const hasWhat = mission.match(/\b(by|through|via)\b/i) ||
+                                        mission.match(/\b(provide|offer|deliver|give|make)\b/i);
+
+                        response = `Looking at your mission: "${mission.substring(0, 100)}${mission.length > 100 ? '...' : ''}"<br><br>`;
+
+                        if (hasWho && hasWhat) {
+                            response += "This looks like a solid start! I can see who you're helping and what you're providing.<br><br>" +
+                                "<strong>One test:</strong> Could a stranger read this and explain your business to someone else? If yes, you're in good shape!";
+                        } else if (!hasWho) {
+                            response += "I'm not quite sure WHO you're helping. Try being more specific about your customer.<br><br>" +
+                                "Instead of 'people', who exactly? What's their situation?";
+                        } else {
+                            response += "Good start! Consider adding more about HOW you help them or WHY it matters.<br><br>" +
+                                "What makes your approach different or valuable?";
+                        }
+                    } else {
+                        response = "Write your mission statement above first, and I'll help you check if it's clear!";
+                    }
+                } else if (messageLower.includes('how') || messageLower.includes('by')) {
+                    response = "The <strong>HOW</strong> is your method or approach.<br><br>" +
+                        "This is what makes you different from others who might solve the same problem:<br>" +
+                        "• What's your specific approach?<br>" +
+                        "• What do you actually deliver?<br>" +
+                        "• How do customers interact with you?<br><br>" +
+                        "'By preparing affordable homemade meals they can pick up weekly' is specific and clear.";
+                } else if (messageLower.includes('why') || messageLower.includes('matter')) {
+                    response = "The <strong>WHY IT MATTERS</strong> connects to their deeper need.<br><br>" +
+                        "Go beyond the obvious. Why do they REALLY need this?<br>" +
+                        "• What's the pain behind the pain?<br>" +
+                        "• What are they sacrificing without your help?<br>" +
+                        "• What could they do with the time/money/energy you save them?<br><br>" +
+                        "'Because families deserve good food without the stress' hits an emotional truth.";
+                } else {
+                    // General encouragement
+                    response = "You're doing great! Remember:<br><br>" +
+                        "• <strong>WHO</strong> - Be specific about your customer<br>" +
+                        "• <strong>WHAT</strong> - Focus on their outcome, not your activity<br>" +
+                        "• <strong>HOW</strong> - Your specific approach or method<br>" +
+                        "• <strong>WHY</strong> - The deeper reason it matters<br><br>" +
+                        "Which part would you like help with?";
+                }
+
+                addMessageToChat('assistant', response);
+            }, 1000 + Math.random() * 500);
+        }
+
+        function saveAndContinue() {
+            const mission = document.getElementById('mission').value.trim();
+
+            if (!mission) {
+                alert('Please write your mission statement before continuing.');
+                document.getElementById('mission').focus();
+                return;
+            }
+
+            Session.saveField('mission', mission);
+            Session.completeMoment(MOMENT_ID);
+            window.location.href = 'moment-3.html';
+        }
+    </script>
+</body>
+</html>

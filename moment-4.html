@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moment 4: Your Actions - Vibe</title>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Progress Bar -->
+        <div id="progress-container"></div>
+
+        <!-- Header -->
+        <div id="header-container"></div>
+
+        <!-- Main Content -->
+        <div class="card">
+            <h3>Define Your Actions</h3>
+            <p>For each goal, add 2 specific actions you can measure. Good actions answer: <strong>"How will I know I've made progress?"</strong></p>
+            <p>Try to include numbers where you can (e.g., "Talk to 10 potential customers" instead of "Talk to customers").</p>
+        </div>
+
+        <!-- Goal 1 Actions -->
+        <div class="item-card" id="goal-1-card">
+            <div class="item-number">Goal 1</div>
+            <h3 id="goal-1-title">Your First Goal</h3>
+
+            <div class="form-group">
+                <label>Action 1:</label>
+                <input type="text" id="keyResults_0_0" data-field="keyResults.0.0" placeholder="What specific thing will you do?">
+            </div>
+            <div class="form-group">
+                <label>Action 2:</label>
+                <input type="text" id="keyResults_0_1" data-field="keyResults.0.1" placeholder="What else will show progress?">
+            </div>
+        </div>
+
+        <!-- Goal 2 Actions -->
+        <div class="item-card" id="goal-2-card">
+            <div class="item-number">Goal 2</div>
+            <h3 id="goal-2-title">Your Second Goal</h3>
+
+            <div class="form-group">
+                <label>Action 1:</label>
+                <input type="text" id="keyResults_1_0" data-field="keyResults.1.0" placeholder="What specific thing will you do?">
+            </div>
+            <div class="form-group">
+                <label>Action 2:</label>
+                <input type="text" id="keyResults_1_1" data-field="keyResults.1.1" placeholder="What else will show progress?">
+            </div>
+        </div>
+
+        <!-- Goal 3 Actions -->
+        <div class="item-card" id="goal-3-card">
+            <div class="item-number">Goal 3</div>
+            <h3 id="goal-3-title">Your Third Goal</h3>
+
+            <div class="form-group">
+                <label>Action 1:</label>
+                <input type="text" id="keyResults_2_0" data-field="keyResults.2.0" placeholder="What specific thing will you do?">
+            </div>
+            <div class="form-group">
+                <label>Action 2:</label>
+                <input type="text" id="keyResults_2_1" data-field="keyResults.2.1" placeholder="What else will show progress?">
+            </div>
+        </div>
+
+        <!-- Chat Interface -->
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="chat-header-icon">AI</div>
+                <div class="chat-header-title">AI Coach</div>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="chat-message assistant">
+                    <div class="chat-avatar">AI</div>
+                    <div class="chat-bubble">
+                        <p style="margin: 0;">Now let's make your goals concrete. For each goal, what specific things can you do and measure? Think about what you could check off a list.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Replies -->
+            <div class="quick-replies" style="padding: 0 16px;">
+                <button class="quick-reply-btn" onclick="askQuestion('How do I measure this?')">How do I measure this?</button>
+                <button class="quick-reply-btn" onclick="askQuestion('Is this specific enough?')">Is this specific enough?</button>
+                <button class="quick-reply-btn" onclick="askQuestion('What numbers should I use?')">What numbers?</button>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" id="chat-input" placeholder="Ask me anything..." onkeypress="handleKeyPress(event)">
+                <button class="chat-send-btn" onclick="sendMessage()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Example -->
+        <div class="example-box">
+            <div class="example-header">Maria's Actions for "Build meal prep skills"</div>
+            <div class="example-content">
+                • Complete 3 batch cooking tutorials<br>
+                • Test 10 recipes with family and get feedback<br>
+                • Get food handler certification
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="card">
+            <div id="nav-container"></div>
+        </div>
+    </div>
+
+    <script src="js/session.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        const MOMENT_ID = 4;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            Navigation.init(MOMENT_ID);
+            Navigation.renderNavButtons('nav-container', MOMENT_ID, {
+                nextLabel: 'Save & Review Your Plan',
+                onNext: 'saveAndContinue()'
+            });
+
+            // Load goals and show/hide cards
+            const objectives = [
+                Session.getField('objectives.0'),
+                Session.getField('objectives.1'),
+                Session.getField('objectives.2')
+            ];
+
+            objectives.forEach((obj, i) => {
+                const card = document.getElementById(`goal-${i + 1}-card`);
+                const title = document.getElementById(`goal-${i + 1}-title`);
+
+                if (obj) {
+                    title.textContent = obj;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Load saved key results
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 2; j++) {
+                    const saved = Session.getField(`keyResults.${i}.${j}`);
+                    const input = document.getElementById(`keyResults_${i}_${j}`);
+                    if (saved && input) {
+                        input.value = saved;
+                    }
+                }
+            }
+
+            // Load chat history
+            loadChatHistory();
+
+            // Auto-save
+            document.querySelectorAll('input[data-field]').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    Session.saveField(e.target.dataset.field, e.target.value);
+                });
+            });
+        });
+
+        function loadChatHistory() {
+            const history = Session.getChatHistory(MOMENT_ID);
+            history.forEach(msg => {
+                addMessageToChat(msg.role, msg.content, false);
+            });
+        }
+
+        function addMessageToChat(role, content, save = true) {
+            const container = document.getElementById('chat-messages');
+            const isUser = role === 'user';
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${role}`;
+            messageDiv.innerHTML = `
+                <div class="chat-avatar">${isUser ? 'You' : 'AI'}</div>
+                <div class="chat-bubble">
+                    <p style="margin: 0;">${content}</p>
+                </div>
+            `;
+
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+
+            if (save) {
+                Session.saveChatMessage(MOMENT_ID, role, content);
+            }
+        }
+
+        function showTyping() {
+            const container = document.getElementById('chat-messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-message assistant';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="chat-avatar">AI</div>
+                <div class="chat-bubble">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(typingDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) typing.remove();
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            addMessageToChat('user', message);
+            input.value = '';
+            generateResponse(message);
+        }
+
+        function askQuestion(question) {
+            addMessageToChat('user', question);
+            generateResponse(question);
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function hasNumber(text) {
+            return /\d/.test(text);
+        }
+
+        function generateResponse(userMessage) {
+            showTyping();
+
+            const messageLower = userMessage.toLowerCase();
+
+            // Collect all actions
+            const actions = [];
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 2; j++) {
+                    const input = document.getElementById(`keyResults_${i}_${j}`);
+                    if (input && input.value.trim()) {
+                        actions.push({
+                            goalIndex: i,
+                            text: input.value.trim(),
+                            hasNumber: hasNumber(input.value)
+                        });
+                    }
+                }
+            }
+
+            setTimeout(() => {
+                hideTyping();
+
+                let response = '';
+
+                if (messageLower.includes('measure')) {
+                    response = "Good actions are measurable. Ask yourself:<br><br>" +
+                        "• <strong>How many?</strong> (e.g., 'Talk to 10 customers' not 'Talk to customers')<br>" +
+                        "• <strong>By when?</strong> (e.g., 'by end of month')<br>" +
+                        "• <strong>What counts as done?</strong> (e.g., 'Get 5 positive responses')<br><br>" +
+                        "Numbers make it clear whether you've succeeded or not. 'Get better at cooking' is vague. 'Complete 3 cooking courses' is measurable.";
+                } else if (messageLower.includes('specific')) {
+                    if (actions.length > 0) {
+                        response = "Let me check your actions:<br><br>";
+
+                        actions.forEach((action, idx) => {
+                            const goalNum = action.goalIndex + 1;
+                            response += `<strong>Goal ${goalNum}:</strong> "${action.text}"<br>`;
+
+                            if (action.hasNumber) {
+                                response += "✓ Has a number — that's measurable!<br><br>";
+                            } else if (action.text.length < 20) {
+                                response += "→ Pretty short. Can you add a number or more detail?<br><br>";
+                            } else {
+                                response += "→ Consider adding a number (how many? by when?)<br><br>";
+                            }
+                        });
+                    } else {
+                        response = "Fill in some actions above, and I'll help you check if they're specific enough!";
+                    }
+                } else if (messageLower.includes('number')) {
+                    response = "Here are some numbers that make actions clearer:<br><br>" +
+                        "• <strong>Quantity:</strong> '5 customers', '10 recipes', '3 tutorials'<br>" +
+                        "• <strong>Time:</strong> 'by end of week', 'within 30 days', '2 hours per day'<br>" +
+                        "• <strong>Money:</strong> '$500 in sales', '$100 budget', '20% profit margin'<br>" +
+                        "• <strong>Percentage:</strong> '80% satisfaction', '50% response rate'<br><br>" +
+                        "Pick numbers that are challenging but achievable. You can always adjust later!";
+                } else {
+                    // General feedback
+                    const actionsWithNumbers = actions.filter(a => a.hasNumber).length;
+                    const totalActions = actions.length;
+
+                    if (totalActions === 0) {
+                        response = "I'm ready to help! Fill in your actions above, then ask me to review them or help make them more specific.";
+                    } else {
+                        response = `You have ${totalActions} action(s) so far. ${actionsWithNumbers} include numbers, which is great for tracking progress.<br><br>`;
+
+                        if (actionsWithNumbers < totalActions) {
+                            response += "Try adding numbers to the others so you can measure your progress. Would you like suggestions?";
+                        } else {
+                            response += "Your actions look measurable! In the next moment, you'll review your complete plan and pick your first step.";
+                        }
+                    }
+                }
+
+                addMessageToChat('assistant', response);
+            }, 1000 + Math.random() * 500);
+        }
+
+        function saveAndContinue() {
+            // Save all key results
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 2; j++) {
+                    const input = document.getElementById(`keyResults_${i}_${j}`);
+                    if (input) {
+                        Session.saveField(`keyResults.${i}.${j}`, input.value.trim());
+                    }
+                }
+            }
+
+            // Check that at least one action exists
+            let hasAction = false;
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 2; j++) {
+                    const input = document.getElementById(`keyResults_${i}_${j}`);
+                    if (input && input.value.trim()) {
+                        hasAction = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!hasAction) {
+                alert('Please add at least one action before continuing.');
+                return;
+            }
+
+            Session.completeMoment(MOMENT_ID);
+            window.location.href = 'moment-5.html';
+        }
+    </script>
+</body>
+</html>
