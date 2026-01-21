@@ -5,6 +5,17 @@
 
 const Navigation = {
     /**
+     * Get URL with preserved query parameters (for demo mode)
+     */
+    getUrlWithParams(baseUrl) {
+        const currentParams = new URLSearchParams(window.location.search);
+        if (currentParams.toString()) {
+            return `${baseUrl}?${currentParams.toString()}`;
+        }
+        return baseUrl;
+    },
+
+    /**
      * Moment definitions
      */
     moments: [
@@ -26,7 +37,7 @@ const Navigation = {
 
         const moment = this.moments.find(m => m.id === momentId);
         if (moment) {
-            window.location.href = moment.file;
+            window.location.href = this.getUrlWithParams(moment.file);
             return true;
         }
         return false;
@@ -55,7 +66,7 @@ const Navigation = {
         if (current > 1) {
             this.goToMoment(current - 1);
         } else {
-            window.location.href = 'index.html';
+            window.location.href = this.getUrlWithParams('index.html');
         }
     },
 

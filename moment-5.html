@@ -425,7 +425,7 @@
             if (confirm('Start over with a new business idea? Your current plan will be saved until you create a new one.')) {
                 Session.clear();
                 Session.start();
-                window.location.href = 'moment-1.html';
+                window.location.href = Navigation.getUrlWithParams('moment-1.html');
             }
         }
     </script>
