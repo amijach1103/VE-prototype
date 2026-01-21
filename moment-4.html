@@ -76,16 +76,16 @@
                 <div class="chat-message assistant">
                     <div class="chat-avatar">AI</div>
                     <div class="chat-bubble">
-                        <p style="margin: 0;">Now let's make your goals concrete. For each goal, what specific things can you do and measure? Think about what you could check off a list.</p>
+                        <p style="margin: 0;">Here's where most people get stuck: they write actions that sound good but can't actually be measured.<br><br>"Get customers" isn't an action — it's a wish. "Talk to 5 potential customers this week" is an action. See the difference?<br><br>For each goal, I want you to write actions with <strong>numbers</strong>. If you can't put a number on it, you can't track it.</p>
                     </div>
                 </div>
             </div>
 
             <!-- Quick Replies -->
             <div class="quick-replies" style="padding: 0 16px;">
-                <button class="quick-reply-btn" onclick="askQuestion('How do I measure this?')">How do I measure this?</button>
-                <button class="quick-reply-btn" onclick="askQuestion('Is this specific enough?')">Is this specific enough?</button>
-                <button class="quick-reply-btn" onclick="askQuestion('What numbers should I use?')">What numbers?</button>
+                <button class="quick-reply-btn" onclick="askQuestion('Challenge my actions')">Challenge my actions</button>
+                <button class="quick-reply-btn" onclick="askQuestion('Show me examples')">Show me examples</button>
+                <button class="quick-reply-btn" onclick="askQuestion('What numbers make sense?')">What numbers?</button>
             </div>
 
             <!-- Chat Input -->
@@ -267,7 +267,63 @@
 
                 let response = '';
 
-                if (messageLower.includes('measure')) {
+                if (messageLower.includes('challenge')) {
+                    if (actions.length > 0) {
+                        response = "Let me be direct about your actions:<br><br>";
+
+                        actions.forEach((action, idx) => {
+                            const goalNum = action.goalIndex + 1;
+                            const text = action.text.toLowerCase();
+                            const isWishy = text.match(/\b(try|maybe|some|improve|better|more|work on)\b/i);
+                            const isTooEasy = text.match(/\b(research|read|think|plan|learn about)\b/i) && !action.hasNumber;
+
+                            response += `<strong>Goal ${goalNum}:</strong> "${action.text}"<br>`;
+
+                            if (isTooEasy) {
+                                response += "→ <strong>Red flag:</strong> This is preparation, not action. Research doesn't generate revenue. What's the action that involves actual customers?<br><br>";
+                            } else if (isWishy) {
+                                response += "→ <strong>Too vague.</strong> \"Try\" and \"maybe\" aren't commitments. Either you'll do it or you won't. What's the number?<br><br>";
+                            } else if (!action.hasNumber) {
+                                response += "→ <strong>Missing a number.</strong> How many? By when? Without that, you won't know if you succeeded.<br><br>";
+                            } else {
+                                response += "→ <strong>Good</strong> — this is specific and measurable.<br><br>";
+                            }
+                        });
+
+                        response += "<strong>The real question:</strong> If you complete these actions, will your business actually be further along? Or will you just feel busy?";
+                    } else {
+                        response = "Write your actions above first, then I'll challenge them!";
+                    }
+                } else if (messageLower.includes('example')) {
+                    const idea = Session.getField('idea') ? Session.getField('idea').toLowerCase() : '';
+
+                    if (idea.includes('food') || idea.includes('meal') || idea.includes('cook')) {
+                        response = "Here's how a meal prep entrepreneur wrote specific actions:<br><br>" +
+                            "<strong>Goal: Find my first paying customers</strong><br>" +
+                            "• \"Ask 10 neighbors if they'd be interested — this week\"<br>" +
+                            "• \"Get 3 people to commit to trying one week of meals\"<br><br>" +
+                            "Notice: not \"find customers\" but a specific number of specific actions. She could check these off.<br><br>" +
+                            "What's the equivalent for your goals?";
+                    } else if (idea.includes('clean') || idea.includes('service')) {
+                        response = "Here's how a house cleaner wrote specific actions:<br><br>" +
+                            "<strong>Goal: Get my first regular clients</strong><br>" +
+                            "• \"Clean 3 friends' houses for free to get before/after photos\"<br>" +
+                            "• \"Ask each friend to introduce me to 2 people who need cleaning\"<br><br>" +
+                            "See how each action has a number and is clearly completable? That's what makes it trackable.<br><br>" +
+                            "How can you make your actions this specific?";
+                    } else {
+                        response = "Here's the pattern that works across different businesses:<br><br>" +
+                            "<strong>Bad actions:</strong><br>" +
+                            "• \"Research the market\" — Too vague, no end point<br>" +
+                            "• \"Get customers\" — Wish, not action<br>" +
+                            "• \"Improve my skills\" — No way to measure<br><br>" +
+                            "<strong>Good actions:</strong><br>" +
+                            "• \"Talk to 5 potential customers this week\"<br>" +
+                            "• \"Get 2 people to pay for my service\"<br>" +
+                            "• \"Complete 1 certification by end of month\"<br><br>" +
+                            "Every good action has a <strong>number</strong> and a <strong>deadline</strong>. Which of your actions needs this?";
+                    }
+                } else if (messageLower.includes('measure')) {
                     response = "Good actions are measurable. Ask yourself:<br><br>" +
                         "• <strong>How many?</strong> (e.g., 'Talk to 10 customers' not 'Talk to customers')<br>" +
                         "• <strong>By when?</strong> (e.g., 'by end of month')<br>" +
@@ -300,19 +356,26 @@
                         "• <strong>Percentage:</strong> '80% satisfaction', '50% response rate'<br><br>" +
                         "Pick numbers that are challenging but achievable. You can always adjust later!";
                 } else {
-                    // General feedback
+                    // General feedback - more engaging
                     const actionsWithNumbers = actions.filter(a => a.hasNumber).length;
                     const totalActions = actions.length;
 
                     if (totalActions === 0) {
-                        response = "I'm ready to help! Fill in your actions above, then ask me to review them or help make them more specific.";
+                        response = "Start writing your actions above. Remember:<br><br>" +
+                            "<strong>Bad:</strong> \"Get customers\"<br>" +
+                            "<strong>Good:</strong> \"Talk to 5 potential customers this week\"<br><br>" +
+                            "Every action needs a number. Write something and I'll help you make it stronger.";
                     } else {
-                        response = `You have ${totalActions} action(s) so far. ${actionsWithNumbers} include numbers, which is great for tracking progress.<br><br>`;
+                        response = `Let me see what you've got: ${totalActions} action(s) so far, ${actionsWithNumbers} with numbers.<br><br>`;
 
                         if (actionsWithNumbers < totalActions) {
-                            response += "Try adding numbers to the others so you can measure your progress. Would you like suggestions?";
+                            response += "<strong>My challenge:</strong> Go back and add a number to each action. " +
+                                "\"How many?\" and \"By when?\" are the questions that turn wishes into commitments.<br><br>" +
+                                "Want me to challenge your specific actions?";
                         } else {
-                            response += "Your actions look measurable! In the next moment, you'll review your complete plan and pick your first step.";
+                            response += "<strong>Good start</strong> — you've got numbers on your actions.<br><br>" +
+                                "But here's the harder question: Are these the RIGHT actions? Will completing them actually move your business forward?<br><br>" +
+                                "Want me to challenge whether these actions will actually matter?";
                         }
                     }
                 }

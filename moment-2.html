@@ -53,16 +53,16 @@
                 <div class="chat-message assistant">
                     <div class="chat-avatar">AI</div>
                     <div class="chat-bubble">
-                        <p style="margin: 0;">Let's turn your idea into a clear mission statement. Use the formula above - I can help you with any part that feels tricky.</p>
+                        <p style="margin: 0;">Now let's get specific. A mission statement forces you to answer the hard questions: Who exactly are you helping? What do they actually get? Why should they choose you?<br><br>Use the formula above. If any part feels hard to write — that's a sign you need to think it through more. That's the point.</p>
                     </div>
                 </div>
             </div>
 
             <!-- Quick Replies -->
             <div class="quick-replies" id="quick-replies" style="padding: 0 16px;">
-                <button class="quick-reply-btn" onclick="askQuestion('Help me with the WHO')">Help me with WHO</button>
-                <button class="quick-reply-btn" onclick="askQuestion('Help me with the WHAT')">Help me with WHAT</button>
-                <button class="quick-reply-btn" onclick="askQuestion('Is this clear enough?')">Is this clear?</button>
+                <button class="quick-reply-btn" onclick="askQuestion('My WHO is too vague')">My WHO is vague</button>
+                <button class="quick-reply-btn" onclick="askQuestion('Review my mission')">Review my mission</button>
+                <button class="quick-reply-btn" onclick="askQuestion('Show me how others do it')">How others do it</button>
             </div>
 
             <!-- Chat Input -->
@@ -210,66 +210,84 @@
 
                 let response = '';
 
-                if (messageLower.includes('who')) {
-                    response = "The <strong>WHO</strong> is your target customer. Be specific!<br><br>" +
-                        "Instead of 'everyone' or 'people', think about:<br>" +
-                        "• What's their situation? (busy parents, new graduates, retirees)<br>" +
-                        "• What's their struggle? (no time, limited budget, lack of skills)<br>" +
-                        "• Where are they? (your neighborhood, online, local businesses)<br><br>" +
-                        "For example: 'busy working parents' is better than just 'parents'.";
+                if (messageLower.includes('who') || messageLower.includes('vague')) {
+                    response = "Let me push you on the <strong>WHO</strong>.<br><br>" +
+                        "\"Busy parents\" is still too broad. There are millions of busy parents. Which ones?<br><br>" +
+                        "<strong>Try this test:</strong> Can you picture one specific person? What's their name? Where do they live? What's their day like?<br><br>" +
+                        "A meal prep entrepreneur I know narrowed it to: \"Working moms in my zip code who have kids under 10 and get home after 6pm.\" She could actually FIND these people.<br><br>" +
+                        "Who's YOUR specific person?";
                 } else if (messageLower.includes('what')) {
-                    response = "The <strong>WHAT</strong> is the outcome or benefit they get.<br><br>" +
-                        "Don't describe what YOU do - describe what THEY get:<br>" +
-                        "• What problem goes away?<br>" +
-                        "• What becomes easier?<br>" +
-                        "• What do they achieve?<br><br>" +
-                        "'Eat healthier' is about them. 'I cook meals' is about you. Focus on them.";
+                    response = "Here's the mistake most people make with <strong>WHAT</strong>: they describe what they DO instead of what the customer GETS.<br><br>" +
+                        "\"I cook meals\" = about you<br>" +
+                        "\"Families eat healthier without the stress\" = about them<br><br>" +
+                        "<strong>The test:</strong> Would your customer use these exact words to describe what they want? Or are you using business-speak?<br><br>" +
+                        "A house cleaner told me her customers don't say \"I want cleaning services.\" They say \"I want to come home to a house that doesn't stress me out.\"<br><br>" +
+                        "What would YOUR customer actually say they want?";
                 } else if (messageLower.includes('clear') || messageLower.includes('review')) {
                     if (mission) {
                         // Analyze the mission
                         const hasWho = mission.toLowerCase().includes('help') ||
                                        mission.match(/for\s+\w+/i) ||
-                                       mission.match(/\b(parents|families|people|customers|clients)\b/i);
+                                       mission.match(/\b(parents|families|people|customers|clients|moms|dads|seniors|professionals)\b/i);
                         const hasWhat = mission.match(/\b(by|through|via)\b/i) ||
-                                        mission.match(/\b(provide|offer|deliver|give|make)\b/i);
+                                        mission.match(/\b(provide|offer|deliver|give|make|save|get)\b/i);
+                        const isVague = mission.match(/\b(everyone|people|anyone|help people)\b/i);
 
-                        response = `Looking at your mission: "${mission.substring(0, 100)}${mission.length > 100 ? '...' : ''}"<br><br>`;
+                        response = `Let me be honest about: "${mission.substring(0, 100)}${mission.length > 100 ? '...' : ''}"<br><br>`;
 
-                        if (hasWho && hasWhat) {
-                            response += "This looks like a solid start! I can see who you're helping and what you're providing.<br><br>" +
-                                "<strong>One test:</strong> Could a stranger read this and explain your business to someone else? If yes, you're in good shape!";
+                        if (isVague) {
+                            response += "<strong>Red flag:</strong> \"People\" or \"everyone\" is too vague. No successful business serves everyone.<br><br>" +
+                                "Who's the ONE type of person who would be most excited about this? Start there.<br><br>" +
+                                "<strong>Your next step:</strong> Rewrite it with a specific person in mind — someone you could actually go find this week.";
+                        } else if (hasWho && hasWhat) {
+                            response += "This is getting clearer. I can see who and what.<br><br>" +
+                                "<strong>The real test:</strong> Read this out loud to someone who doesn't know your idea. Do they get it in 10 seconds?<br><br>" +
+                                "If they say \"So you mean...\" and get it right, you're there. If they look confused, simplify further.<br><br>" +
+                                "Try it with someone today. What do they say?";
                         } else if (!hasWho) {
-                            response += "I'm not quite sure WHO you're helping. Try being more specific about your customer.<br><br>" +
-                                "Instead of 'people', who exactly? What's their situation?";
+                            response += "I can't tell WHO you're helping. \"People\" isn't specific enough.<br><br>" +
+                                "<strong>Challenge:</strong> Finish this sentence: \"The person who needs this most is someone who ______.\"<br><br>" +
+                                "What's the situation that makes someone NEED what you offer?";
                         } else {
-                            response += "Good start! Consider adding more about HOW you help them or WHY it matters.<br><br>" +
-                                "What makes your approach different or valuable?";
+                            response += "Good start on the WHO. Now I need to understand: what do they GET from you?<br><br>" +
+                                "Not what you do — what changes for THEM? What problem disappears?";
                         }
                     } else {
-                        response = "Write your mission statement above first, and I'll help you check if it's clear!";
+                        response = "Write your mission statement above first, and I'll give you honest feedback!";
                     }
+                } else if (messageLower.includes('others') || messageLower.includes('examples')) {
+                    response = "Here's how other entrepreneurs have written clear missions:<br><br>" +
+                        "<strong>Meal prep:</strong> \"I help working moms in [neighborhood] feed their families healthy dinners by delivering 5 ready-to-heat meals every Sunday.\"<br><br>" +
+                        "<strong>House cleaning:</strong> \"I help busy professionals come home to a calm, clean space by doing deep cleans every two weeks — so they can actually relax on weekends.\"<br><br>" +
+                        "<strong>Tutoring:</strong> \"I help middle schoolers who are struggling in math build confidence by meeting them where they are — no judgment, just progress.\"<br><br>" +
+                        "Notice: each one has a <strong>specific WHO</strong>, a <strong>clear WHAT</strong>, and a <strong>reason WHY it matters</strong>.<br><br>" +
+                        "What would yours sound like in this format?";
                 } else if (messageLower.includes('how') || messageLower.includes('by')) {
-                    response = "The <strong>HOW</strong> is your method or approach.<br><br>" +
-                        "This is what makes you different from others who might solve the same problem:<br>" +
-                        "• What's your specific approach?<br>" +
-                        "• What do you actually deliver?<br>" +
-                        "• How do customers interact with you?<br><br>" +
-                        "'By preparing affordable homemade meals they can pick up weekly' is specific and clear.";
+                    response = "The <strong>HOW</strong> is what makes you different from everyone else who could solve this problem.<br><br>" +
+                        "Be specific:<br>" +
+                        "• Not \"I provide meals\" → \"I deliver 5 ready-to-heat dinners every Sunday\"<br>" +
+                        "• Not \"I clean houses\" → \"I do a deep clean every two weeks so you never have to think about it\"<br><br>" +
+                        "The HOW should answer: \"Why would someone choose YOU instead of the other options?\"<br><br>" +
+                        "What's your specific approach that makes you the obvious choice?";
                 } else if (messageLower.includes('why') || messageLower.includes('matter')) {
-                    response = "The <strong>WHY IT MATTERS</strong> connects to their deeper need.<br><br>" +
-                        "Go beyond the obvious. Why do they REALLY need this?<br>" +
-                        "• What's the pain behind the pain?<br>" +
-                        "• What are they sacrificing without your help?<br>" +
-                        "• What could they do with the time/money/energy you save them?<br><br>" +
-                        "'Because families deserve good food without the stress' hits an emotional truth.";
+                    response = "The <strong>WHY</strong> is where most people go shallow. Let me push you deeper.<br><br>" +
+                        "\"Because they don't have time\" — okay, but why does THAT matter?<br>" +
+                        "\"Because they're stressed\" — why does that matter?<br>" +
+                        "\"Because they feel like they're failing their family\" — NOW we're getting somewhere.<br><br>" +
+                        "<strong>Ask yourself:</strong> What are they sacrificing right now because this problem exists? What guilt, stress, or frustration goes away when you solve it?<br><br>" +
+                        "That's your real WHY. What is it?";
                 } else {
-                    // General encouragement
-                    response = "You're doing great! Remember:<br><br>" +
-                        "• <strong>WHO</strong> - Be specific about your customer<br>" +
-                        "• <strong>WHAT</strong> - Focus on their outcome, not your activity<br>" +
-                        "• <strong>HOW</strong> - Your specific approach or method<br>" +
-                        "• <strong>WHY</strong> - The deeper reason it matters<br><br>" +
-                        "Which part would you like help with?";
+                    // Check if they have something written
+                    if (mission) {
+                        response = `I see you're working on: "${mission.substring(0, 60)}..."<br><br>` +
+                            "Let me ask you the hard question: <strong>If you showed this to a stranger, would they immediately understand what you do and who it's for?</strong><br><br>" +
+                            "If there's any hesitation, something needs to be clearer. Which part feels weakest to you right now — the WHO, the WHAT, or the WHY?";
+                    } else {
+                        response = "Start writing your mission above using the formula. It doesn't have to be perfect — that's what I'm here for.<br><br>" +
+                            "<strong>Just fill in the blanks:</strong><br>" +
+                            "\"I help [WHO] do [WHAT] by [HOW] because [WHY].\"<br><br>" +
+                            "Write something, and I'll help you make it stronger.";
+                    }
                 }
 
                 addMessageToChat('assistant', response);

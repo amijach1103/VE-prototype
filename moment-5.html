@@ -61,16 +61,16 @@
                 <div class="chat-message assistant">
                     <div class="chat-avatar">AI</div>
                     <div class="chat-bubble">
-                        <p style="margin: 0;">Congratulations on finishing your plan! Take a moment to review it. What's the ONE thing you'll do this week to get started?</p>
+                        <p style="margin: 0;">You've done something most people never do: turn a vague idea into an actual plan with specific actions.<br><br>But here's the truth — <strong>this plan is worth nothing if you don't act on it this week.</strong><br><br>What's the ONE thing you'll do in the next 7 days? Not "someday." This week.</p>
                     </div>
                 </div>
             </div>
 
             <!-- Quick Replies -->
             <div class="quick-replies" style="padding: 0 16px;">
-                <button class="quick-reply-btn" onclick="askQuestion('What should I do first?')">What should I do first?</button>
-                <button class="quick-reply-btn" onclick="askQuestion('Review my plan')">Review my plan</button>
-                <button class="quick-reply-btn" onclick="askQuestion('What\'s risky?')">What's risky?</button>
+                <button class="quick-reply-btn" onclick="askQuestion('What should I do first?')">What do I do first?</button>
+                <button class="quick-reply-btn" onclick="askQuestion('Challenge my plan')">Challenge my plan</button>
+                <button class="quick-reply-btn" onclick="askQuestion('What could go wrong?')">What could go wrong?</button>
             </div>
 
             <!-- Chat Input -->
@@ -301,15 +301,41 @@
                     }
 
                     if (actions.length > 0) {
-                        response = "Looking at your actions, I'd suggest starting with something that:<br><br>" +
-                            "1. <strong>You can do this week</strong> — not someday, but NOW<br>" +
-                            "2. <strong>Doesn't need money</strong> — use what you have<br>" +
-                            "3. <strong>Gets you real feedback</strong> — talk to potential customers<br><br>" +
-                            "From your list, consider: <em>\"" + actions[0].action + "\"</em><br><br>" +
-                            "What's stopping you from starting that today?";
+                        // Find customer-related action first
+                        const customerAction = actions.find(a =>
+                            a.action.toLowerCase().match(/customer|client|talk|ask|find|people/)
+                        );
+                        const suggestedAction = customerAction || actions[0];
+
+                        response = "Let me be direct: <strong>start with customers.</strong><br><br>" +
+                            "Most people want to build something perfect before talking to anyone. That's backwards. You'll learn more from one real conversation than a week of planning.<br><br>" +
+                            "From your list, I'd start with: <em>\"" + suggestedAction.action + "\"</em><br><br>" +
+                            "<strong>Your assignment:</strong> Do this in the next 48 hours. Not next week. Not when you're ready. Now.<br><br>" +
+                            "What would need to change for you to do this tomorrow?";
                     } else {
                         response = "It looks like you haven't added specific actions yet. Go back to Moment 4 to add them!";
                     }
+                } else if (messageLower.includes('challenge')) {
+                    const goalCount = data.objectives.filter(o => o).length;
+                    const actionCount = data.keyResults.flat().filter(kr => kr).length;
+                    const hasCustomerGoal = data.objectives.some(o => o && o.toLowerCase().match(/customer|client|sell|find|paying/));
+
+                    response = "Here's my honest assessment:<br><br>";
+
+                    if (!hasCustomerGoal) {
+                        response += "<strong>Red flag:</strong> I don't see a clear \"find customers\" goal. Every other goal is pointless without paying customers. Go back and add one.<br><br>";
+                    }
+
+                    if (actionCount < 4) {
+                        response += "<strong>Gap:</strong> You only have " + actionCount + " actions. That's pretty thin. Can you add 1-2 more specific things you'll do?<br><br>";
+                    }
+
+                    if (hasCustomerGoal && actionCount >= 4) {
+                        response += "<strong>This is solid.</strong> You have customers as a priority and specific actions to track.<br><br>";
+                    }
+
+                    response += "But here's the real challenge: <strong>Will you actually DO any of this?</strong> " +
+                        "The best plan in the world is worthless if it just sits here. What's the one action you'll complete by this time next week?";
                 } else if (messageLower.includes('review') || messageLower.includes('plan')) {
                     const goalCount = data.objectives.filter(o => o).length;
                     const actionCount = data.keyResults.flat().filter(kr => kr).length;
@@ -326,21 +352,30 @@
                         response += "Consider adding more detail. More specific plans = easier to follow.<br><br>" +
                             "You can always go back and edit any section.";
                     }
-                } else if (messageLower.includes('risk')) {
-                    response = "Every new business has risks. Here are the biggest ones to watch:<br><br>" +
-                        "<strong>1. Waiting too long to start</strong><br>" +
-                        "Don't perfect your plan forever. Test it with real people.<br><br>" +
-                        "<strong>2. Spending money before you have customers</strong><br>" +
-                        "Start scrappy. Get paying customers first, then invest.<br><br>" +
-                        "<strong>3. Not talking to potential customers</strong><br>" +
-                        "Your assumptions might be wrong. Find out fast by asking people.<br><br>" +
-                        "The biggest risk is usually <em>not starting at all</em>. What's holding you back?";
+                } else if (messageLower.includes('risk') || messageLower.includes('wrong')) {
+                    response = "Let me tell you what actually kills new businesses — because it's probably not what you think:<br><br>" +
+                        "<strong>1. Not starting.</strong><br>" +
+                        "Most ideas die in the planning phase. Perfectionism is a killer. Done is better than perfect.<br><br>" +
+                        "<strong>2. Building before talking to customers.</strong><br>" +
+                        "People spend months on a product nobody wants. Talk to 10 potential customers BEFORE you invest time or money.<br><br>" +
+                        "<strong>3. Spending money too early.</strong><br>" +
+                        "You don't need a logo. You don't need a website. You need ONE paying customer. Everything else can wait.<br><br>" +
+                        "The real question: what's the risk you're NOT thinking about? What assumption in your plan might be wrong?";
                 } else {
-                    response = "You've done great work! Here's my advice:<br><br>" +
-                        "• <strong>Pick ONE action</strong> and do it this week<br>" +
-                        "• <strong>Talk to real people</strong> who might be customers<br>" +
-                        "• <strong>Keep it simple</strong> — you can always add complexity later<br><br>" +
-                        "Plans change as you learn. That's normal and healthy. The key is to start!";
+                    // Default - still challenging
+                    const firstStep = data.firstStep || '';
+
+                    if (firstStep) {
+                        response = `You've committed to: \"${firstStep.substring(0, 60)}${firstStep.length > 60 ? '...' : ''}\"<br><br>` +
+                            "<strong>Now make it real.</strong> Put it in your calendar. Tell someone you'll do it. " +
+                            "Accountability is the difference between \"I'll try\" and \"I did it.\"<br><br>" +
+                            "One week from now, you'll either have done this or you won't. Which will it be?";
+                    } else {
+                        response = "You've built a plan. That's more than most people do with their ideas.<br><br>" +
+                            "But <strong>a plan without action is just a wish.</strong><br><br>" +
+                            "Write your first step above — specifically what you'll do and when. " +
+                            "Make it something you can do in the next 48 hours. Not \"someday\" — this week.";
+                    }
                 }
 
                 addMessageToChat('assistant', response);

@@ -74,16 +74,16 @@
                 <div class="chat-message assistant">
                     <div class="chat-avatar">AI</div>
                     <div class="chat-bubble">
-                        <p style="margin: 0;">Let's figure out your 3 main goals. These should be high-level — we'll break them into specific actions in the next moment.</p>
+                        <p style="margin: 0;">Now the hard part: what has to happen for your mission to become real?<br><br>Most people write goals that are too vague ("grow the business") or too easy ("make a logo"). I'll push you toward goals that actually matter — things that, if you don't achieve them, the business won't work.</p>
                     </div>
                 </div>
             </div>
 
             <!-- Quick Replies -->
             <div class="quick-replies" style="padding: 0 16px;">
-                <button class="quick-reply-btn" onclick="askQuestion('Are these goals realistic?')">Are these realistic?</button>
+                <button class="quick-reply-btn" onclick="askQuestion('Challenge my goals')">Challenge my goals</button>
                 <button class="quick-reply-btn" onclick="askQuestion('What am I missing?')">What am I missing?</button>
-                <button class="quick-reply-btn" onclick="askQuestion('Give me examples')">Give me examples</button>
+                <button class="quick-reply-btn" onclick="askQuestion('Which goal matters most?')">Which matters most?</button>
             </div>
 
             <!-- Chat Input -->
@@ -241,82 +241,106 @@
 
                 let response = '';
 
-                if (messageLower.includes('realistic')) {
+                if (messageLower.includes('realistic') || messageLower.includes('challenge')) {
                     if (filledGoals.length > 0) {
-                        response = "Let me check your goals:<br><br>";
+                        response = "Let me be direct about your goals:<br><br>";
                         goals.forEach((goal, i) => {
                             if (goal) {
-                                const isShort = goal.length < 15;
-                                const hasTimeframe = goal.match(/\b(week|month|day|year)\b/i);
+                                const isVague = goal.match(/\b(grow|improve|better|more|increase)\b/i) && !goal.match(/\d/);
+                                const isTooEasy = goal.match(/\b(logo|website|name|social media|business card)\b/i);
+                                const hasNumber = goal.match(/\d+/);
 
                                 response += `<strong>Goal ${i + 1}:</strong> "${goal}"<br>`;
-                                if (isShort) {
-                                    response += "→ This is pretty brief. Can you add more detail?<br><br>";
-                                } else if (!hasTimeframe) {
-                                    response += "→ Consider adding a timeframe — when would you achieve this?<br><br>";
+                                if (isTooEasy) {
+                                    response += "→ <strong>Red flag:</strong> This is a task, not a goal. A logo won't make or break your business. What actually matters?<br><br>";
+                                } else if (isVague) {
+                                    response += "→ <strong>Too vague.</strong> \"Grow\" how much? By when? How would you know if you achieved it?<br><br>";
+                                } else if (hasNumber) {
+                                    response += "→ <strong>Good</strong> — this is specific and measurable.<br><br>";
                                 } else {
-                                    response += "→ This looks clear and focused!<br><br>";
+                                    response += "→ Could be stronger. Can you add a number or deadline?<br><br>";
                                 }
                             }
                         });
-                        response += "Remember: Goals should be challenging but achievable. Can you make progress on this in the next 3 months?";
+                        response += "<strong>The real test:</strong> If you achieve these 3 goals, would you actually have a working business? Or just feel busy?";
                     } else {
-                        response = "Enter your goals above first, and I'll help you check if they're realistic!";
+                        response = "Enter your goals above first, and I'll challenge them!";
                     }
                 } else if (messageLower.includes('missing')) {
-                    const hasCapability = goals.some(g => g.toLowerCase().match(/skill|learn|build|create|develop/));
-                    const hasCustomers = goals.some(g => g.toLowerCase().match(/customer|client|sell|market|find/));
-                    const hasOperations = goals.some(g => g.toLowerCase().match(/set up|operation|system|process|schedule/));
+                    const hasCapability = goals.some(g => g.toLowerCase().match(/skill|learn|build|create|develop|product|recipe|service/));
+                    const hasCustomers = goals.some(g => g.toLowerCase().match(/customer|client|sell|market|find|paying|first/));
+                    const hasOperations = goals.some(g => g.toLowerCase().match(/set up|operation|system|process|schedule|deliver|reliable/));
 
-                    response = "Let me see what areas you've covered:<br><br>";
+                    response = "Let me check what you're missing — because what you DON'T plan for is usually what kills a business:<br><br>";
 
                     if (hasCapability) {
-                        response += "✓ <strong>Building capability</strong> — covered<br>";
+                        response += "✓ <strong>Capability</strong> — you're thinking about what you need to build<br>";
                     } else {
-                        response += "○ <strong>Building capability</strong> — consider: What skills or products do you need to develop?<br>";
+                        response += "⚠️ <strong>Capability gap:</strong> Can you actually deliver what you're promising? What skills or products do you need first?<br>";
                     }
 
                     if (hasCustomers) {
-                        response += "✓ <strong>Finding customers</strong> — covered<br>";
+                        response += "✓ <strong>Customers</strong> — you're thinking about finding buyers<br>";
                     } else {
-                        response += "○ <strong>Finding customers</strong> — consider: How will people find out about you?<br>";
+                        response += "⚠️ <strong>Customer gap:</strong> This is the #1 reason businesses fail — no customers. How will people find you?<br>";
                     }
 
                     if (hasOperations) {
-                        response += "✓ <strong>Setting up operations</strong> — covered<br>";
+                        response += "✓ <strong>Operations</strong> — you're thinking about delivery<br>";
                     } else {
-                        response += "○ <strong>Setting up operations</strong> — consider: What do you need to actually deliver?<br>";
+                        response += "⚠️ <strong>Operations gap:</strong> Can you do this reliably, week after week? What systems do you need?<br>";
                     }
 
-                    if (filledGoals.length < 3) {
-                        response += "<br>You have room for " + (3 - filledGoals.length) + " more goal(s). Consider filling in the gaps above!";
-                    }
+                    response += "<br><strong>The question most people skip:</strong> Which of these would break your business fastest if you ignored it? That's your real priority.";
                 } else if (messageLower.includes('example')) {
-                    const idea = Session.getField('idea').toLowerCase();
+                    const idea = Session.getField('idea') ? Session.getField('idea').toLowerCase() : '';
 
                     if (idea.includes('food') || idea.includes('meal') || idea.includes('cook')) {
-                        response = "For a food business, consider:<br><br>" +
-                            "• <strong>Capability:</strong> Perfect 10 recipes customers love<br>" +
-                            "• <strong>Customers:</strong> Get 5 paying customers in my neighborhood<br>" +
-                            "• <strong>Operations:</strong> Set up a weekly cooking and delivery schedule";
+                        response = "Here's what worked for a meal prep entrepreneur I know:<br><br>" +
+                            "• <strong>Goal 1:</strong> \"Get 5 paying customers in my zip code within 4 weeks\" — She started by asking neighbors, not strangers<br>" +
+                            "• <strong>Goal 2:</strong> \"Perfect 10 recipes that I can make consistently and profitably\" — Not 50 recipes. Ten that work.<br>" +
+                            "• <strong>Goal 3:</strong> \"Deliver on time every single week for 8 weeks straight\" — Reliability > variety<br><br>" +
+                            "Notice: every goal has a <strong>number</strong> and a <strong>timeframe</strong>. That's how you know if you're succeeding.";
                     } else if (idea.includes('clean') || idea.includes('service')) {
-                        response = "For a service business, consider:<br><br>" +
-                            "• <strong>Capability:</strong> Get trained/certified in my service area<br>" +
-                            "• <strong>Customers:</strong> Land my first 3 regular clients<br>" +
-                            "• <strong>Operations:</strong> Set up scheduling and payment systems";
+                        response = "Here's what worked for a house cleaner starting out:<br><br>" +
+                            "• <strong>Goal 1:</strong> \"Get 3 regular clients who pay on time\" — Not 20 one-time jobs. 3 recurring.<br>" +
+                            "• <strong>Goal 2:</strong> \"Complete each clean in under 3 hours\" — Speed = profit<br>" +
+                            "• <strong>Goal 3:</strong> \"Get 2 referrals from each happy client\" — Her only marketing was asking<br><br>" +
+                            "The theme: small numbers, repeated consistently. Don't try to scale before you can deliver.";
                     } else {
-                        response = "Some goal examples:<br><br>" +
-                            "• <strong>Capability:</strong> 'Build/learn the core skills I need'<br>" +
-                            "• <strong>Customers:</strong> 'Find my first 5 paying customers'<br>" +
-                            "• <strong>Operations:</strong> 'Set up the basics to run reliably'<br><br>" +
-                            "What type of business are you thinking about? I can give more specific examples.";
+                        response = "Here's a pattern that works across different businesses:<br><br>" +
+                            "• <strong>Goal 1 (Customers):</strong> \"Get my first 5 paying customers within 30 days\" — Start with people you know<br>" +
+                            "• <strong>Goal 2 (Capability):</strong> \"Deliver my service/product 10 times without a major problem\" — Prove you can do it reliably<br>" +
+                            "• <strong>Goal 3 (Learning):</strong> \"Talk to every customer and write down what they actually want\" — Real feedback, not assumptions<br><br>" +
+                            "Notice: I'm NOT saying \"build a website\" or \"create a logo.\" Those don't matter until you have customers.";
+                    }
+                } else if (messageLower.includes('which') || messageLower.includes('most') || messageLower.includes('priority') || messageLower.includes('first')) {
+                    if (filledGoals.length > 0) {
+                        response = "Let me be blunt: <strong>customers come first. Always.</strong><br><br>" +
+                            "I see a lot of people spend months on capability and operations before they have a single paying customer. Then they find out nobody wants what they built.<br><br>" +
+                            "Here's my challenge: <strong>Can you get ONE paying customer before working on anything else?</strong><br><br>" +
+                            "Not a friend doing you a favor. Someone who pays real money because they want what you offer.<br><br>" +
+                            "If you can do that, everything else gets easier. If you can't, you need to know that NOW, not after you've invested months of work.";
+                    } else {
+                        response = "Write your goals above first, and I'll help you prioritize!";
                     }
                 } else {
-                    response = "Great question! Here's what makes good goals:<br><br>" +
-                        "• <strong>Specific</strong> — Clear about what you'll achieve<br>" +
-                        "• <strong>Meaningful</strong> — Actually matters for your business<br>" +
-                        "• <strong>Achievable</strong> — You can make progress in 3 months<br><br>" +
-                        "Would you like me to review your goals or give you examples?";
+                    // Default: engage with whatever they have
+                    if (filledGoals.length > 0) {
+                        response = `I see you're working on your goals. Let me ask you the hard question:<br><br>` +
+                            `<strong>If you achieved all three of these goals, would you actually have a working business?</strong><br><br>` +
+                            `Not "making progress." Not "feeling productive." An actual business with paying customers.<br><br>` +
+                            `If the answer is "maybe" or "I'm not sure" — that's a sign your goals might be too vague or focused on the wrong things.<br><br>` +
+                            `Would you like me to challenge your goals, or help you figure out what you might be missing?`;
+                    } else {
+                        response = `Start by writing your goals above. Don't overthink it — just answer:<br><br>` +
+                            `<strong>What has to happen for your mission to become real?</strong><br><br>` +
+                            `Most people focus on three areas:<br>` +
+                            `1. <strong>Capability</strong> — What do you need to build or learn?<br>` +
+                            `2. <strong>Customers</strong> — How will people find you and pay you?<br>` +
+                            `3. <strong>Operations</strong> — What do you need to actually deliver?<br><br>` +
+                            `Write something for each, and I'll help you make them stronger.`;
+                    }
                 }
 
                 addMessageToChat('assistant', response);

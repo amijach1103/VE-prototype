@@ -216,7 +216,7 @@
                     <div class="chat-message assistant">
                         <div class="chat-avatar">AI</div>
                         <div class="chat-bubble">
-                            <p style="margin: 0;">Great! Tell me about your idea and I'll help you think it through. What are you hoping to do?</p>
+                            <p style="margin: 0;">Tell me about your idea. I'm here to help you think it through — and I'll push back if something doesn't add up. That's how good ideas get stronger. What are you hoping to do?</p>
                         </div>
                     </div>
                 </div>
@@ -224,8 +224,8 @@
                 <!-- Quick Replies -->
                 <div class="quick-replies" id="quick-replies" style="padding: 0 16px;">
                     <button class="quick-reply-btn" onclick="askQuestion('Give me an example')">Give me an example</button>
-                    <button class="quick-reply-btn" onclick="askQuestion('What makes a good idea?')">What makes a good idea?</button>
-                    <button class="quick-reply-btn" onclick="askQuestion('Is my idea too broad?')">Is my idea too broad?</button>
+                    <button class="quick-reply-btn" onclick="askQuestion('How do I test this?')">How do I test this?</button>
+                    <button class="quick-reply-btn" onclick="askQuestion('Push back on my idea')">Push back on my idea</button>
                 </div>
 
                 <!-- Chat Input -->
@@ -523,8 +523,10 @@
             // Add a message to chat about the selected idea
             setTimeout(() => {
                 addMessageToChat('assistant',
-                    `Great choice! "${idea.title}" is a solid business idea. I can see you wrote: "${idea.fullIdea.substring(0, 80)}..."<br><br>` +
-                    `This is a good start! In the next moment, we'll turn this into a clear mission statement. Feel free to edit what's written above if you want to make it more "you."`
+                    `Okay, "${idea.title}" — that's a starting point. But here's the thing: lots of people have this same idea.<br><br>` +
+                    `<strong>What would make YOUR version different?</strong> Maybe it's who you serve, how you deliver it, or something only you can bring to it.<br><br>` +
+                    `Before we move on: Do you know anyone who's already paying for something like this? If so, what are they paying, and what do they wish was better?<br><br>` +
+                    `Feel free to edit what's written above. Make it yours.`
                 );
             }, 500);
         }
@@ -614,37 +616,60 @@
                 let response = '';
 
                 if (messageLower.includes('example')) {
-                    response = "Here are some ideas that work well for getting started:<br><br>" +
-                        "• <strong>Food/meals</strong> - Meal prep, baked goods, specialty items<br>" +
-                        "• <strong>Services</strong> - Cleaning, organizing, yard work, pet care<br>" +
-                        "• <strong>Childcare</strong> - Babysitting, tutoring, after-school help<br>" +
-                        "• <strong>Crafts</strong> - Handmade items, custom gifts, alterations<br><br>" +
-                        "What matters most is that it's something you can actually do and people will pay for.";
+                    response = "Here are ideas I've seen work well — and they all started small:<br><br>" +
+                        "• <strong>Food/meals</strong> — One entrepreneur started by cooking for just 3 families on her block. Now she serves 40+ weekly.<br>" +
+                        "• <strong>Services</strong> — A house cleaner started with one neighbor's referral. She asks every client: \"Who else needs this?\" That's her whole marketing.<br>" +
+                        "• <strong>Childcare</strong> — After-school pickup solves a real pain point for working parents.<br><br>" +
+                        "What matters: pick something you can start <strong>this week</strong> with the people you already know.<br><br>" +
+                        "Which of these feels closest to what you're thinking?";
                 } else if (messageLower.includes('good idea') || messageLower.includes('what makes')) {
-                    response = "A good business idea usually has three things:<br><br>" +
-                        "1. <strong>A real problem</strong> - People need something they can't easily get<br>" +
-                        "2. <strong>Your ability</strong> - You can actually provide it (skills, time, resources)<br>" +
-                        "3. <strong>Willing buyers</strong> - People will pay money for it<br><br>" +
-                        "It doesn't need to be unique or revolutionary. Many successful businesses do ordinary things really well.";
+                    response = "A good business idea has three things — but here's what trips people up:<br><br>" +
+                        "1. <strong>A real problem</strong> — Not what YOU think people need. What THEY say they need. (Have you asked anyone yet?)<br><br>" +
+                        "2. <strong>Your ability</strong> — Can you deliver it consistently, not just once?<br><br>" +
+                        "3. <strong>Willing buyers</strong> — Would they pay money, or just say \"that's nice\"?<br><br>" +
+                        "<strong>Here's a test:</strong> Can you name ONE specific person who would pay for this? Not \"busy moms\" — an actual person with a name.<br><br>" +
+                        "If you can't, that's your first step: find that person and ask them.";
                 } else if (messageLower.includes('too broad') || messageLower.includes('narrow')) {
                     if (idea) {
-                        response = `Looking at your idea: "${idea.substring(0, 100)}..."<br><br>` +
-                            "Ask yourself:<br>" +
-                            "• Can you describe your customer in one sentence?<br>" +
-                            "• Is there one main thing you'd do for them?<br>" +
-                            "• Could you start this week if you had to?<br><br>" +
-                            "If any answer is 'no', try narrowing down. Who SPECIFICALLY would you help? What EXACTLY would you do?";
+                        response = `Looking at what you wrote: "${idea.substring(0, 80)}..."<br><br>` +
+                            "Let me ask you three questions:<br>" +
+                            "• Can you describe your customer in <strong>one sentence</strong>? (Not \"busy people\" — who specifically?)<br>" +
+                            "• What's the <strong>one thing</strong> you'd do for them? (Not a menu of services — the core offer)<br>" +
+                            "• Could you start <strong>this week</strong> if you had to?<br><br>" +
+                            "If any answer is \"I'm not sure\" — that's actually useful! It tells you where to focus.<br><br>" +
+                            "<strong>Try this:</strong> Finish this sentence: \"I help [specific person] do [specific thing] so they can [specific outcome].\"<br><br>" +
+                            "Write that above and I'll tell you if it's getting sharper.";
                     } else {
                         response = "Write your idea above first, and I can help you figure out if it needs to be more focused!";
                     }
+                } else if (messageLower.includes('push back') || messageLower.includes('challenge')) {
+                    if (idea) {
+                        response = `Okay, let me be direct with you about "${idea.substring(0, 60)}..."<br><br>` +
+                            "<strong>The hard question:</strong> What would need to be true for this to actually work? Not \"it would be nice if\" — what HAS to be true?<br><br>" +
+                            "For most ideas, there's one assumption that matters most. If you're wrong about it, the whole thing falls apart.<br><br>" +
+                            "What's yours? Name it, and we can figure out how to test it before you invest too much.";
+                    } else {
+                        response = "Write your idea above first, and I'll push back on it!";
+                    }
+                } else if (messageLower.includes('test') || messageLower.includes('how do i know')) {
+                    if (idea) {
+                        response = `Good question. Here's how to test "${idea.substring(0, 50)}..." without spending money:<br><br>` +
+                            "<strong>This week:</strong> Find 3 people who fit your customer description. Ask them:<br>" +
+                            "• \"How do you currently handle [this problem]?\"<br>" +
+                            "• \"What's frustrating about it?\"<br>" +
+                            "• \"What have you tried?\"<br><br>" +
+                            "<strong>Don't pitch your idea yet.</strong> Just listen. If they light up talking about the problem, you're onto something.<br><br>" +
+                            "If they shrug, that's valuable too — it means you might need a different angle.";
+                    } else {
+                        response = "Write your idea above first, and I'll help you figure out how to test it!";
+                    }
                 } else if (idea) {
-                    response = `Thanks for sharing! Based on what you wrote, I have a few thoughts:<br><br>` +
-                        `Your idea seems to be about helping people with something they need. That's a great start!<br><br>` +
-                        `<strong>Questions to consider:</strong><br>` +
-                        `• Who exactly would pay for this?<br>` +
-                        `• What specific problem are you solving for them?<br>` +
-                        `• How would you deliver this to them?<br><br>` +
-                        `In the next moment, we'll turn this into a clear mission statement.`;
+                    response = `I can see what you're going for here. Let me push back a little — not to discourage you, but to make this stronger.<br><br>` +
+                        `<strong>The honest question:</strong> Have you talked to anyone who would actually pay for this? Not friends being supportive — someone who has this problem right now?<br><br>` +
+                        `<strong>If yes</strong> — what did they tell you? I'd love to hear what you learned.<br><br>` +
+                        `<strong>If not</strong> — here's your one thing this week: Find 3 people who fit your customer description. Ask them: "How do you currently handle this? What's frustrating about it?"<br><br>` +
+                        `Don't pitch your idea yet. Just listen. Their answers will tell you if you're onto something real.<br><br>` +
+                        `What do you think — have you had any of these conversations yet?`;
                 } else {
                     response = "I'm here to help! Try writing your business idea in the text box above, then ask me questions about it. Or ask me for examples if you're still brainstorming.";
                 }
