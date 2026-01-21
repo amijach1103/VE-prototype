@@ -117,6 +117,7 @@
 
     <script src="js/session.js"></script>
     <script src="js/navigation.js"></script>
+    <script src="js/demo.js"></script>
     <script>
         const MOMENT_ID = 4;
 
@@ -126,6 +127,9 @@
                 nextLabel: 'Save & Review Your Plan',
                 onNext: 'saveAndContinue()'
             });
+
+            // Initialize demo mode if active
+            Demo.init(MOMENT_ID);
 
             // Load goals and show/hide cards
             const objectives = [
@@ -244,6 +248,19 @@
 
         function generateResponse(userMessage) {
             showTyping();
+
+            // Check for demo mode - use scripted responses
+            if (Demo.isActive()) {
+                setTimeout(() => {
+                    hideTyping();
+                    const demoResponse = Demo.getResponse(MOMENT_ID, userMessage);
+                    if (demoResponse) {
+                        addMessageToChat('assistant', demoResponse);
+                        return;
+                    }
+                }, 1000);
+                return;
+            }
 
             const messageLower = userMessage.toLowerCase();
 

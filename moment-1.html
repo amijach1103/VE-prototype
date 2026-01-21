@@ -262,6 +262,7 @@
 
     <script src="js/session.js"></script>
     <script src="js/navigation.js"></script>
+    <script src="js/demo.js"></script>
     <script>
         const MOMENT_ID = 1;
 
@@ -273,6 +274,13 @@
         // Initialize on load
         document.addEventListener('DOMContentLoaded', () => {
             Navigation.init(MOMENT_ID);
+
+            // Initialize demo mode if active
+            const isDemoMode = Demo.init(MOMENT_ID);
+            if (isDemoMode) {
+                // In demo mode, skip to have-idea section with pre-filled data
+                choosePath('have-idea');
+            }
 
             // Check if user already has an idea saved
             const savedIdea = Session.getField('idea');
@@ -614,6 +622,15 @@
                 hideTyping();
 
                 let response = '';
+
+                // Check for demo mode - use scripted responses
+                if (Demo.isActive()) {
+                    const demoResponse = Demo.getResponse(MOMENT_ID, userMessage);
+                    if (demoResponse) {
+                        addMessageToChat('assistant', demoResponse);
+                        return;
+                    }
+                }
 
                 if (messageLower.includes('example')) {
                     response = "Here are ideas I've seen work well — and they all started small:<br><br>" +

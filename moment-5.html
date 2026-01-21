@@ -126,11 +126,15 @@
 
     <script src="js/session.js"></script>
     <script src="js/navigation.js"></script>
+    <script src="js/demo.js"></script>
     <script>
         const MOMENT_ID = 5;
 
         document.addEventListener('DOMContentLoaded', () => {
             Navigation.init(MOMENT_ID);
+
+            // Initialize demo mode if active
+            Demo.init(MOMENT_ID);
 
             // Populate review
             populateReview();
@@ -278,6 +282,19 @@
 
         function generateResponse(userMessage) {
             showTyping();
+
+            // Check for demo mode - use scripted responses
+            if (Demo.isActive()) {
+                setTimeout(() => {
+                    hideTyping();
+                    const demoResponse = Demo.getResponse(MOMENT_ID, userMessage);
+                    if (demoResponse) {
+                        addMessageToChat('assistant', demoResponse);
+                        return;
+                    }
+                }, 1000);
+                return;
+            }
 
             const messageLower = userMessage.toLowerCase();
             const session = Session.load();

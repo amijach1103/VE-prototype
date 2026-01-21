@@ -121,6 +121,7 @@
 
     <script src="js/session.js"></script>
     <script src="js/navigation.js"></script>
+    <script src="js/demo.js"></script>
     <script>
         const MOMENT_ID = 3;
 
@@ -130,6 +131,9 @@
                 nextLabel: 'Save & Continue to Moment 4',
                 onNext: 'saveAndContinue()'
             });
+
+            // Initialize demo mode if active
+            Demo.init(MOMENT_ID);
 
             // Show mission reminder
             const mission = Session.getField('mission');
@@ -235,6 +239,19 @@
             ];
             const filledGoals = goals.filter(g => g);
             const messageLower = userMessage.toLowerCase();
+
+            // Check for demo mode - use scripted responses
+            if (Demo.isActive()) {
+                setTimeout(() => {
+                    hideTyping();
+                    const demoResponse = Demo.getResponse(MOMENT_ID, userMessage);
+                    if (demoResponse) {
+                        addMessageToChat('assistant', demoResponse);
+                        return;
+                    }
+                }, 1000);
+                return;
+            }
 
             setTimeout(() => {
                 hideTyping();

@@ -98,6 +98,7 @@
 
     <script src="js/session.js"></script>
     <script src="js/navigation.js"></script>
+    <script src="js/demo.js"></script>
     <script>
         const MOMENT_ID = 2;
 
@@ -107,6 +108,9 @@
                 nextLabel: 'Save & Continue to Moment 3',
                 onNext: 'saveAndContinue()'
             });
+
+            // Initialize demo mode if active
+            Demo.init(MOMENT_ID);
 
             // Show idea from moment 1
             const idea = Session.getField('idea');
@@ -209,6 +213,15 @@
                 hideTyping();
 
                 let response = '';
+
+                // Check for demo mode - use scripted responses
+                if (Demo.isActive()) {
+                    const demoResponse = Demo.getResponse(MOMENT_ID, userMessage);
+                    if (demoResponse) {
+                        addMessageToChat('assistant', demoResponse);
+                        return;
+                    }
+                }
 
                 if (messageLower.includes('who') || messageLower.includes('vague')) {
                     response = "Let me push you on the <strong>WHO</strong>.<br><br>" +
