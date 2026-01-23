@@ -82,7 +82,7 @@
             <!-- Quick Replies -->
             <div class="quick-replies" style="padding: 0 16px;">
                 <button class="quick-reply-btn" onclick="askQuestion('Challenge my goals')">Challenge my goals</button>
-                <button class="quick-reply-btn" onclick="askQuestion('What am I missing?')">What am I missing?</button>
+                <button class="quick-reply-btn" onclick="askQuestion('What worked for others?')">What worked for others?</button>
                 <button class="quick-reply-btn" onclick="askQuestion('Which goal matters most?')">Which matters most?</button>
             </div>
 
@@ -128,7 +128,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             Navigation.init(MOMENT_ID);
             Navigation.renderNavButtons('nav-container', MOMENT_ID, {
-                nextLabel: 'Save & Continue to Moment 4',
+                nextLabel: 'Save & Review Your Plan',
                 onNext: 'saveAndContinue()'
             });
 
@@ -383,7 +383,7 @@
             });
 
             Session.completeMoment(MOMENT_ID);
-            window.location.href = Navigation.getUrlWithParams('moment-4.html');
+            window.location.href = Navigation.getUrlWithParams('moment-5.html');
         }
     </script>
 </body>

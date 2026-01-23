@@ -327,7 +327,7 @@
                 document.getElementById('discovery-section').classList.remove('active');
                 document.getElementById('have-idea-section').classList.add('active');
                 Navigation.renderNavButtons('nav-container', MOMENT_ID, {
-                    nextLabel: 'Save & Continue to Moment 2',
+                    nextLabel: 'Save & Continue to Goals',
                     showBack: false,
                     onNext: 'saveAndContinue()'
                 });
@@ -749,7 +749,7 @@
 
             Session.saveField('idea', idea);
             Session.completeMoment(MOMENT_ID);
-            window.location.href = Navigation.getUrlWithParams('moment-2.html');
+            window.location.href = Navigation.getUrlWithParams('moment-3.html');
         }
     </script>
 </body>
