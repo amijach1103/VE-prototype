@@ -965,9 +965,17 @@
         }
         loadVoices();
 
-        function speak(text) {
-            if (!document.getElementById('tts-toggle').checked) return;
-            if (!text) return;
+        let currentUtterance = null;
+        let onSpeechEnd = null;
+
+        function speak(text, callback) {
+            const ttsEnabled = document.getElementById('tts-toggle').checked;
+
+            if (!ttsEnabled || !text) {
+                // If TTS disabled or no text, call callback immediately
+                if (callback) callback();
+                return false;
+            }
 
             // Cancel any ongoing speech
             speechSynthesis.cancel();
@@ -977,7 +985,17 @@
             utterance.rate = 0.95; // Slightly slower for clarity
             utterance.pitch = 1;
 
+            // When speech ends, wait a moment then call callback
+            utterance.onend = () => {
+                currentUtterance = null;
+                if (callback) {
+                    setTimeout(callback, 1000); // 1 second pause after speaking
+                }
+            };
+
+            currentUtterance = utterance;
             speechSynthesis.speak(utterance);
+            return true; // TTS is handling timing
         }
 
         function stopSpeaking() {
@@ -1084,10 +1102,9 @@
             document.getElementById('scene-num').textContent = step.scene;
             document.getElementById('scene-name').textContent = step.sceneName;
 
-            // Update voiceover cue and speak it
+            // Update voiceover cue
             if (step.voiceover) {
                 document.getElementById('voiceover-text').textContent = step.voiceover;
-                speak(step.voiceover);
             }
 
             // Render new content if needed
@@ -1110,8 +1127,25 @@
             }
 
             // Schedule next step if auto-advance is on
-            if (autoAdvance && step.duration) {
-                scheduleNextStep(step.duration);
+            if (autoAdvance) {
+                const ttsEnabled = document.getElementById('tts-toggle').checked;
+
+                if (ttsEnabled && step.voiceover) {
+                    // TTS mode: wait for speech to end, then advance
+                    // Show indeterminate progress
+                    document.getElementById('step-progress-bar').style.width = '100%';
+                    document.getElementById('step-progress-bar').style.opacity = '0.5';
+
+                    speak(step.voiceover, () => {
+                        document.getElementById('step-progress-bar').style.opacity = '1';
+                        if (autoAdvance) {
+                            nextStep();
+                        }
+                    });
+                } else {
+                    // Manual timing mode: use fixed duration
+                    scheduleNextStep(step.duration || 3000);
+                }
             }
         }
 
