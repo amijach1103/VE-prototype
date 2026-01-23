@@ -72,7 +72,7 @@ const Demo = {
                 `✓ <strong>WHAT:</strong> Clear outcome — "eat healthy dinners"<br>` +
                 `✓ <strong>HOW:</strong> Concrete — "ready-to-heat meals weekly"<br><br>` +
                 `This is solid. I can picture the person and understand what they get.<br><br>` +
-                `<strong>One push:</strong> "Weekly" delivery — is that based on what customers want, or what's convenient for you? Have you asked them?`
+                `<strong>One thing I can't know:</strong> Does "healthy" mean the same thing in your community? Low-carb? Kid-friendly? Only your neighbors can tell you. Talk to a few and ask what "healthy" means to them.`
         },
 
         3: {
@@ -117,6 +117,7 @@ const Demo = {
                 `• Don't perfect recipes before you have customers<br>` +
                 `• "Commit" needs to mean something concrete (deposit?)<br><br>` +
                 `<strong>Your one thing this week:</strong> Have those 10 conversations. Don't pitch — ask "What do you do for dinner on busy nights? What's frustrating?"<br><br>` +
+                `<strong>What I can't do:</strong> I won't be here next week to check if you did it. Find someone — a friend, family member, anyone — and tell them this plan. Ask them to check in. That accountability will matter more than anything I've said.<br><br>` +
                 `Everything else can wait until you've done that. Will you do it?`
         }
     },

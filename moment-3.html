@@ -83,7 +83,7 @@
             <div class="quick-replies" style="padding: 0 16px;">
                 <button class="quick-reply-btn" onclick="askQuestion('Challenge my goals')">Challenge my goals</button>
                 <button class="quick-reply-btn" onclick="askQuestion('What worked for others?')">What worked for others?</button>
-                <button class="quick-reply-btn" onclick="askQuestion('Which goal matters most?')">Which matters most?</button>
+                <button class="quick-reply-btn" onclick="askQuestion('Should I find a mentor?')">Should I find a mentor?</button>
             </div>
 
             <!-- Chat Input -->
@@ -331,6 +331,19 @@
                             "• <strong>Goal 3 (Learning):</strong> \"Talk to every customer and write down what they actually want\" — Real feedback, not assumptions<br><br>" +
                             "Notice: I'm NOT saying \"build a website\" or \"create a logo.\" Those don't matter until you have customers.";
                     }
+                } else if (messageLower.includes('mentor') || messageLower.includes('other entrepreneur') || messageLower.includes('someone who')) {
+                    response = "<strong>Yes — and here's why it matters more than talking to me:</strong><br><br>" +
+                        "I can help you think through problems, but I can't do what another entrepreneur can:<br>" +
+                        "• Share what ACTUALLY happened when they started (not theory)<br>" +
+                        "• Introduce you to people in their network<br>" +
+                        "• Hold you accountable because they care about you<br>" +
+                        "• Understand your specific situation and community<br><br>" +
+                        "<strong>How to find them:</strong><br>" +
+                        "• Ask around: \"Do you know anyone who started their own business?\"<br>" +
+                        "• Check local small business centers, churches, community centers<br>" +
+                        "• Look for Facebook groups of local entrepreneurs<br><br>" +
+                        "<strong>When you find one:</strong> Don't ask \"how do I start a business?\" Ask: \"What do you wish you knew when you started?\" That one question opens everything.<br><br>" +
+                        "One conversation with someone who's done it is worth more than hours with me. Seriously.";
                 } else if (messageLower.includes('which') || messageLower.includes('most') || messageLower.includes('priority') || messageLower.includes('first')) {
                     if (filledGoals.length > 0) {
                         response = "Let me be blunt: <strong>customers come first. Always.</strong><br><br>" +

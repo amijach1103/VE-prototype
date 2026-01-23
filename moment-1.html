@@ -201,7 +201,7 @@
                     <div class="chat-message assistant">
                         <div class="chat-avatar">AI</div>
                         <div class="chat-bubble">
-                            <p style="margin: 0;">Hey! I'm here to help you think through your business idea — and I'll push back if something doesn't add up. That's how good ideas get stronger.<br><br><strong>So tell me: what's the business you're thinking about starting?</strong><br><br>Don't worry about making it perfect. Just tell me what you want to do.</p>
+                            <p style="margin: 0;">Hey! I'm here to help you think through your business idea — and I'll push back if something doesn't add up. That's how good ideas get stronger.<br><br><strong>One thing upfront:</strong> I can help you clarify your thinking, but I can't replace real conversations with actual customers. The best insights will come from talking to people — I can help you prepare for those conversations.<br><br><strong>So tell me: what's the business you're thinking about starting?</strong></p>
                         </div>
                     </div>
                 </div>
@@ -210,6 +210,7 @@
                 <div class="quick-replies" id="quick-replies" style="padding: 0 16px;">
                     <button class="quick-reply-btn" onclick="askQuestion('I need help finding an idea')">I need help finding an idea</button>
                     <button class="quick-reply-btn" onclick="askQuestion('Give me an example')">Give me an example</button>
+                    <button class="quick-reply-btn" onclick="askQuestion('What can you help with?')">What can you help with?</button>
                 </div>
 
                 <!-- Chat Input -->
@@ -643,6 +644,23 @@
                     response = `Okay, let me make sure I understand: "${userMessage.substring(0, 60)}${userMessage.length > 60 ? '...' : ''}"<br><br>` +
                         `<strong>Tell me more.</strong> Who specifically would you serve? "Busy people" is too broad — a meal prep business for working parents looks very different from one for elderly folks or gym-goers.<br><br>` +
                         `<strong>Who's your ONE person?</strong> Describe them to me.`;
+                    addMessageToChat('assistant', response);
+                    return;
+                }
+
+                if (messageLower.includes('what can you help') || messageLower.includes('what can\'t you')) {
+                    response = "<strong>What I CAN help with:</strong><br>" +
+                        "• Clarifying your thinking and challenging vague ideas<br>" +
+                        "• Giving you frameworks and questions to work through<br>" +
+                        "• Sharing examples from other entrepreneurs<br>" +
+                        "• Helping you prepare for customer conversations<br><br>" +
+                        "<strong>What I CAN'T do:</strong><br>" +
+                        "• Replace real customer conversations — you need to talk to actual people<br>" +
+                        "• Connect you with mentors or introduce you to customers<br>" +
+                        "• Understand your specific community and culture<br>" +
+                        "• Build your confidence — that comes from doing, not from me<br>" +
+                        "• Hold you accountable — that requires humans who care about you<br><br>" +
+                        "<strong>Bottom line:</strong> I'm a thinking tool, not a replacement for people. The best thing I can do is help you prepare for the real work — which happens out there, not in here.";
                     addMessageToChat('assistant', response);
                     return;
                 }

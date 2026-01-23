@@ -76,7 +76,7 @@
                 <div class="chat-message assistant">
                     <div class="chat-avatar">AI</div>
                     <div class="chat-bubble">
-                        <p style="margin: 0;">Here's where most people get stuck: they write actions that sound good but can't actually be measured.<br><br>"Get customers" isn't an action — it's a wish. "Talk to 5 potential customers this week" is an action. See the difference?<br><br>For each goal, I want you to write actions with <strong>numbers</strong>. If you can't put a number on it, you can't track it.</p>
+                        <p style="margin: 0;">Here's where most people get stuck: they write actions that sound good but can't actually be measured.<br><br>"Get customers" isn't an action — it's a wish. "Talk to 5 potential customers this week" is an action. See the difference?<br><br>For each goal, write actions with <strong>numbers</strong>. If you can't put a number on it, you can't track it.<br><br><strong>Fair warning:</strong> I can help you write great actions, but I can't make you do them. That's on you — or better yet, find someone who'll check in on you.</p>
                     </div>
                 </div>
             </div>
@@ -85,7 +85,7 @@
             <div class="quick-replies" style="padding: 0 16px;">
                 <button class="quick-reply-btn" onclick="askQuestion('Challenge my actions')">Challenge my actions</button>
                 <button class="quick-reply-btn" onclick="askQuestion('Show me examples')">Show me examples</button>
-                <button class="quick-reply-btn" onclick="askQuestion('What numbers make sense?')">What numbers?</button>
+                <button class="quick-reply-btn" onclick="askQuestion('How do I stay accountable?')">How do I stay accountable?</button>
             </div>
 
             <!-- Chat Input -->
@@ -365,6 +365,18 @@
                     } else {
                         response = "Fill in some actions above, and I'll help you check if they're specific enough!";
                     }
+                } else if (messageLower.includes('accountab') || messageLower.includes('stay on track') || messageLower.includes('follow through')) {
+                    response = "<strong>Here's the truth: I can't hold you accountable.</strong> I'm not going to check in next week. I won't know if you did what you said.<br><br>" +
+                        "Accountability requires humans who care about you. Here's how to find it:<br><br>" +
+                        "<strong>1. Tell someone specific.</strong><br>" +
+                        "Don't say \"I'm starting a business.\" Say \"I'm going to talk to 5 potential customers by Friday. Can I text you when I do?\"<br><br>" +
+                        "<strong>2. Find an accountability partner.</strong><br>" +
+                        "Another person working on a goal — you check in weekly. \"Did you do what you said? Did I?\"<br><br>" +
+                        "<strong>3. Make it public.</strong><br>" +
+                        "Post your commitment somewhere. The fear of looking bad can be motivating.<br><br>" +
+                        "<strong>4. Schedule it.</strong><br>" +
+                        "Put the action in your calendar with a specific time. \"Talk to neighbor about meal prep — Tuesday 6pm.\"<br><br>" +
+                        "The best plans fail without accountability. Who's going to hold you to this?";
                 } else if (messageLower.includes('number')) {
                     response = "Here are some numbers that make actions clearer:<br><br>" +
                         "• <strong>Quantity:</strong> '5 customers', '10 recipes', '3 tutorials'<br>" +
