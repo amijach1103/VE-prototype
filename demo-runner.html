@@ -92,6 +92,63 @@
             color: #333;
         }
 
+        .btn-auto {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-auto:hover {
+            background: #059669;
+        }
+
+        .btn-auto.running {
+            background: #ef4444;
+        }
+
+        .btn-auto.running:hover {
+            background: #dc2626;
+        }
+
+        /* Countdown overlay */
+        .countdown-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .countdown-number {
+            font-size: 150px;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Progress bar for auto-advance */
+        .step-progress {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            width: 200px;
+            height: 8px;
+            background: #e5e5e5;
+            border-radius: 4px;
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        .step-progress-bar {
+            height: 100%;
+            background: #7c3aed;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
         /* Timer */
         .timer {
             position: fixed;
@@ -490,9 +547,15 @@
         <p id="voiceover-text">Press "Next Scene" to begin...</p>
     </div>
 
+    <!-- Step Progress -->
+    <div class="step-progress" id="step-progress" style="display: none;">
+        <div class="step-progress-bar" id="step-progress-bar"></div>
+    </div>
+
     <!-- Controls -->
     <div class="controls">
-        <button class="btn-next" id="btn-next" onclick="nextStep()">Start Demo</button>
+        <button class="btn-auto" id="btn-auto" onclick="toggleAutoAdvance()">▶ Auto-Run Demo</button>
+        <button class="btn-next" id="btn-next" onclick="nextStep()">Next Step</button>
         <button class="btn-reset" onclick="resetDemo()">Reset</button>
     </div>
 
@@ -510,6 +573,7 @@
             {
                 scene: 1,
                 sceneName: "Meet Destiny",
+                duration: 10000, // 10 seconds
                 voiceover: "Meet Destiny. She's a home health aide thinking about starting a meal prep business on the side. She's using Vibe — a prototype we built to test whether AI can guide entrepreneurs like her through structured thinking.",
                 render: () => `
                     <div class="header">
@@ -528,6 +592,7 @@
             {
                 scene: 2,
                 sceneName: "Destiny Shares Her Idea",
+                duration: 8000, // 8 seconds
                 voiceover: "Right away, the AI is upfront about what it can and can't do. It can help Destiny think — but it can't replace real conversations with customers.",
                 render: () => `
                     <div class="progress-bar">
@@ -562,6 +627,7 @@
             {
                 scene: 2,
                 sceneName: "Destiny Shares Her Idea",
+                duration: 3000, // 3 seconds for typing
                 voiceover: "",
                 action: "type",
                 typeTarget: "user-input",
@@ -572,6 +638,7 @@
             {
                 scene: 2,
                 sceneName: "Destiny Shares Her Idea",
+                duration: 10000, // 10 seconds
                 voiceover: "The AI doesn't just accept her idea — it pushes back. This is Constructive Challenge.",
                 action: "addMessage",
                 messages: [
@@ -584,6 +651,7 @@
             {
                 scene: 3,
                 sceneName: "Destiny Builds Her Mission",
+                duration: 8000, // 8 seconds
                 voiceover: "Destiny works through a mission formula — who she helps, what she does, and why it matters.",
                 render: () => `
                     <div class="progress-bar">
@@ -625,6 +693,7 @@
             {
                 scene: 3,
                 sceneName: "Destiny Builds Her Mission",
+                duration: 6000, // 6 seconds
                 voiceover: "The AI challenges her — and admits it doesn't know her community. She does.",
                 render: null
             },
@@ -632,6 +701,7 @@
             {
                 scene: 4,
                 sceneName: "Destiny Gets Specific",
+                duration: 10000, // 10 seconds
                 voiceover: "When Destiny sets a vague goal, the AI pushes for something measurable.",
                 render: () => `
                     <div class="progress-bar">
@@ -675,6 +745,7 @@
             {
                 scene: 4,
                 sceneName: "Destiny Gets Specific",
+                duration: 4000, // 4 seconds
                 voiceover: "Specific Actions — every goal needs a number.",
                 render: null
             },
@@ -682,6 +753,7 @@
             {
                 scene: 5,
                 sceneName: "Destiny Learns From Others",
+                duration: 10000, // 10 seconds
                 voiceover: "The AI draws on examples from other industries — showing Destiny she's not alone.",
                 render: () => `
                     <div class="progress-bar">
@@ -718,6 +790,7 @@
             {
                 scene: 5,
                 sceneName: "Destiny Learns From Others",
+                duration: 4000, // 4 seconds
                 voiceover: "Cross-Domain Insight — real examples make advice concrete.",
                 render: null
             },
@@ -725,6 +798,7 @@
             {
                 scene: 6,
                 sceneName: "Destiny's Plan — And What Comes Next",
+                duration: 8000, // 8 seconds
                 voiceover: "At the end, Destiny has a real plan — mission, goals, specific actions. Built through conversation, not dictated by AI.",
                 render: () => `
                     <div class="progress-bar">
@@ -777,6 +851,7 @@
             {
                 scene: 6,
                 sceneName: "Destiny's Plan — And What Comes Next",
+                duration: 2000, // 2 seconds
                 voiceover: "",
                 action: "tapButton",
                 buttonId: "btn-boundaries",
@@ -786,6 +861,7 @@
             {
                 scene: 6,
                 sceneName: "Destiny's Plan — And What Comes Next",
+                duration: 12000, // 12 seconds
                 voiceover: "This is the design principle we're testing: AI should know its limits. Confidence and accountability require humans — we designed that boundary intentionally.",
                 action: "addBoundariesResponse",
                 render: null
@@ -794,6 +870,7 @@
             {
                 scene: 6,
                 sceneName: "Destiny's Plan — And What Comes Next",
+                duration: 6000, // 6 seconds
                 voiceover: "Destiny leaves with a plan and a push to find real support. That's our hypothesis in action.",
                 action: "showWhatsNext",
                 render: null
@@ -803,6 +880,9 @@
         let currentStep = -1;
         let timerInterval = null;
         let startTime = null;
+        let autoAdvance = false;
+        let autoAdvanceTimeout = null;
+        let progressInterval = null;
 
         function updateTimer() {
             if (!startTime) return;
@@ -810,6 +890,70 @@
             const mins = Math.floor(elapsed / 60);
             const secs = elapsed % 60;
             document.getElementById('timer').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function toggleAutoAdvance() {
+            const btn = document.getElementById('btn-auto');
+
+            if (!autoAdvance) {
+                // Start auto-advance with countdown
+                showCountdown(() => {
+                    autoAdvance = true;
+                    btn.textContent = '⏹ Stop';
+                    btn.classList.add('running');
+                    document.getElementById('step-progress').style.display = 'block';
+                    nextStep();
+                });
+            } else {
+                // Stop auto-advance
+                autoAdvance = false;
+                btn.textContent = '▶ Auto-Run Demo';
+                btn.classList.remove('running');
+                document.getElementById('step-progress').style.display = 'none';
+                if (autoAdvanceTimeout) clearTimeout(autoAdvanceTimeout);
+                if (progressInterval) clearInterval(progressInterval);
+            }
+        }
+
+        function showCountdown(callback) {
+            const overlay = document.createElement('div');
+            overlay.className = 'countdown-overlay';
+            overlay.innerHTML = '<div class="countdown-number">3</div>';
+            document.body.appendChild(overlay);
+
+            let count = 3;
+            const countInterval = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    overlay.querySelector('.countdown-number').textContent = count;
+                } else {
+                    clearInterval(countInterval);
+                    overlay.remove();
+                    callback();
+                }
+            }, 1000);
+        }
+
+        function scheduleNextStep(duration) {
+            if (!autoAdvance) return;
+
+            // Update progress bar
+            const progressBar = document.getElementById('step-progress-bar');
+            progressBar.style.width = '0%';
+
+            const startProgress = Date.now();
+            progressInterval = setInterval(() => {
+                const elapsed = Date.now() - startProgress;
+                const percent = Math.min((elapsed / duration) * 100, 100);
+                progressBar.style.width = percent + '%';
+            }, 50);
+
+            autoAdvanceTimeout = setTimeout(() => {
+                clearInterval(progressInterval);
+                if (autoAdvance) {
+                    nextStep();
+                }
+            }, duration);
         }
 
         function nextStep() {
@@ -825,6 +969,11 @@
                 document.getElementById('btn-next').textContent = 'Demo Complete';
                 document.getElementById('btn-next').disabled = true;
                 clearInterval(timerInterval);
+                // Stop auto-advance
+                autoAdvance = false;
+                document.getElementById('btn-auto').textContent = '▶ Auto-Run Demo';
+                document.getElementById('btn-auto').classList.remove('running');
+                document.getElementById('step-progress').style.display = 'none';
                 return;
             }
 
@@ -856,6 +1005,11 @@
                 addBoundariesResponse();
             } else if (step.action === 'showWhatsNext') {
                 showWhatsNext();
+            }
+
+            // Schedule next step if auto-advance is on
+            if (autoAdvance && step.duration) {
+                scheduleNextStep(step.duration);
             }
         }
 
@@ -966,16 +1120,25 @@
         function resetDemo() {
             currentStep = -1;
             clearInterval(timerInterval);
+            if (autoAdvanceTimeout) clearTimeout(autoAdvanceTimeout);
+            if (progressInterval) clearInterval(progressInterval);
+            autoAdvance = false;
             startTime = null;
             document.getElementById('timer').textContent = '0:00';
             document.getElementById('scene-num').textContent = '1';
             document.getElementById('scene-name').textContent = 'Meet Destiny';
-            document.getElementById('voiceover-text').textContent = 'Press "Start Demo" to begin...';
-            document.getElementById('btn-next').textContent = 'Start Demo';
+            document.getElementById('voiceover-text').textContent = 'Click "Auto-Run Demo" to begin (3-2-1 countdown, then it runs automatically)';
+            document.getElementById('btn-next').textContent = 'Next Step';
             document.getElementById('btn-next').disabled = false;
+            document.getElementById('btn-auto').textContent = '▶ Auto-Run Demo';
+            document.getElementById('btn-auto').classList.remove('running');
+            document.getElementById('step-progress').style.display = 'none';
             document.getElementById('phone-screen').innerHTML = `
-                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">
-                    <p>Press "Start Demo" to begin</p>
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; text-align: center; padding: 20px;">
+                    <div>
+                        <p style="font-size: 18px; margin-bottom: 10px;">Ready to record</p>
+                        <p style="font-size: 14px;">Click <strong>Auto-Run Demo</strong> to start<br>3-2-1 countdown, then it runs automatically</p>
+                    </div>
                 </div>
             `;
         }
