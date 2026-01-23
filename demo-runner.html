@@ -884,14 +884,13 @@
                     </div>
                 `
             },
-            // Scene 6b: Tap quick reply
+            // Scene 6b: Destiny asks about AI limits
             {
                 scene: 6,
                 sceneName: "Destiny's Plan — And What Comes Next",
                 duration: 2000, // 2 seconds
                 voiceover: "She asks what AI can't do...",
-                action: "tapButton",
-                buttonId: "btn-boundaries",
+                action: "addUserQuestion",
                 render: null
             },
             // Scene 6c: AI boundaries response
@@ -900,7 +899,7 @@
                 sceneName: "Destiny's Plan — And What Comes Next",
                 duration: 12000, // 12 seconds
                 voiceover: "This is the design principle we're testing: AI should know its limits. Confidence and accountability require humans — we designed that boundary intentionally.",
-                action: "addBoundariesResponse",
+                action: "addBoundariesAnswer",
                 render: null
             },
             // Scene 6d: Final voiceover
@@ -1137,8 +1136,10 @@
             } else if (step.action === 'tapButton') {
                 const btn = document.getElementById(step.buttonId);
                 if (btn) btn.classList.add('active');
-            } else if (step.action === 'addBoundariesResponse') {
-                addBoundariesResponse();
+            } else if (step.action === 'addUserQuestion') {
+                addUserQuestion();
+            } else if (step.action === 'addBoundariesAnswer') {
+                addBoundariesAnswer();
             } else if (step.action === 'showWhatsNext') {
                 showWhatsNext();
             }
@@ -1207,9 +1208,17 @@
             });
         }
 
-        function addBoundariesResponse() {
+        function addUserQuestion() {
+            // Highlight the button
+            const btn = document.getElementById('btn-boundaries');
+            if (btn) btn.classList.add('active');
+
             const container = document.getElementById('chat-messages');
             if (!container) return;
+
+            // Hide the quick replies
+            const quickReplies = document.querySelector('.quick-replies');
+            if (quickReplies) quickReplies.style.display = 'none';
 
             // Add user message
             const userDiv = document.createElement('div');
@@ -1219,42 +1228,46 @@
                 <div class="chat-bubble">What AI can't give me</div>
             `;
             container.appendChild(userDiv);
+            container.scrollTop = container.scrollHeight;
+        }
 
-            // Add typing indicator
+        function addBoundariesAnswer() {
+            const container = document.getElementById('chat-messages');
+            if (!container) return;
+
+            // Add typing indicator briefly
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-message assistant';
+            typingDiv.id = 'typing';
+            typingDiv.innerHTML = `
+                <div class="chat-avatar">AI</div>
+                <div class="chat-bubble">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(typingDiv);
+            container.scrollTop = container.scrollHeight;
+
+            // Replace with actual response after brief delay
             setTimeout(() => {
-                const typingDiv = document.createElement('div');
-                typingDiv.className = 'chat-message assistant';
-                typingDiv.id = 'typing';
-                typingDiv.innerHTML = `
+                typingDiv.remove();
+                const aiDiv = document.createElement('div');
+                aiDiv.className = 'chat-message assistant';
+                aiDiv.innerHTML = `
                     <div class="chat-avatar">AI</div>
                     <div class="chat-bubble">
-                        <div class="typing-indicator">
-                            <span></span><span></span><span></span>
-                        </div>
+                        <strong>What I CAN'T do:</strong><br><br>
+                        • <strong>Build your confidence</strong> — that comes from doing, not from me<br><br>
+                        • <strong>Hold you accountable</strong> — that requires humans who care about you<br><br>
+                        • <strong>Connect you to customers</strong> — that's on you<br><br>
+                        <span class="highlight"><strong>Find your people.</strong></span>
                     </div>
                 `;
-                container.appendChild(typingDiv);
+                container.appendChild(aiDiv);
                 container.scrollTop = container.scrollHeight;
-
-                // Replace with actual response
-                setTimeout(() => {
-                    typingDiv.remove();
-                    const aiDiv = document.createElement('div');
-                    aiDiv.className = 'chat-message assistant';
-                    aiDiv.innerHTML = `
-                        <div class="chat-avatar">AI</div>
-                        <div class="chat-bubble">
-                            <strong>What I CAN'T do:</strong><br><br>
-                            • <strong>Build your confidence</strong> — that comes from doing, not from me<br><br>
-                            • <strong>Hold you accountable</strong> — that requires humans who care about you<br><br>
-                            • <strong>Connect you to customers</strong> — that's on you<br><br>
-                            <span class="highlight"><strong>Find your people.</strong></span>
-                        </div>
-                    `;
-                    container.appendChild(aiDiv);
-                    container.scrollTop = container.scrollHeight;
-                }, 1500);
-            }, 500);
+            }, 800);
         }
 
         function showWhatsNext() {
