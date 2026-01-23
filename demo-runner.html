@@ -15,40 +15,38 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #f5f5f5;
             min-height: 100vh;
+            display: flex;
         }
 
-        /* Phone frame */
-        .phone-frame {
-            width: 375px;
-            height: 812px;
-            background: white;
-            border-radius: 40px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
-            margin: 20px;
-            margin-left: 250px;
-            overflow: hidden;
-            position: relative;
-            border: 12px solid #1a1a1a;
+        /* Left sidebar with all controls */
+        .sidebar {
+            width: 400px;
+            min-width: 400px;
+            background: #1a1a1a;
+            color: white;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
         }
 
-        .phone-screen {
-            height: 100%;
-            overflow-y: auto;
-            padding: 20px 16px;
-            padding-top: 50px;
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
         }
 
         /* Scene indicator */
         .scene-indicator {
-            position: fixed;
-            top: 20px;
-            left: 20px;
             background: #7c3aed;
             color: white;
             padding: 12px 20px;
             border-radius: 8px;
             font-weight: 600;
-            z-index: 1000;
         }
 
         .scene-indicator .scene-num {
@@ -60,37 +58,73 @@
             opacity: 0.9;
         }
 
+        /* Timer */
+        .timer {
+            background: #374151;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 24px;
+        }
+
+        /* Progress bar for auto-advance */
+        .step-progress {
+            width: 100%;
+            height: 8px;
+            background: #374151;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .step-progress-bar {
+            height: 100%;
+            background: #7c3aed;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        /* Voiceover cue */
+        .voiceover-cue {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            padding: 20px;
+            border-radius: 12px;
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 24px;
+        }
+
+        .voiceover-cue h4 {
+            color: #92400e;
+            margin-bottom: 12px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .voiceover-cue p {
+            color: #78350f;
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
         /* Controls */
         .controls {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
             display: flex;
-            gap: 10px;
-            z-index: 1000;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .controls button {
-            padding: 12px 24px;
+            padding: 16px 24px;
             font-size: 16px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-        }
-
-        .btn-next {
-            background: #7c3aed;
-            color: white;
-        }
-
-        .btn-next:hover {
-            background: #6d28d9;
-        }
-
-        .btn-reset {
-            background: #e5e5e5;
-            color: #333;
+            width: 100%;
         }
 
         .btn-auto {
@@ -108,6 +142,54 @@
 
         .btn-auto.running:hover {
             background: #dc2626;
+        }
+
+        .btn-next {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .btn-next:hover {
+            background: #6d28d9;
+        }
+
+        .btn-reset {
+            background: #374151;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #4b5563;
+        }
+
+        /* Phone area */
+        .phone-area {
+            margin-left: 400px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Phone frame */
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+            position: relative;
+            border: 12px solid #1a1a1a;
+        }
+
+        .phone-screen {
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px 16px;
+            padding-top: 50px;
         }
 
         /* Countdown overlay */
@@ -128,66 +210,6 @@
             font-size: 150px;
             color: white;
             font-weight: bold;
-        }
-
-        /* Progress bar for auto-advance */
-        .step-progress {
-            position: fixed;
-            top: 80px;
-            left: 20px;
-            width: 200px;
-            height: 8px;
-            background: #e5e5e5;
-            border-radius: 4px;
-            overflow: hidden;
-            z-index: 1000;
-        }
-
-        .step-progress-bar {
-            height: 100%;
-            background: #7c3aed;
-            width: 0%;
-            transition: width 0.1s linear;
-        }
-
-        /* Timer */
-        .timer {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #1a1a1a;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 24px;
-            z-index: 1000;
-        }
-
-        /* Voiceover cue */
-        .voiceover-cue {
-            position: fixed;
-            top: 120px;
-            right: 20px;
-            width: 350px;
-            background: #fef3c7;
-            border: 2px solid #f59e0b;
-            padding: 16px;
-            border-radius: 8px;
-            z-index: 1000;
-        }
-
-        .voiceover-cue h4 {
-            color: #92400e;
-            margin-bottom: 8px;
-            font-size: 12px;
-            text-transform: uppercase;
-        }
-
-        .voiceover-cue p {
-            color: #78350f;
-            font-size: 16px;
-            line-height: 1.6;
         }
 
         /* App styles */
@@ -532,37 +554,41 @@
     </style>
 </head>
 <body>
-    <!-- Scene Indicator -->
-    <div class="scene-indicator">
-        <div class="scene-num" id="scene-num">1</div>
-        <div class="scene-name" id="scene-name">Meet Destiny</div>
+    <!-- Left Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="scene-indicator">
+                <div class="scene-num" id="scene-num">1</div>
+                <div class="scene-name" id="scene-name">Meet Destiny</div>
+            </div>
+            <div class="timer" id="timer">0:00</div>
+        </div>
+
+        <!-- Step Progress -->
+        <div class="step-progress" id="step-progress">
+            <div class="step-progress-bar" id="step-progress-bar"></div>
+        </div>
+
+        <!-- Voiceover Cue -->
+        <div class="voiceover-cue">
+            <h4>📢 Read This</h4>
+            <p id="voiceover-text">Click "Auto-Run Demo" to begin</p>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button class="btn-auto" id="btn-auto" onclick="toggleAutoAdvance()">▶ Auto-Run Demo</button>
+            <button class="btn-next" id="btn-next" onclick="nextStep()">Next Step</button>
+            <button class="btn-reset" onclick="resetDemo()">Reset</button>
+        </div>
     </div>
 
-    <!-- Timer -->
-    <div class="timer" id="timer">0:00</div>
-
-    <!-- Voiceover Cue -->
-    <div class="voiceover-cue">
-        <h4>Voiceover Cue</h4>
-        <p id="voiceover-text">Press "Next Scene" to begin...</p>
-    </div>
-
-    <!-- Step Progress -->
-    <div class="step-progress" id="step-progress" style="display: none;">
-        <div class="step-progress-bar" id="step-progress-bar"></div>
-    </div>
-
-    <!-- Controls -->
-    <div class="controls">
-        <button class="btn-auto" id="btn-auto" onclick="toggleAutoAdvance()">▶ Auto-Run Demo</button>
-        <button class="btn-next" id="btn-next" onclick="nextStep()">Next Step</button>
-        <button class="btn-reset" onclick="resetDemo()">Reset</button>
-    </div>
-
-    <!-- Phone Frame -->
-    <div class="phone-frame">
-        <div class="phone-screen" id="phone-screen">
-            <!-- Content will be injected here -->
+    <!-- Phone Area -->
+    <div class="phone-area">
+        <div class="phone-frame">
+            <div class="phone-screen" id="phone-screen">
+                <!-- Content will be injected here -->
+            </div>
         </div>
     </div>
 
@@ -1127,7 +1153,7 @@
             document.getElementById('timer').textContent = '0:00';
             document.getElementById('scene-num').textContent = '1';
             document.getElementById('scene-name').textContent = 'Meet Destiny';
-            document.getElementById('voiceover-text').textContent = 'Click "Auto-Run Demo" to begin (3-2-1 countdown, then it runs automatically)';
+            document.getElementById('voiceover-text').textContent = 'Click "Auto-Run Demo" to begin';
             document.getElementById('btn-next').textContent = 'Next Step';
             document.getElementById('btn-next').disabled = false;
             document.getElementById('btn-auto').textContent = '▶ Auto-Run Demo';
@@ -1136,8 +1162,8 @@
             document.getElementById('phone-screen').innerHTML = `
                 <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; text-align: center; padding: 20px;">
                     <div>
-                        <p style="font-size: 18px; margin-bottom: 10px;">Ready to record</p>
-                        <p style="font-size: 14px;">Click <strong>Auto-Run Demo</strong> to start<br>3-2-1 countdown, then it runs automatically</p>
+                        <p style="font-size: 18px; margin-bottom: 10px;">📱 Ready to record</p>
+                        <p style="font-size: 14px; color: #999;">Demo will appear here</p>
                     </div>
                 </div>
             `;
