@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Entrepreneurship Poster</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+
+        .poster {
+            width: 1100px;
+            background: white;
+            margin: 0 auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: #1180b0;
+            color: white;
+            padding: 24px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .header .team {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .logo {
+            background: white;
+            color: #1180b0;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* Content */
+        .content {
+            padding: 24px 32px;
+        }
+
+        /* Section titles */
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1180b0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #1180b0;
+            padding-bottom: 6px;
+            display: inline-block;
+        }
+
+        /* Challenge Section */
+        .challenge-section {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .barrier-grid {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .barrier-box {
+            flex: 1;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .barrier-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .barrier-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .barrier-label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .challenge-caption {
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .rt-intro {
+            text-align: center;
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 16px;
+        }
+
+        .challenge-quote {
+            text-align: center;
+            font-size: 15px;
+            color: #1180b0;
+            font-style: italic;
+            font-weight: 500;
+            margin-top: 16px;
+            padding: 12px 24px;
+            background: #e0f2fe;
+            border-radius: 6px;
+        }
+
+        /* Two Column Layout */
+        .two-columns {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .column {
+            flex: 1;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        /* Prototype Flow */
+        .prototype-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .flow-step {
+            text-align: center;
+            flex: 1;
+        }
+
+        .flow-circle {
+            width: 50px;
+            height: 50px;
+            background: #1180b0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 0 auto 8px;
+        }
+
+        .flow-label {
+            font-size: 12px;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .flow-arrow {
+            color: #1180b0;
+            font-size: 20px;
+            margin: 0 -8px;
+            margin-bottom: 20px;
+        }
+
+        .quatere-stat {
+            background: white;
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+            margin-top: 16px;
+            border-left: 4px solid #10B981;
+        }
+
+        .quatere-stat strong {
+            color: #10B981;
+        }
+
+        /* Try It Callout */
+        .try-it-callout {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #1180b0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 16px;
+        }
+
+        .try-it-content {
+            color: white;
+        }
+
+        .try-it-label {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .try-it-version {
+            font-size: 11px;
+            opacity: 0.9;
+        }
+
+        .try-it-qr {
+            background: white;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .try-it-qr img {
+            display: block;
+        }
+
+        /* AI Role Design */
+        .ai-role-grid {
+            display: flex;
+            gap: 12px;
+        }
+
+        .ai-role-column {
+            flex: 1;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .ai-role-column.principles {
+            background: #dbeafe;
+            border: 2px solid #3b82f6;
+        }
+
+        .ai-role-column.patterns {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+        }
+
+        .ai-role-column.boundaries {
+            background: #ffedd5;
+            border: 2px solid #f97316;
+        }
+
+        .ai-role-number {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .principles .ai-role-number { color: #1d4ed8; }
+        .patterns .ai-role-number { color: #059669; }
+        .boundaries .ai-role-number { color: #ea580c; }
+
+        .ai-role-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .principles .ai-role-title { color: #1d4ed8; }
+        .patterns .ai-role-title { color: #059669; }
+        .boundaries .ai-role-title { color: #ea580c; }
+
+        .ai-role-desc {
+            font-size: 11px;
+            color: #374151;
+            line-height: 1.4;
+        }
+
+        .methodology-context {
+            font-size: 13px;
+            color: #64748b;
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        .ai-role-list {
+            font-size: 10px;
+            color: #374151;
+            line-height: 1.5;
+            text-align: left;
+            margin-top: 8px;
+        }
+
+        .ai-role-list div {
+            padding: 2px 0;
+        }
+
+        /* Timeline Section */
+        .timeline-section {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .timeline {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            position: relative;
+            margin: 20px 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            right: 25px;
+            height: 4px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+
+        .timeline-item {
+            text-align: center;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .timeline-dot {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 20px;
+            border: 3px solid;
+        }
+
+        .timeline-dot.done {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+
+        .timeline-dot.in-progress {
+            background: #fbbf24;
+            border-color: #fbbf24;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .timeline-dot.future {
+            background: white;
+            border-color: #d1d5db;
+            color: #9ca3af;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(251, 191, 36, 0); }
+        }
+
+        .timeline-phase {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1180b0;
+            margin-bottom: 4px;
+        }
+
+        .timeline-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 2px;
+        }
+
+        .timeline-status {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* Footer */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .key-finding {
+            background: #e0f2fe;
+            border-left: 4px solid #1180b0;
+            padding: 12px 16px;
+            border-radius: 0 6px 6px 0;
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        .key-finding-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #1180b0;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .key-finding-text {
+            font-size: 13px;
+            color: #374151;
+        }
+
+        .qr-placeholder {
+            width: 80px;
+            height: 80px;
+            background: #f3f4f6;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #9ca3af;
+            text-align: center;
+        }
+
+        /* Section header with QR */
+        .section-header-with-qr {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .section-header-with-qr .section-title {
+            margin-bottom: 0;
+        }
+
+        .qr-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #1180b0;
+            padding: 4px 8px 4px 4px;
+            border-radius: 6px;
+        }
+
+        .qr-badge img {
+            border-radius: 3px;
+        }
+
+        .qr-badge span {
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Phone mockup */
+        .phone-icon {
+            font-size: 40px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .build-subtitle {
+            text-align: center;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 16px;
+        }
+
+        /* Rising Talent Stats */
+        .rising-talent-stats {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-top: 12px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1180b0;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Early Signals Section */
+        .signals-section {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .signals-grid {
+            display: flex;
+            gap: 16px;
+        }
+
+        .signal-card {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            border-left: 4px solid;
+        }
+
+        .signal-card.working {
+            border-left-color: #10b981;
+        }
+
+        .signal-card.challenging {
+            border-left-color: #f59e0b;
+        }
+
+        .signal-card.question {
+            border-left-color: #8b5cf6;
+        }
+
+        .signal-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .signal-icon {
+            font-size: 18px;
+        }
+
+        .signal-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .signal-card.working .signal-title { color: #059669; }
+        .signal-card.challenging .signal-title { color: #d97706; }
+        .signal-card.question .signal-title { color: #7c3aed; }
+
+        .signal-list {
+            list-style: none;
+            font-size: 12px;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .signal-list li {
+            margin-bottom: 4px;
+        }
+
+        .signal-list li::before {
+            content: "•";
+            margin-right: 6px;
+            color: #9ca3af;
+        }
+
+        .signal-text {
+            font-size: 13px;
+            color: #374151;
+            font-style: italic;
+        }
+
+        /* Exploratory Badge */
+        .exploratory-badge {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            color: #92400e;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+            margin-left: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="poster">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1>Vibe Entrepreneurship: AI-Guided Support for Rising Talent</h1>
+                <div class="team">Agueda Schwartz, Angela Lankford, Brendan Veranth & Claude Code</div>
+            </div>
+            <div class="logo">wgu<span style="font-weight: 400;">labs</span></div>
+        </div>
+
+        <div class="content">
+            <!-- Challenge Section -->
+            <div class="challenge-section">
+                <div class="section-title">Who We're Designing For: Rising Talent</div>
+                <div class="rt-intro">~24 million US adults facing compounding barriers:</div>
+                <div class="barrier-grid">
+                    <div class="barrier-box">
+                        <div class="barrier-icon">📱</div>
+                        <div class="barrier-label">Phone-primary</div>
+                    </div>
+                    <div class="barrier-box">
+                        <div class="barrier-icon">🕐</div>
+                        <div class="barrier-label">Time-scarce</div>
+                    </div>
+                    <div class="barrier-box">
+                        <div class="barrier-icon">💵</div>
+                        <div class="barrier-label">Earning &lt;$15/hr</div>
+                    </div>
+                    <div class="barrier-box">
+                        <div class="barrier-icon">🎓</div>
+                        <div class="barrier-label">59% HS diploma</div>
+                    </div>
+                </div>
+                <div class="challenge-quote">"If they want to pursue entrepreneurship, existing programs weren't designed for their constraints."</div>
+            </div>
+
+            <!-- Two Columns -->
+            <div class="two-columns">
+                <!-- What We're Building -->
+                <div class="column">
+                    <div class="section-header-with-qr">
+                        <div class="section-title">What We're Building</div>
+                        <div class="qr-badge">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=40x40&data=https://amijach1103.github.io/VE-prototype" alt="QR Code">
+                            <span>Try V3</span>
+                        </div>
+                    </div>
+                    <div class="phone-icon">📱</div>
+                    <div class="build-subtitle">Mobile-first AI-guided business planning</div>
+
+                    <div class="prototype-flow">
+                        <div class="flow-step">
+                            <div class="flow-circle">1</div>
+                            <div class="flow-label">Idea</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="flow-circle">2</div>
+                            <div class="flow-label">Mission</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="flow-circle">3</div>
+                            <div class="flow-label">Goals</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="flow-circle">4</div>
+                            <div class="flow-label">Actions</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="flow-circle">5</div>
+                            <div class="flow-label">Plan</div>
+                        </div>
+                    </div>
+
+                    <div class="quatere-stat">
+                        Built on <strong>Quatere methods</strong>: 261 entrepreneurs, 14+ cohorts, <strong>34% PMF</strong>
+                    </div>
+
+                    </div>
+
+                <!-- AI Role Design -->
+                <div class="column">
+                    <div class="section-title">AI Role Design</div>
+                    <div class="methodology-context">We analyzed what made Quatere facilitators effective and translated it into testable AI behaviors.</div>
+                    <div class="ai-role-grid">
+                        <div class="ai-role-column principles">
+                            <div class="ai-role-number">5</div>
+                            <div class="ai-role-title">Principles</div>
+                            <div class="ai-role-list">
+                                <div>Flexibility</div>
+                                <div>Facilitate clarity</div>
+                                <div>Support peers</div>
+                                <div>Protect resources</div>
+                                <div>Measure impact</div>
+                            </div>
+                        </div>
+                        <div class="ai-role-column patterns">
+                            <div class="ai-role-number">7</div>
+                            <div class="ai-role-title">Patterns</div>
+                            <div class="ai-role-list">
+                                <div>Draw examples</div>
+                                <div>Specific actions</div>
+                                <div>Challenge assumptions</div>
+                                <div>Cross-domain insight</div>
+                                <div>Dialogue style</div>
+                            </div>
+                        </div>
+                        <div class="ai-role-column boundaries">
+                            <div class="ai-role-number">5</div>
+                            <div class="ai-role-title">Boundaries</div>
+                            <div class="ai-role-list">
+                                <div>Peer connection</div>
+                                <div>Accountability</div>
+                                <div>Network access</div>
+                                <div>Cultural context</div>
+                                <div>Confidence building</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline Section -->
+            <div class="timeline-section">
+                <div class="section-title">Testing Phases</div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot done">✓</div>
+                        <div class="timeline-phase">Phase 0</div>
+                        <div class="timeline-label">Internal</div>
+                        <div class="timeline-status">Done</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot in-progress">●</div>
+                        <div class="timeline-phase">Phase 1</div>
+                        <div class="timeline-label">Proxy</div>
+                        <div class="timeline-status">In Progress</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot future">○</div>
+                        <div class="timeline-phase">Phase 2</div>
+                        <div class="timeline-label">Closer to RT</div>
+                        <div class="timeline-status">Next</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot future">○</div>
+                        <div class="timeline-phase">Phase 3</div>
+                        <div class="timeline-label">Rising Talent</div>
+                        <div class="timeline-status">Q2 2026</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Early Signals Section -->
+            <div class="signals-section">
+                <div class="section-title">What We're Learning</div>
+                <div class="signals-grid">
+                    <div class="signal-card working">
+                        <div class="signal-header">
+                            <span class="signal-icon">✓</span>
+                            <span class="signal-title">Working</span>
+                        </div>
+                        <ul class="signal-list">
+                            <li>Structure helps — users complete the full flow</li>
+                            <li>Cross-domain examples resonate</li>
+                            <li>Specific prompts outperform open-ended</li>
+                        </ul>
+                    </div>
+                    <div class="signal-card challenging">
+                        <div class="signal-header">
+                            <span class="signal-icon">!</span>
+                            <span class="signal-title">Challenging</span>
+                        </div>
+                        <ul class="signal-list">
+                            <li>Users wanted dialogue, not feedback</li>
+                            <li>Generic responses don't land</li>
+                            <li>Methodology fidelity needs careful design</li>
+                        </ul>
+                    </div>
+                    <div class="signal-card question">
+                        <div class="signal-header">
+                            <span class="signal-icon">?</span>
+                            <span class="signal-title">Open Question</span>
+                        </div>
+                        <p class="signal-text">"Will Rising Talent trust AI guidance? Only the pilot will tell us."</p>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="footer">
+                    <div class="key-finding" style="margin-right: 0;">
+                        <div class="key-finding-label">Our Commitment</div>
+                        <div class="key-finding-text">We're here to learn, not to prove we're right. <strong>"This doesn't work" is a valid outcome.</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
