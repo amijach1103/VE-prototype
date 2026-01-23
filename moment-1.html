@@ -95,8 +95,8 @@
         <!-- Header -->
         <div id="header-container"></div>
 
-        <!-- Path Choice (Initial) -->
-        <div class="card" id="path-choice-card">
+        <!-- Path Choice (Hidden - go straight to chat) -->
+        <div class="card" id="path-choice-card" style="display: none;">
             <h3>Let's start with your business idea</h3>
             <p>Which describes you better?</p>
 
@@ -191,22 +191,7 @@
 
         <!-- Have Idea Flow (Hidden Initially) -->
         <div class="discovery-section" id="have-idea-section">
-            <div class="card">
-                <h3>What's your business idea?</h3>
-                <p>Describe what you want to do in your own words. Don't worry about making it perfect.</p>
-
-                <div class="form-group">
-                    <label for="idea">Your idea:</label>
-                    <textarea
-                        id="idea"
-                        data-field="idea"
-                        placeholder="Example: I want to make homemade meals for busy families in my neighborhood who don't have time to cook..."
-                    ></textarea>
-                    <p class="hint">Think about: What would you do? Who would you help? What problem would you solve?</p>
-                </div>
-            </div>
-
-            <!-- Chat Interface -->
+            <!-- Chat Interface - NOW LEADS -->
             <div class="chat-container">
                 <div class="chat-header">
                     <div class="chat-header-icon">AI</div>
@@ -216,16 +201,15 @@
                     <div class="chat-message assistant">
                         <div class="chat-avatar">AI</div>
                         <div class="chat-bubble">
-                            <p style="margin: 0;">Tell me about your idea. I'm here to help you think it through — and I'll push back if something doesn't add up. That's how good ideas get stronger. What are you hoping to do?</p>
+                            <p style="margin: 0;">Hey! I'm here to help you think through your business idea — and I'll push back if something doesn't add up. That's how good ideas get stronger.<br><br><strong>So tell me: what's the business you're thinking about starting?</strong><br><br>Don't worry about making it perfect. Just tell me what you want to do.</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Quick Replies -->
                 <div class="quick-replies" id="quick-replies" style="padding: 0 16px;">
+                    <button class="quick-reply-btn" onclick="askQuestion('I need help finding an idea')">I need help finding an idea</button>
                     <button class="quick-reply-btn" onclick="askQuestion('Give me an example')">Give me an example</button>
-                    <button class="quick-reply-btn" onclick="askQuestion('How do I test this?')">How do I test this?</button>
-                    <button class="quick-reply-btn" onclick="askQuestion('Push back on my idea')">Push back on my idea</button>
                 </div>
 
                 <!-- Chat Input -->
@@ -234,7 +218,7 @@
                         type="text"
                         class="chat-input"
                         id="chat-input"
-                        placeholder="Ask me anything..."
+                        placeholder="Tell me your business idea..."
                         onkeypress="handleKeyPress(event)"
                     >
                     <button class="chat-send-btn" onclick="sendMessage()">
@@ -245,11 +229,26 @@
                 </div>
             </div>
 
+            <!-- Idea Summary - Secondary, updated through chat -->
+            <div class="card" id="idea-summary-card" style="display: none;">
+                <h3>Your Idea (so far)</h3>
+                <p style="color: var(--text-muted); font-size: 14px;">Based on our conversation:</p>
+                <div class="form-group">
+                    <textarea
+                        id="idea"
+                        data-field="idea"
+                        placeholder="Your idea will appear here as we talk..."
+                        style="min-height: 80px;"
+                    ></textarea>
+                    <p class="hint">Feel free to edit this as we refine your idea together.</p>
+                </div>
+            </div>
+
             <!-- Example -->
             <div class="example-box">
-                <div class="example-header">Maria's Idea</div>
+                <div class="example-header">Example: Maria's Idea</div>
                 <div class="example-content">
-                    "I want to cook healthy meals for busy parents in my neighborhood. They're always stressed about feeding their kids good food but don't have time to cook. I love cooking and I'm good at making big batches."
+                    "I want to cook healthy meals for busy parents in my neighborhood. They're always stressed about feeding their kids good food but don't have time to cook."
                 </div>
             </div>
 
@@ -276,18 +275,16 @@
             Navigation.init(MOMENT_ID);
 
             // Initialize demo mode if active
-            const isDemoMode = Demo.init(MOMENT_ID);
-            if (isDemoMode) {
-                // In demo mode, skip to have-idea section with pre-filled data
-                choosePath('have-idea');
-            }
+            Demo.init(MOMENT_ID);
+
+            // Always go straight to chat-first flow
+            choosePath('have-idea');
 
             // Check if user already has an idea saved
             const savedIdea = Session.getField('idea');
             if (savedIdea) {
-                // Go straight to idea section
-                choosePath('have-idea');
                 document.getElementById('idea').value = savedIdea;
+                document.getElementById('idea-summary-card').style.display = 'block';
             }
 
             // Setup skill tag clicks
@@ -630,6 +627,52 @@
                         addMessageToChat('assistant', demoResponse);
                         return;
                     }
+                }
+
+                // Check if user is sharing their idea (not a question)
+                const isQuestion = messageLower.includes('?') || messageLower.includes('example') || messageLower.includes('help') || messageLower.includes('how');
+                const looksLikeIdea = messageLower.includes('i want to') || messageLower.includes('i\'m thinking') || messageLower.includes('my idea') || messageLower.includes('start a') || messageLower.includes('sell') || messageLower.includes('offer') || messageLower.includes('business');
+
+                if (looksLikeIdea && !isQuestion) {
+                    // User shared their idea - capture it and show summary
+                    document.getElementById('idea').value = userMessage;
+                    Session.saveField('idea', userMessage);
+                    document.getElementById('idea-summary-card').style.display = 'block';
+
+                    // Constructive challenge response
+                    response = `Okay, let me make sure I understand: "${userMessage.substring(0, 60)}${userMessage.length > 60 ? '...' : ''}"<br><br>` +
+                        `<strong>Tell me more.</strong> Who specifically would you serve? "Busy people" is too broad — a meal prep business for working parents looks very different from one for elderly folks or gym-goers.<br><br>` +
+                        `<strong>Who's your ONE person?</strong> Describe them to me.`;
+                    addMessageToChat('assistant', response);
+                    return;
+                }
+
+                if (messageLower.includes('need help finding') || messageLower.includes('not sure what')) {
+                    // Redirect to discovery flow
+                    response = "No problem! Let me help you explore some options.<br><br>" +
+                        "<strong>Quick question:</strong> What are you good at? Think about skills you use at work, hobbies, or things people ask you to help with.<br><br>" +
+                        "For example: cooking, cleaning, organizing, fixing things, taking care of kids, driving, crafts...";
+                    addMessageToChat('assistant', response);
+                    return;
+                }
+
+                // Check if user is describing their target customer
+                const describingCustomer = messageLower.includes('parent') || messageLower.includes('mom') || messageLower.includes('dad') || messageLower.includes('working') || messageLower.includes('busy') || messageLower.includes('elderly') || messageLower.includes('senior') || messageLower.includes('families') || messageLower.includes('people who');
+                const hasIdea = document.getElementById('idea').value.trim();
+
+                if (describingCustomer && hasIdea) {
+                    // They're refining their customer - update idea and give validation + next push
+                    const currentIdea = document.getElementById('idea').value;
+                    const refinedIdea = currentIdea + ' - specifically for ' + userMessage;
+                    document.getElementById('idea').value = refinedIdea;
+                    Session.saveField('idea', refinedIdea);
+
+                    response = `<strong>That's more specific.</strong> "${userMessage}" — now I can picture who you're talking about.<br><br>` +
+                        `Here's the harder question: <strong>Have you talked to anyone who fits this description?</strong><br><br>` +
+                        `Not friends being supportive — someone who actually has this problem right now. What do they currently do? What's frustrating about it?<br><br>` +
+                        `If you haven't talked to anyone yet, that's your first step. Want me to help you figure out how to find them?`;
+                    addMessageToChat('assistant', response);
+                    return;
                 }
 
                 if (messageLower.includes('example')) {
