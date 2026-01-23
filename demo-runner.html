@@ -966,14 +966,14 @@
         loadVoices();
 
         let currentUtterance = null;
-        let onSpeechEnd = null;
+        let speechEndCallback = null;
 
         function speak(text, callback) {
             const ttsEnabled = document.getElementById('tts-toggle').checked;
 
             if (!ttsEnabled || !text) {
-                // If TTS disabled or no text, call callback immediately
-                if (callback) callback();
+                // If TTS disabled or no text, call callback after a short delay
+                if (callback) setTimeout(callback, 2000);
                 return false;
             }
 
@@ -982,14 +982,29 @@
 
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.voice = selectedVoice;
-            utterance.rate = 0.95; // Slightly slower for clarity
+            utterance.rate = 0.92; // Slightly slower for clarity
             utterance.pitch = 1;
 
-            // When speech ends, wait a moment then call callback
+            // Store callback for when speech ends
+            speechEndCallback = callback;
+
             utterance.onend = () => {
+                console.log('Speech ended:', text.substring(0, 30) + '...');
                 currentUtterance = null;
-                if (callback) {
-                    setTimeout(callback, 1000); // 1 second pause after speaking
+                if (speechEndCallback) {
+                    const cb = speechEndCallback;
+                    speechEndCallback = null;
+                    setTimeout(cb, 1200); // 1.2 second pause after speaking
+                }
+            };
+
+            utterance.onerror = (e) => {
+                console.error('Speech error:', e);
+                currentUtterance = null;
+                if (speechEndCallback) {
+                    const cb = speechEndCallback;
+                    speechEndCallback = null;
+                    setTimeout(cb, 1000);
                 }
             };
 
@@ -1000,6 +1015,8 @@
 
         function stopSpeaking() {
             speechSynthesis.cancel();
+            speechEndCallback = null;
+            currentUtterance = null;
         }
 
         function updateTimer() {
@@ -1130,20 +1147,27 @@
             if (autoAdvance) {
                 const ttsEnabled = document.getElementById('tts-toggle').checked;
 
-                if (ttsEnabled && step.voiceover) {
+                if (ttsEnabled) {
                     // TTS mode: wait for speech to end, then advance
-                    // Show indeterminate progress
-                    document.getElementById('step-progress-bar').style.width = '100%';
-                    document.getElementById('step-progress-bar').style.opacity = '0.5';
+                    // Hide the progress bar in TTS mode (timing is voice-driven)
+                    document.getElementById('step-progress').style.display = 'none';
 
-                    speak(step.voiceover, () => {
-                        document.getElementById('step-progress-bar').style.opacity = '1';
+                    const advanceToNext = () => {
                         if (autoAdvance) {
                             nextStep();
                         }
-                    });
+                    };
+
+                    if (step.voiceover) {
+                        // Has voiceover - wait for it to finish
+                        speak(step.voiceover, advanceToNext);
+                    } else {
+                        // No voiceover (typing, button tap) - short pause then advance
+                        setTimeout(advanceToNext, step.duration || 2000);
+                    }
                 } else {
-                    // Manual timing mode: use fixed duration
+                    // Manual timing mode: use fixed duration with progress bar
+                    document.getElementById('step-progress').style.display = 'block';
                     scheduleNextStep(step.duration || 3000);
                 }
             }
