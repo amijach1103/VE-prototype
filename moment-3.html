@@ -128,7 +128,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             Navigation.init(MOMENT_ID);
             Navigation.renderNavButtons('nav-container', MOMENT_ID, {
-                nextLabel: 'Save & Review Your Plan',
+                nextLabel: 'Save & Continue to Actions',
                 onNext: 'saveAndContinue()'
             });
 
@@ -383,7 +383,7 @@
             });
 
             Session.completeMoment(MOMENT_ID);
-            window.location.href = Navigation.getUrlWithParams('moment-5.html');
+            window.location.href = Navigation.getUrlWithParams('moment-4.html');
         }
     </script>
 </body>
