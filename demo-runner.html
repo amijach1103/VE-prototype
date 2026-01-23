@@ -575,6 +575,17 @@
             <p id="voiceover-text">Click "Auto-Run Demo" to begin</p>
         </div>
 
+        <!-- TTS Toggle -->
+        <div style="margin-bottom: 16px;">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="checkbox" id="tts-toggle" checked style="width: 18px; height: 18px;">
+                <span>🔊 Auto-read voiceover</span>
+            </label>
+            <select id="voice-select" style="width: 100%; margin-top: 8px; padding: 8px; border-radius: 6px; background: #374151; color: white; border: none;">
+                <option value="">Loading voices...</option>
+            </select>
+        </div>
+
         <!-- Controls -->
         <div class="controls">
             <button class="btn-auto" id="btn-auto" onclick="toggleAutoAdvance()">▶ Auto-Run Demo</button>
@@ -909,6 +920,69 @@
         let autoAdvance = false;
         let autoAdvanceTimeout = null;
         let progressInterval = null;
+        let selectedVoice = null;
+
+        // Text-to-Speech setup
+        function loadVoices() {
+            const voiceSelect = document.getElementById('voice-select');
+            const voices = speechSynthesis.getVoices();
+
+            // Filter to English voices and prefer natural-sounding ones
+            const englishVoices = voices.filter(v => v.lang.startsWith('en'));
+
+            if (englishVoices.length === 0) {
+                voiceSelect.innerHTML = '<option value="">No voices available</option>';
+                return;
+            }
+
+            voiceSelect.innerHTML = '';
+            englishVoices.forEach((voice, i) => {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `${voice.name} (${voice.lang})`;
+                // Prefer Samantha, Karen, or any "premium" voice
+                if (voice.name.includes('Samantha') || voice.name.includes('Karen') || voice.name.includes('Allison')) {
+                    option.selected = true;
+                    selectedVoice = voice;
+                }
+                voiceSelect.appendChild(option);
+            });
+
+            // If no preferred voice found, use first one
+            if (!selectedVoice && englishVoices.length > 0) {
+                selectedVoice = englishVoices[0];
+                voiceSelect.selectedIndex = 0;
+            }
+
+            voiceSelect.addEventListener('change', (e) => {
+                selectedVoice = englishVoices[e.target.selectedIndex];
+            });
+        }
+
+        // Load voices (may need to wait for them)
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = loadVoices;
+        }
+        loadVoices();
+
+        function speak(text) {
+            if (!document.getElementById('tts-toggle').checked) return;
+            if (!text) return;
+
+            // Cancel any ongoing speech
+            speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.voice = selectedVoice;
+            utterance.rate = 0.95; // Slightly slower for clarity
+            utterance.pitch = 1;
+
+            speechSynthesis.speak(utterance);
+        }
+
+        function stopSpeaking() {
+            speechSynthesis.cancel();
+        }
 
         function updateTimer() {
             if (!startTime) return;
@@ -938,6 +1012,7 @@
                 document.getElementById('step-progress').style.display = 'none';
                 if (autoAdvanceTimeout) clearTimeout(autoAdvanceTimeout);
                 if (progressInterval) clearInterval(progressInterval);
+                stopSpeaking();
             }
         }
 
@@ -1009,9 +1084,10 @@
             document.getElementById('scene-num').textContent = step.scene;
             document.getElementById('scene-name').textContent = step.sceneName;
 
-            // Update voiceover cue
+            // Update voiceover cue and speak it
             if (step.voiceover) {
                 document.getElementById('voiceover-text').textContent = step.voiceover;
+                speak(step.voiceover);
             }
 
             // Render new content if needed
@@ -1150,6 +1226,7 @@
             if (progressInterval) clearInterval(progressInterval);
             autoAdvance = false;
             startTime = null;
+            stopSpeaking();
             document.getElementById('timer').textContent = '0:00';
             document.getElementById('scene-num').textContent = '1';
             document.getElementById('scene-name').textContent = 'Meet Destiny';
