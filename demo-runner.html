@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Demo Runner - Destiny's Journey</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        /* Phone frame */
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            margin: 20px auto;
+            overflow: hidden;
+            position: relative;
+            border: 12px solid #1a1a1a;
+        }
+
+        .phone-screen {
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px 16px;
+            padding-top: 50px;
+        }
+
+        /* Scene indicator */
+        .scene-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #7c3aed;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 1000;
+        }
+
+        .scene-indicator .scene-num {
+            font-size: 24px;
+        }
+
+        .scene-indicator .scene-name {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Controls */
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .controls button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-next {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .btn-next:hover {
+            background: #6d28d9;
+        }
+
+        .btn-reset {
+            background: #e5e5e5;
+            color: #333;
+        }
+
+        /* Timer */
+        .timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1a1a1a;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 24px;
+            z-index: 1000;
+        }
+
+        /* Voiceover cue */
+        .voiceover-cue {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
+            max-width: 600px;
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            padding: 16px;
+            border-radius: 8px;
+            z-index: 1000;
+        }
+
+        .voiceover-cue h4 {
+            color: #92400e;
+            margin-bottom: 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .voiceover-cue p {
+            color: #78350f;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* App styles */
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #7c3aed;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .btn-start {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: #7c3aed;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .progress-step {
+            flex: 1;
+            height: 4px;
+            background: #e5e5e5;
+            border-radius: 2px;
+        }
+
+        .progress-step.active {
+            background: #7c3aed;
+        }
+
+        /* Chat styles */
+        .chat-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .chat-header {
+            background: #7c3aed;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-header-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .chat-messages {
+            padding: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .chat-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .chat-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .chat-message.assistant .chat-avatar {
+            background: #ede9fe;
+            color: #7c3aed;
+        }
+
+        .chat-message.user .chat-avatar {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            line-height: 1.5;
+            font-size: 15px;
+        }
+
+        .chat-message.assistant .chat-bubble {
+            background: #f3f4f6;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-message.user .chat-bubble {
+            background: #7c3aed;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-bubble .highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Chat input */
+        .chat-input-area {
+            padding: 12px 16px;
+            border-top: 1px solid #e5e5e5;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e5e5e5;
+            border-radius: 24px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .chat-input:focus {
+            border-color: #7c3aed;
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #9ca3af;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+        }
+
+        /* Card styles */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+        }
+
+        .formula-box {
+            background: #ede9fe;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            color: #5b21b6;
+        }
+
+        /* Mission textarea */
+        .mission-text {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            font-size: 15px;
+            line-height: 1.5;
+            resize: none;
+            min-height: 80px;
+        }
+
+        /* Quick replies */
+        .quick-replies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px 16px;
+        }
+
+        .quick-reply-btn {
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border: 1px solid #e5e5e5;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .quick-reply-btn:hover, .quick-reply-btn.active {
+            background: #ede9fe;
+            border-color: #7c3aed;
+            color: #7c3aed;
+        }
+
+        /* Plan review */
+        .plan-item {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .plan-item-label {
+            font-size: 12px;
+            color: #7c3aed;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .plan-item-content {
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        /* Success box */
+        .success-box {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .success-icon {
+            width: 48px;
+            height: 48px;
+            background: #10b981;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 12px;
+        }
+
+        /* What's next */
+        .whats-next {
+            background: #eff6ff;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .whats-next-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .whats-next-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .whats-next-bullet {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        /* Cursor blink for typing effect */
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: #7c3aed;
+            animation: blink 1s infinite;
+            vertical-align: text-bottom;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Hidden by default */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Scene containers */
+        .scene {
+            display: none;
+        }
+
+        .scene.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Scene Indicator -->
+    <div class="scene-indicator">
+        <div class="scene-num" id="scene-num">1</div>
+        <div class="scene-name" id="scene-name">Meet Destiny</div>
+    </div>
+
+    <!-- Timer -->
+    <div class="timer" id="timer">0:00</div>
+
+    <!-- Voiceover Cue -->
+    <div class="voiceover-cue">
+        <h4>Voiceover Cue</h4>
+        <p id="voiceover-text">Press "Next Scene" to begin...</p>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button class="btn-next" id="btn-next" onclick="nextStep()">Start Demo</button>
+        <button class="btn-reset" onclick="resetDemo()">Reset</button>
+    </div>
+
+    <!-- Phone Frame -->
+    <div class="phone-frame">
+        <div class="phone-screen" id="phone-screen">
+            <!-- Content will be injected here -->
+        </div>
+    </div>
+
+    <script>
+        // Demo script data
+        const demoScript = [
+            // Scene 1: Landing page
+            {
+                scene: 1,
+                sceneName: "Meet Destiny",
+                voiceover: "Meet Destiny. She's a home health aide thinking about starting a meal prep business on the side. She's using Vibe — a prototype we built to test whether AI can guide entrepreneurs like her through structured thinking.",
+                render: () => `
+                    <div class="header">
+                        <h1>Vibe</h1>
+                        <p>Turn your business idea into an action plan</p>
+                    </div>
+                    <div class="card">
+                        <p style="text-align: center; color: #666; margin-bottom: 20px;">
+                            Answer a few questions. Get a clear plan.<br>Takes about 10 minutes.
+                        </p>
+                        <button class="btn-start">Get Started</button>
+                    </div>
+                `
+            },
+            // Scene 2a: Chat with AI greeting
+            {
+                scene: 2,
+                sceneName: "Destiny Shares Her Idea",
+                voiceover: "Right away, the AI is upfront about what it can and can't do. It can help Destiny think — but it can't replace real conversations with customers.",
+                render: () => `
+                    <div class="progress-bar">
+                        <div class="progress-step active"></div>
+                        <div class="progress-step"></div>
+                        <div class="progress-step"></div>
+                        <div class="progress-step"></div>
+                        <div class="progress-step"></div>
+                    </div>
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <div class="chat-header-icon">AI</div>
+                            <div>AI Coach</div>
+                        </div>
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="chat-message assistant">
+                                <div class="chat-avatar">AI</div>
+                                <div class="chat-bubble">
+                                    Hey! I'm here to help you think through your business idea.<br><br>
+                                    <span class="highlight"><strong>One thing upfront:</strong> I can help you clarify your thinking, but I can't replace real conversations with actual customers.</span><br><br>
+                                    So tell me: what's the business you're thinking about starting?
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" class="chat-input" id="user-input" placeholder="Tell me your business idea..." readonly>
+                        </div>
+                    </div>
+                `
+            },
+            // Scene 2b: Destiny types her idea
+            {
+                scene: 2,
+                sceneName: "Destiny Shares Her Idea",
+                voiceover: "",
+                action: "type",
+                typeTarget: "user-input",
+                typeText: "I want to start a meal prep business",
+                render: null
+            },
+            // Scene 2c: AI responds with challenge
+            {
+                scene: 2,
+                sceneName: "Destiny Shares Her Idea",
+                voiceover: "The AI doesn't just accept her idea — it pushes back. This is Constructive Challenge.",
+                action: "addMessage",
+                messages: [
+                    { role: "user", text: "I want to start a meal prep business" },
+                    { role: "assistant", text: "That's a starting point. But let me push you a bit.<br><br><strong>Who specifically would you serve?</strong> \"Busy people\" is too broad — a meal prep business for working parents looks very different from one for elderly folks or gym-goers.<br><br><strong>Who's your ONE person?</strong>" }
+                ],
+                render: null
+            },
+            // Scene 3: Mission
+            {
+                scene: 3,
+                sceneName: "Destiny Builds Her Mission",
+                voiceover: "Destiny works through a mission formula — who she helps, what she does, and why it matters.",
+                render: () => `
+                    <div class="progress-bar">
+                        <div class="progress-step active"></div>
+                        <div class="progress-step active"></div>
+                        <div class="progress-step"></div>
+                        <div class="progress-step"></div>
+                        <div class="progress-step"></div>
+                    </div>
+                    <div class="card">
+                        <h3>Create Your Mission Statement</h3>
+                        <div class="formula-box">
+                            I help [WHO] do [WHAT] by [HOW] because [WHY]
+                        </div>
+                    </div>
+                    <div class="card">
+                        <label style="font-weight: 600; display: block; margin-bottom: 8px;">Your mission:</label>
+                        <textarea class="mission-text" id="mission-input" readonly>I help working parents who get home late eat healthy meals by preparing fresh weekly meal boxes because they shouldn't have to choose between time and nutrition.</textarea>
+                    </div>
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <div class="chat-header-icon">AI</div>
+                            <div>AI Coach</div>
+                        </div>
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="chat-message assistant">
+                                <div class="chat-avatar">AI</div>
+                                <div class="chat-bubble">
+                                    This is getting clearer. I can see who and what.<br><br>
+                                    <strong>But here's my pushback:</strong> "Eat healthy meals" is vague. What does "healthy" mean to YOUR customers? Low-carb? Kid-friendly? Quick to reheat?<br><br>
+                                    <span class="highlight"><strong>One thing I can't know:</strong> Only your neighbors can tell you what matters to them.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            // Scene 3b: Voiceover for AI response
+            {
+                scene: 3,
+                sceneName: "Destiny Builds Her Mission",
+                voiceover: "The AI challenges her — and admits it doesn't know her community. She does.",
+                render: null
+            },
+            // Scene 4: Specific Actions
+            {
+                scene: 4,
+                sceneName: "Destiny Gets Specific",
+                voiceover: "When Destiny sets a vague goal, the AI pushes for something measurable.",
+                render: () => `
+                    <div class="progress-bar">
+                        <div class="progress-step active"></div>
+                        <div class="progress-step active"></div>
+                        <div class="progress-step active"></div>
+                        <div class="progress-step active"></div>
+                        <div class="progress-step"></div>
+                    </div>
+                    <div class="card">
+                        <h3>Define Your Actions</h3>
+                        <p style="color: #666; margin-bottom: 16px;">For each goal, what specific actions will you take?</p>
+                        <div class="plan-item">
+                            <div class="plan-item-label">Goal 1</div>
+                            <div class="plan-item-content">Get my first 5 paying customers</div>
+                        </div>
+                        <div style="margin-top: 12px;">
+                            <label style="font-weight: 600; display: block; margin-bottom: 8px;">Action:</label>
+                            <input type="text" class="chat-input" style="width: 100%; border-radius: 8px;" value="Find customers" readonly>
+                        </div>
+                    </div>
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <div class="chat-header-icon">AI</div>
+                            <div>AI Coach</div>
+                        </div>
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="chat-message assistant">
+                                <div class="chat-avatar">AI</div>
+                                <div class="chat-bubble">
+                                    <strong>"Find customers"</strong> — that's a wish, not an action.<br><br>
+                                    Try this instead: <strong>"Talk to 5 potential customers this week."</strong><br><br>
+                                    Can you do that? Who are the 5 people you'd ask?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            // Scene 4b: Voiceover
+            {
+                scene: 4,
+                sceneName: "Destiny Gets Specific",
+                voiceover: "Specific Actions — every goal needs a number.",
+                render: null
+            },
+            // Scene 5: Cross-Domain Insight
+            {
+                scene: 5,
+                sceneName: "Destiny Learns From Others",
+                voiceover: "The AI draws on examples from other industries — showing Destiny she's not alone.",
+                render: () => `
+                    <div class="progress-bar">
+                        <div class="progress-step active"></div>
+                        <div class="progress-step active"></div>
+                        <div class="progress-step active"></div>
+                        <div class="progress-step active"></div>
+                        <div class="progress-step"></div>
+                    </div>
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <div class="chat-header-icon">AI</div>
+                            <div>AI Coach</div>
+                        </div>
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="chat-message user">
+                                <div class="chat-avatar">You</div>
+                                <div class="chat-bubble">What worked for others?</div>
+                            </div>
+                            <div class="chat-message assistant">
+                                <div class="chat-avatar">AI</div>
+                                <div class="chat-bubble">
+                                    Here's what worked for a <strong>house cleaner</strong> I know — and it applies to meal prep too:<br><br>
+                                    She cleaned 3 friends' houses for free to get before/after photos. Then she asked each friend to introduce her to 2 people who needed cleaning.<br><br>
+                                    Within a month, she had 6 paying clients — all from referrals.<br><br>
+                                    <strong>What's your version of that?</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            // Scene 5b: Voiceover
+            {
+                scene: 5,
+                sceneName: "Destiny Learns From Others",
+                voiceover: "Cross-Domain Insight — real examples make advice concrete.",
+                render: null
+            },
+            // Scene 6: Plan Summary
+            {
+                scene: 6,
+                sceneName: "Destiny's Plan — And What Comes Next",
+                voiceover: "At the end, Destiny has a real plan — mission, goals, specific actions. Built through conversation, not dictated by AI.",
+                render: () => `
+                    <div class="progress-bar">
+                        <div class="progress-step active"></div>
+                        <div class="progress-step active"></div>
+                        <div class="progress-step active"></div>
+                        <div class="progress-step active"></div>
+                        <div class="progress-step active"></div>
+                    </div>
+                    <div class="success-box">
+                        <div class="success-icon">✓</div>
+                        <h3 style="color: #065f46;">You Did It!</h3>
+                        <p style="color: #065f46;">You've created a business plan.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Your Business Plan</h3>
+                        <div class="plan-item">
+                            <div class="plan-item-label">Mission</div>
+                            <div class="plan-item-content">I help working parents who get home late eat healthy meals by preparing fresh weekly meal boxes.</div>
+                        </div>
+                        <div class="plan-item">
+                            <div class="plan-item-label">Goal 1</div>
+                            <div class="plan-item-content">Get my first 5 paying customers</div>
+                        </div>
+                        <div class="plan-item">
+                            <div class="plan-item-label">Action</div>
+                            <div class="plan-item-content">Talk to 10 neighbors this week about meal prep</div>
+                        </div>
+                    </div>
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <div class="chat-header-icon">AI</div>
+                            <div>AI Coach</div>
+                        </div>
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="chat-message assistant">
+                                <div class="chat-avatar">AI</div>
+                                <div class="chat-bubble">
+                                    You've built a real plan. But here's the truth — <strong>this plan is worth nothing if you don't act on it this week.</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="quick-replies">
+                            <button class="quick-reply-btn" id="btn-boundaries">What AI can't give me</button>
+                        </div>
+                    </div>
+                `
+            },
+            // Scene 6b: Tap quick reply
+            {
+                scene: 6,
+                sceneName: "Destiny's Plan — And What Comes Next",
+                voiceover: "",
+                action: "tapButton",
+                buttonId: "btn-boundaries",
+                render: null
+            },
+            // Scene 6c: AI boundaries response
+            {
+                scene: 6,
+                sceneName: "Destiny's Plan — And What Comes Next",
+                voiceover: "This is the design principle we're testing: AI should know its limits. Confidence and accountability require humans — we designed that boundary intentionally.",
+                action: "addBoundariesResponse",
+                render: null
+            },
+            // Scene 6d: Final voiceover
+            {
+                scene: 6,
+                sceneName: "Destiny's Plan — And What Comes Next",
+                voiceover: "Destiny leaves with a plan and a push to find real support. That's our hypothesis in action.",
+                action: "showWhatsNext",
+                render: null
+            }
+        ];
+
+        let currentStep = -1;
+        let timerInterval = null;
+        let startTime = null;
+
+        function updateTimer() {
+            if (!startTime) return;
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const mins = Math.floor(elapsed / 60);
+            const secs = elapsed % 60;
+            document.getElementById('timer').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function nextStep() {
+            currentStep++;
+
+            if (currentStep === 0) {
+                startTime = Date.now();
+                timerInterval = setInterval(updateTimer, 1000);
+                document.getElementById('btn-next').textContent = 'Next Step';
+            }
+
+            if (currentStep >= demoScript.length) {
+                document.getElementById('btn-next').textContent = 'Demo Complete';
+                document.getElementById('btn-next').disabled = true;
+                clearInterval(timerInterval);
+                return;
+            }
+
+            const step = demoScript[currentStep];
+
+            // Update scene indicator
+            document.getElementById('scene-num').textContent = step.scene;
+            document.getElementById('scene-name').textContent = step.sceneName;
+
+            // Update voiceover cue
+            if (step.voiceover) {
+                document.getElementById('voiceover-text').textContent = step.voiceover;
+            }
+
+            // Render new content if needed
+            if (step.render) {
+                document.getElementById('phone-screen').innerHTML = step.render();
+            }
+
+            // Handle special actions
+            if (step.action === 'type') {
+                typeText(step.typeTarget, step.typeText);
+            } else if (step.action === 'addMessage') {
+                addMessages(step.messages);
+            } else if (step.action === 'tapButton') {
+                const btn = document.getElementById(step.buttonId);
+                if (btn) btn.classList.add('active');
+            } else if (step.action === 'addBoundariesResponse') {
+                addBoundariesResponse();
+            } else if (step.action === 'showWhatsNext') {
+                showWhatsNext();
+            }
+        }
+
+        function typeText(targetId, text) {
+            const input = document.getElementById(targetId);
+            if (!input) return;
+
+            input.value = '';
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i < text.length) {
+                    input.value += text[i];
+                    i++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 50);
+        }
+
+        function addMessages(messages) {
+            const container = document.getElementById('chat-messages');
+            if (!container) return;
+
+            messages.forEach((msg, index) => {
+                setTimeout(() => {
+                    const div = document.createElement('div');
+                    div.className = `chat-message ${msg.role}`;
+                    div.innerHTML = `
+                        <div class="chat-avatar">${msg.role === 'user' ? 'You' : 'AI'}</div>
+                        <div class="chat-bubble">${msg.text}</div>
+                    `;
+                    container.appendChild(div);
+                    container.scrollTop = container.scrollHeight;
+                }, index * 800);
+            });
+        }
+
+        function addBoundariesResponse() {
+            const container = document.getElementById('chat-messages');
+            if (!container) return;
+
+            // Add user message
+            const userDiv = document.createElement('div');
+            userDiv.className = 'chat-message user';
+            userDiv.innerHTML = `
+                <div class="chat-avatar">You</div>
+                <div class="chat-bubble">What AI can't give me</div>
+            `;
+            container.appendChild(userDiv);
+
+            // Add typing indicator
+            setTimeout(() => {
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'chat-message assistant';
+                typingDiv.id = 'typing';
+                typingDiv.innerHTML = `
+                    <div class="chat-avatar">AI</div>
+                    <div class="chat-bubble">
+                        <div class="typing-indicator">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(typingDiv);
+                container.scrollTop = container.scrollHeight;
+
+                // Replace with actual response
+                setTimeout(() => {
+                    typingDiv.remove();
+                    const aiDiv = document.createElement('div');
+                    aiDiv.className = 'chat-message assistant';
+                    aiDiv.innerHTML = `
+                        <div class="chat-avatar">AI</div>
+                        <div class="chat-bubble">
+                            <strong>What I CAN'T do:</strong><br><br>
+                            • <strong>Build your confidence</strong> — that comes from doing, not from me<br><br>
+                            • <strong>Hold you accountable</strong> — that requires humans who care about you<br><br>
+                            • <strong>Connect you to customers</strong> — that's on you<br><br>
+                            <span class="highlight"><strong>Find your people.</strong></span>
+                        </div>
+                    `;
+                    container.appendChild(aiDiv);
+                    container.scrollTop = container.scrollHeight;
+                }, 1500);
+            }, 500);
+        }
+
+        function showWhatsNext() {
+            const screen = document.getElementById('phone-screen');
+            const whatsNextHtml = `
+                <div class="card" style="margin-top: 16px;">
+                    <h3>What's Next?</h3>
+                    <div class="whats-next">
+                        <div class="whats-next-item">
+                            <span class="whats-next-bullet">→</span>
+                            <span><strong>This week:</strong> Take that first action</span>
+                        </div>
+                        <div class="whats-next-item">
+                            <span class="whats-next-bullet">→</span>
+                            <span><strong>Find your people:</strong> Tell someone about your plan</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            screen.insertAdjacentHTML('beforeend', whatsNextHtml);
+        }
+
+        function resetDemo() {
+            currentStep = -1;
+            clearInterval(timerInterval);
+            startTime = null;
+            document.getElementById('timer').textContent = '0:00';
+            document.getElementById('scene-num').textContent = '1';
+            document.getElementById('scene-name').textContent = 'Meet Destiny';
+            document.getElementById('voiceover-text').textContent = 'Press "Start Demo" to begin...';
+            document.getElementById('btn-next').textContent = 'Start Demo';
+            document.getElementById('btn-next').disabled = false;
+            document.getElementById('phone-screen').innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">
+                    <p>Press "Start Demo" to begin</p>
+                </div>
+            `;
+        }
+
+        // Initialize
+        resetDemo();
+    </script>
+</body>
+</html>
