@@ -631,6 +631,7 @@
                 sceneName: "Destiny Shares Her Idea",
                 duration: 8000, // 8 seconds
                 voiceover: "Right away, the AI is upfront about what it can and can't do. It can help Destiny think — but it can't replace real conversations with customers.",
+                scrollTo: 'ai-transparency',
                 render: () => `
                     <div class="progress-bar">
                         <div class="progress-step active"></div>
@@ -649,7 +650,7 @@
                                 <div class="chat-avatar">AI</div>
                                 <div class="chat-bubble">
                                     Hey! I'm here to help you think through your business idea.<br><br>
-                                    <span class="highlight"><strong>One thing upfront:</strong> I can help you clarify your thinking, but I can't replace real conversations with actual customers.</span><br><br>
+                                    <span class="highlight" id="ai-transparency"><strong>One thing upfront:</strong> I can help you clarify your thinking, but I can't replace real conversations with actual customers.</span><br><br>
                                     So tell me: what's the business you're thinking about starting?
                                 </div>
                             </div>
@@ -669,6 +670,7 @@
                 action: "type",
                 typeTarget: "user-input",
                 typeText: "I want to start a meal prep business",
+                scrollTo: 'user-input',
                 render: null
             },
             // Scene 2c: AI responds with challenge
@@ -678,6 +680,8 @@
                 duration: 10000, // 10 seconds
                 voiceover: "Notice the AI doesn't just accept her idea — it pushes back, asking who specifically she'd serve.",
                 action: "addMessage",
+                scrollTo: 'chat-messages',
+                scrollDelay: 1000,
                 messages: [
                     { role: "user", text: "I want to start a meal prep business" },
                     { role: "assistant", text: "That's a starting point. But let me push you a bit.<br><br><strong>Who specifically would you serve?</strong> \"Busy people\" is too broad — a meal prep business for working parents looks very different from one for elderly folks or gym-goers.<br><br><strong>Who's your ONE person?</strong>" }
@@ -690,6 +694,7 @@
                 sceneName: "Destiny Builds Her Mission",
                 duration: 8000, // 8 seconds
                 voiceover: "Destiny works through a mission formula — who she helps, what she does, and why it matters.",
+                scrollTo: 'mission-input',
                 render: () => `
                     <div class="progress-bar">
                         <div class="progress-step active"></div>
@@ -719,7 +724,7 @@
                                 <div class="chat-bubble">
                                     This is getting clearer. I can see who and what.<br><br>
                                     <strong>But here's my pushback:</strong> "Eat healthy meals" is vague. What does "healthy" mean to YOUR customers? Low-carb? Kid-friendly? Quick to reheat?<br><br>
-                                    <span class="highlight"><strong>One thing I can't know:</strong> Only your neighbors can tell you what matters to them.</span>
+                                    <span class="highlight" id="ai-community-limit"><strong>One thing I can't know:</strong> Only your neighbors can tell you what matters to them.</span>
                                 </div>
                             </div>
                         </div>
@@ -732,6 +737,7 @@
                 sceneName: "Destiny Builds Her Mission",
                 duration: 6000, // 6 seconds
                 voiceover: "The AI challenges her — and admits it doesn't know her community. She does.",
+                scrollTo: 'ai-community-limit',
                 render: null
             },
             // Scene 4: Specific Actions
@@ -740,6 +746,8 @@
                 sceneName: "Destiny Gets Specific",
                 duration: 10000, // 10 seconds
                 voiceover: "When Destiny sets a vague goal, the AI pushes for something measurable.",
+                scrollTo: 'ai-specific-action',
+                scrollDelay: 500,
                 render: () => `
                     <div class="progress-bar">
                         <div class="progress-step active"></div>
@@ -768,7 +776,7 @@
                         <div class="chat-messages" id="chat-messages">
                             <div class="chat-message assistant">
                                 <div class="chat-avatar">AI</div>
-                                <div class="chat-bubble">
+                                <div class="chat-bubble" id="ai-specific-action">
                                     <strong>"Find customers"</strong> — that's a wish, not an action.<br><br>
                                     Try this instead: <strong>"Talk to 5 potential customers this week."</strong><br><br>
                                     Can you do that? Who are the 5 people you'd ask?
@@ -792,6 +800,7 @@
                 sceneName: "Destiny Learns From Others",
                 duration: 10000, // 10 seconds
                 voiceover: "The AI draws on examples from other industries — showing Destiny she's not alone.",
+                scrollTo: 'ai-cross-domain',
                 render: () => `
                     <div class="progress-bar">
                         <div class="progress-step active"></div>
@@ -812,7 +821,7 @@
                             </div>
                             <div class="chat-message assistant">
                                 <div class="chat-avatar">AI</div>
-                                <div class="chat-bubble">
+                                <div class="chat-bubble" id="ai-cross-domain">
                                     Here's what worked for a <strong>house cleaner</strong> I know — and it applies to meal prep too:<br><br>
                                     She cleaned 3 friends' houses for free to get before/after photos. Then she asked each friend to introduce her to 2 people who needed cleaning.<br><br>
                                     Within a month, she had 6 paying clients — all from referrals.<br><br>
@@ -837,6 +846,7 @@
                 sceneName: "Destiny's Plan — And What Comes Next",
                 duration: 8000, // 8 seconds
                 voiceover: "At the end, Destiny has a real plan — mission, goals, specific actions. Built through conversation, not dictated by AI.",
+                scrollTo: 'plan-summary',
                 render: () => `
                     <div class="progress-bar">
                         <div class="progress-step active"></div>
@@ -850,7 +860,7 @@
                         <h3 style="color: #065f46;">You Did It!</h3>
                         <p style="color: #065f46;">You've created a business plan.</p>
                     </div>
-                    <div class="card">
+                    <div class="card" id="plan-summary">
                         <h3>Your Business Plan</h3>
                         <div class="plan-item">
                             <div class="plan-item-label">Mission</div>
@@ -891,6 +901,7 @@
                 duration: 2000, // 2 seconds
                 voiceover: "She asks what AI can't do...",
                 action: "addUserQuestion",
+                scrollTo: 'chat-messages',
                 render: null
             },
             // Scene 6c: AI boundaries response
@@ -900,6 +911,8 @@
                 duration: 12000, // 12 seconds
                 voiceover: "This is the design principle we're testing: AI should know its limits. Confidence and accountability require humans — we designed that boundary intentionally.",
                 action: "addBoundariesAnswer",
+                scrollTo: 'chat-messages',
+                scrollDelay: 1000,
                 render: null
             },
             // Scene 6d: Final voiceover
@@ -909,6 +922,8 @@
                 duration: 6000, // 6 seconds
                 voiceover: "Destiny leaves with a plan and a push to find real support. That's our hypothesis in action.",
                 action: "showWhatsNext",
+                scrollTo: 'whats-next',
+                scrollDelay: 500,
                 render: null
             }
         ];
@@ -1144,6 +1159,11 @@
                 showWhatsNext();
             }
 
+            // Scroll to element if specified
+            if (step.scrollTo) {
+                scrollToElement(step.scrollTo, step.scrollDelay || 300);
+            }
+
             // Schedule next step if auto-advance is on
             if (autoAdvance) {
                 const ttsEnabled = document.getElementById('tts-toggle').checked;
@@ -1273,7 +1293,7 @@
         function showWhatsNext() {
             const screen = document.getElementById('phone-screen');
             const whatsNextHtml = `
-                <div class="card" style="margin-top: 16px;">
+                <div class="card" id="whats-next" style="margin-top: 16px;">
                     <h3>What's Next?</h3>
                     <div class="whats-next">
                         <div class="whats-next-item">
@@ -1288,6 +1308,24 @@
                 </div>
             `;
             screen.insertAdjacentHTML('beforeend', whatsNextHtml);
+        }
+
+        function scrollToElement(elementId, delay = 0) {
+            setTimeout(() => {
+                const element = document.getElementById(elementId);
+                const screen = document.getElementById('phone-screen');
+                if (element && screen) {
+                    // Calculate position relative to the phone screen
+                    const elementRect = element.getBoundingClientRect();
+                    const screenRect = screen.getBoundingClientRect();
+                    const scrollTop = element.offsetTop - 100; // 100px from top for context
+
+                    screen.scrollTo({
+                        top: Math.max(0, scrollTop),
+                        behavior: 'smooth'
+                    });
+                }
+            }, delay);
         }
 
         function resetDemo() {
