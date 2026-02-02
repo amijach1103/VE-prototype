@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe — Gates Presentation Slides</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --inkwell: #132A47;
+            --night-owl-navy: #035271;
+            --labs-blue: #1280b0;
+            --bright-azure: #71BDDB;
+            --blue-sky-blue: #B1D6E3;
+            --moonshot: #E4F3F9;
+            --checkmark-green: #6AA84F;
+            --white: #FFFFFF;
+            --dark-gray: #545454;
+            --medium-gray: #D9D9D9;
+            --light-gray: #f5f5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--light-gray);
+            padding: 40px;
+            color: var(--inkwell);
+        }
+
+        h1.page-title {
+            font-family: 'Merriweather', serif;
+            color: var(--night-owl-navy);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: var(--dark-gray);
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+
+        .slide-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 50px;
+            align-items: flex-start;
+        }
+
+        /* SLIDE - 16:9 aspect ratio, larger for screenshots */
+        .slide {
+            width: 800px;
+            min-width: 800px;
+            height: 450px;
+            background: var(--white);
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 50px 60px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            font-size: 12px;
+            color: var(--blue-sky-blue);
+            font-weight: 600;
+        }
+
+        .slide h2 {
+            font-family: 'Merriweather', serif;
+            color: var(--night-owl-navy);
+            font-size: 32px;
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+
+        .slide p {
+            font-size: 20px;
+            line-height: 1.5;
+            color: var(--inkwell);
+            margin-bottom: 16px;
+        }
+
+        .slide p.large {
+            font-size: 24px;
+        }
+
+        .slide .subtext {
+            font-size: 16px;
+            color: var(--dark-gray);
+        }
+
+        /* Script Panel */
+        .script-panel {
+            flex: 1;
+            background: var(--white);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            max-width: 450px;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+
+        .script-panel h3 {
+            font-family: 'Merriweather', serif;
+            color: var(--labs-blue);
+            font-size: 12px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .script-panel p {
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--dark-gray);
+            margin-bottom: 10px;
+        }
+
+        /* ====== SLIDE VARIANTS ====== */
+
+        /* Title Slide */
+        .slide.title-slide {
+            background: linear-gradient(135deg, var(--night-owl-navy) 0%, var(--labs-blue) 100%);
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .slide.title-slide h2 {
+            color: var(--white);
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .slide.title-slide p {
+            color: var(--blue-sky-blue);
+            font-size: 22px;
+        }
+
+        .slide.title-slide .presenter {
+            margin-top: 40px;
+            color: var(--bright-azure);
+            font-size: 16px;
+        }
+
+        .slide.title-slide .slide-number {
+            color: rgba(255,255,255,0.3);
+        }
+
+        /* Dark Slide */
+        .slide.dark-slide {
+            background: var(--inkwell);
+        }
+
+        .slide.dark-slide h2 {
+            color: var(--white);
+        }
+
+        .slide.dark-slide p {
+            color: var(--blue-sky-blue);
+        }
+
+        .slide.dark-slide .slide-number {
+            color: rgba(255,255,255,0.3);
+        }
+
+        /* Statement Slide - Big centered text */
+        .slide.statement-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px 80px;
+        }
+
+        .slide.statement-slide h2 {
+            font-size: 36px;
+            max-width: 600px;
+        }
+
+        .slide.statement-slide p {
+            font-size: 20px;
+            color: var(--dark-gray);
+            max-width: 500px;
+        }
+
+        /* Big Stat Slide */
+        .slide.stat-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .slide.stat-slide .big-number {
+            font-family: 'Merriweather', serif;
+            font-size: 96px;
+            color: var(--labs-blue);
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+
+        .slide.stat-slide .stat-label {
+            font-size: 24px;
+            color: var(--night-owl-navy);
+            max-width: 500px;
+        }
+
+        .slide.stat-slide .stat-source {
+            margin-top: 30px;
+            font-size: 14px;
+            color: var(--dark-gray);
+        }
+
+        /* Quote Slide */
+        .slide.quote-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px 100px;
+            background: var(--moonshot);
+        }
+
+        .slide.quote-slide .quote {
+            font-family: 'Merriweather', serif;
+            font-size: 32px;
+            color: var(--night-owl-navy);
+            font-style: italic;
+            line-height: 1.4;
+            max-width: 600px;
+        }
+
+        /* Vision Slide */
+        .slide.vision-slide {
+            background: linear-gradient(135deg, var(--labs-blue) 0%, var(--night-owl-navy) 100%);
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px 80px;
+        }
+
+        .slide.vision-slide h2 {
+            color: var(--bright-azure);
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .slide.vision-slide .big-quote {
+            font-family: 'Merriweather', serif;
+            color: var(--white);
+            font-size: 32px;
+            line-height: 1.3;
+            max-width: 600px;
+            margin-bottom: 30px;
+        }
+
+        .slide.vision-slide p {
+            color: var(--blue-sky-blue);
+            font-size: 20px;
+        }
+
+        .slide.vision-slide .slide-number {
+            color: rgba(255,255,255,0.3);
+        }
+
+        /* ====== LAYOUT HELPERS ====== */
+
+        /* Two Column */
+        .two-col {
+            display: flex;
+            gap: 40px;
+            flex: 1;
+            align-items: flex-start;
+        }
+
+        .two-col .col {
+            flex: 1;
+        }
+
+        .two-col .col h4 {
+            font-family: 'Merriweather', serif;
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid;
+        }
+
+        .two-col .col h4.green {
+            color: var(--checkmark-green);
+            border-color: var(--checkmark-green);
+        }
+
+        .two-col .col h4.gray {
+            color: var(--dark-gray);
+            border-color: var(--dark-gray);
+        }
+
+        .two-col .col p {
+            font-size: 18px;
+            margin-bottom: 12px;
+            padding-left: 0;
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: flex;
+            gap: 50px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item .number {
+            font-family: 'Merriweather', serif;
+            font-size: 42px;
+            color: var(--labs-blue);
+            font-weight: 700;
+        }
+
+        .stat-item .label {
+            font-size: 14px;
+            color: var(--dark-gray);
+            margin-top: 4px;
+        }
+
+        /* Simple List */
+        .simple-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .simple-list li {
+            font-size: 22px;
+            color: var(--inkwell);
+            margin-bottom: 16px;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .simple-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 12px;
+            width: 12px;
+            height: 3px;
+            background: var(--labs-blue);
+        }
+
+        /* Principles Table */
+        .principles-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .principle-card {
+            background: var(--moonshot);
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid var(--labs-blue);
+        }
+
+        .principle-card h4 {
+            font-family: 'Merriweather', serif;
+            font-size: 16px;
+            color: var(--night-owl-navy);
+            margin-bottom: 6px;
+        }
+
+        .principle-card p {
+            font-size: 14px;
+            color: var(--dark-gray);
+            margin: 0;
+        }
+
+        /* Reasons */
+        .reasons-list {
+            flex: 1;
+        }
+
+        .reason-item {
+            margin-bottom: 24px;
+        }
+
+        .reason-item h4 {
+            font-size: 20px;
+            color: var(--night-owl-navy);
+            margin-bottom: 4px;
+        }
+
+        .reason-item p {
+            font-size: 16px;
+            color: var(--dark-gray);
+            margin: 0;
+        }
+
+        /* System Diagram Placeholder */
+        .diagram-placeholder {
+            flex: 1;
+            background: var(--moonshot);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            border: 2px dashed var(--blue-sky-blue);
+        }
+
+        .diagram-placeholder p {
+            font-size: 14px;
+            color: var(--dark-gray);
+        }
+
+        /* Demo Placeholder */
+        .demo-placeholder {
+            flex: 1;
+            background: var(--night-owl-navy);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 24px;
+        }
+
+        /* Persona */
+        .persona-card {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .persona-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--bright-azure);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            flex-shrink: 0;
+        }
+
+        .persona-details h4 {
+            font-family: 'Merriweather', serif;
+            font-size: 22px;
+            color: var(--night-owl-navy);
+            margin-bottom: 8px;
+        }
+
+        .persona-details p {
+            font-size: 16px;
+            margin: 0;
+            color: var(--dark-gray);
+        }
+
+        /* Blank slide */
+        .slide.blank-slide {
+            background: var(--moonshot);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide.blank-slide p {
+            font-size: 16px;
+            color: var(--dark-gray);
+            font-style: italic;
+        }
+
+        /* Two-part grid for honest framing */
+        .honest-grid {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+        }
+
+        .honest-col {
+            flex: 1;
+            padding: 24px;
+            border-radius: 8px;
+        }
+
+        .honest-col.green {
+            background: rgba(106, 168, 79, 0.1);
+            border-top: 4px solid var(--checkmark-green);
+        }
+
+        .honest-col.blue {
+            background: rgba(18, 128, 176, 0.1);
+            border-top: 4px solid var(--labs-blue);
+        }
+
+        .honest-col.gray {
+            background: rgba(84, 84, 84, 0.1);
+            border-top: 4px solid var(--dark-gray);
+        }
+
+        .honest-col h4 {
+            font-family: 'Merriweather', serif;
+            font-size: 16px;
+            color: var(--night-owl-navy);
+            margin-bottom: 16px;
+        }
+
+        .honest-col p {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        /* Divider */
+        hr.section-divider {
+            border: none;
+            border-top: 2px solid var(--blue-sky-blue);
+            margin: 60px 0;
+        }
+
+        /* ========== VIBE SYSTEM DIAGRAM (Option A) ========== */
+        .system-frame {
+            flex: 1;
+            padding: 28px 20px 20px;
+            border: 1px solid var(--night-owl-navy);
+            border-radius: 8px;
+            background: var(--moonshot);
+            position: relative;
+        }
+
+        .peer-label-diagram {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--night-owl-navy);
+            color: var(--white);
+            padding: 5px 16px;
+            border-radius: 4px;
+            font-family: 'Merriweather', serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .main-row {
+            display: flex;
+            align-items: stretch;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .agent-box {
+            flex: 1;
+            padding: 16px 12px;
+            border-radius: 6px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid;
+            background: var(--white);
+        }
+
+        .agent-box.coach {
+            border-color: var(--checkmark-green);
+        }
+
+        .agent-box.admin {
+            border-color: var(--labs-blue);
+        }
+
+        .agent-icon {
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        .agent-title {
+            font-family: 'Merriweather', serif;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--inkwell);
+            margin-bottom: 4px;
+        }
+
+        .agent-desc {
+            font-size: 10px;
+            color: var(--dark-gray);
+            line-height: 1.4;
+        }
+
+        .agent-tag {
+            margin-top: auto;
+            padding-top: 8px;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .coach .agent-tag { color: var(--checkmark-green); }
+        .admin .agent-tag { color: var(--labs-blue); }
+
+        .center-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 8px;
+            min-width: 90px;
+        }
+
+        .learner-circle {
+            width: 44px;
+            height: 44px;
+            background: var(--white);
+            border: 2px solid var(--inkwell);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 4px;
+        }
+
+        .learner-icon {
+            font-size: 20px;
+        }
+
+        .learner-label {
+            font-size: 8px;
+            font-weight: 600;
+            color: var(--inkwell);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 6px;
+        }
+
+        .flow-arrows {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .arrow-left, .arrow-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .arrow-line {
+            width: 16px;
+            height: 2px;
+            background: var(--bright-azure);
+        }
+
+        .arrow-head {
+            font-size: 11px;
+            color: var(--bright-azure);
+            font-weight: 700;
+        }
+
+        .nudge-pill {
+            background: var(--bright-azure);
+            padding: 6px 12px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .nudge-icon {
+            font-size: 12px;
+            margin-right: 4px;
+        }
+
+        .nudge-title {
+            font-family: 'Merriweather', serif;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .nudge-desc {
+            font-size: 8px;
+            color: var(--white);
+            opacity: 0.9;
+        }
+
+        .capital-row {
+            padding: 10px 12px;
+            background: var(--white);
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .capital-icon {
+            font-size: 14px;
+        }
+
+        .capital-text {
+            font-size: 10px;
+            color: var(--inkwell);
+        }
+
+        .capital-text strong {
+            font-weight: 700;
+        }
+
+        @media print {
+            body { background: white; }
+            .slide-container { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="page-title">Vibe — Gates Presentation</h1>
+    <p class="page-subtitle">February 10, 2026 | 10 minutes | Screenshot slides for deck</p>
+
+    <!-- ==================== SLIDE 0: TITLE ==================== -->
+    <div class="slide-container">
+        <div class="slide title-slide">
+            <h2>Vibe</h2>
+            <p>AI-Assisted Entrepreneurship<br>for Underserved Learners</p>
+            <p class="presenter">Agueda Schwartz | WGU Labs</p>
+            <span class="slide-number">0</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>Hello. I'm Agueda Schwartz, a Product Manager at WGU Labs.</p>
+            <p>We've been working on a question: how do we help more people turn their ideas into sustainable businesses — especially those who've never had access to the support systems that make that possible?</p>
+            <p>The best entrepreneurship education already exists. It just doesn't reach the people who need it most. Today I'll share what we've learned, what we're building, and what we still don't know.</p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 1: THE GAP ==================== -->
+    <div class="slide-container">
+        <div class="slide statement-slide">
+            <h2>The gap in entrepreneurship education</h2>
+            <p>Accelerators, incubators, courses, programs — they exist.</p>
+            <p>But almost none reach underserved learners.</p>
+            <span class="slide-number">1</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>There's no shortage of entrepreneurship education. Accelerators, incubators, business courses, online programs — they all exist.</p>
+            <p>But almost none of it reaches underserved learners. People working multiple jobs. Caregivers who can't commit to a 10-week evening course. People without investor networks or the capital to join an accelerator.</p>
+            <p>These are the people we're focused on.</p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 2: BIG STAT ==================== -->
+    <div class="slide-container">
+        <div class="slide stat-slide">
+            <div class="big-number">5.4M</div>
+            <p class="stat-label">new business applications in 2021 — a record</p>
+            <p class="stat-source">Black ownership: 5% → 8% | Hispanic ownership: 4% → 7%</p>
+            <p class="stat-source" style="margin-top: 10px; font-size: 11px;">(U.S. Census Bureau, 2021; Brookings Institution, 2022)</p>
+            <span class="slide-number">2</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>Underserved learners are already entrepreneurial. They don't need convincing.</p>
+            <p>The pandemic made this visible. Business applications hit 4.3 million in 2020 — a 24% jump. By 2021, that grew to 5.4 million. And we're seeing a shift in who's starting businesses: Black ownership grew from 5% to 8%, Hispanic ownership from 4% to 7%.</p>
+            <p>Across the country, people are launching meal prep services, cleaning companies, childcare businesses. They're problem-solving with limited resources.</p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 3: THE STAKES ==================== -->
+    <div class="slide-container">
+        <div class="slide quote-slide">
+            <p class="quote">For those without a financial safety net, the consequences of failure aren't disappointing — they're devastating.</p>
+            <p style="font-size: 12px; color: var(--dark-gray); margin-top: 20px; font-style: normal;">1 in 5 businesses fail in year one; ~50% don't survive 5 years (Bureau of Labor Statistics, 2024)</p>
+            <span class="slide-number">3</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>But 1 in 5 businesses fail in the first year. Nearly half don't survive five years.</p>
+            <p>For people with capital, failure is disappointing. For people without a financial safety net, it's devastating.</p>
+            <p>What they lack isn't ideas or motivation — it's access to the support system that makes the difference.</p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 4: HYPOTHESIS ==================== -->
+    <div class="slide-container">
+        <div class="slide statement-slide">
+            <h2>AI as a business partner</h2>
+            <p>Not tech startups. Small businesses. Local businesses.</p>
+            <p>The meal prep service. The cleaning company.</p>
+            <span class="slide-number">4</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>Our hypothesis: AI can be a lever — a business partner that helps underserved learners develop their ideas into profitable businesses.</p>
+            <p>Not tech startups. Small businesses. Local businesses. The meal prep service that feeds the neighborhood. The cleaning company that employs three people.</p>
+            <p>AI can help people navigate the hard parts — clarifying ideas, setting specific goals, understanding next steps. It's not replacing human support. It's extending reach to people who wouldn't otherwise have access.</p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 5: SOUNDBITE ==================== -->
+    <div class="slide-container">
+        <div class="slide dark-slide statement-slide">
+            <h2>Economic mobility, not unicorns.</h2>
+            <span class="slide-number">5</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>This is about economic mobility, not unicorns.</p>
+            <p><em>[Pause — let it land]</em></p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 6: WHY ENTREPRENEURSHIP ==================== -->
+    <div class="slide-container">
+        <div class="slide">
+            <h2>Why entrepreneurship fits AI</h2>
+            <div class="reasons-list">
+                <div class="reason-item">
+                    <h4>1. The expertise that matters is hard to scale</h4>
+                    <p>When to push back, what question to ask</p>
+                </div>
+                <div class="reason-item">
+                    <h4>2. Momentum matters</h4>
+                    <p>Ideas without action stay ideas</p>
+                </div>
+            </div>
+            <span class="slide-number">6</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>Why entrepreneurship?</p>
+            <p>The expertise that matters is hard to scale. It's not in a textbook. It's knowing when to push back on a vague idea, what question to ask, when to say "you know your community better than I do." We think AI can learn these coaching patterns.</p>
+            <p>And momentum matters. Ideas without action stay ideas. A weekly rhythm keeps things moving.</p>
+            <p>This led us to a partnership.</p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 7: THE FOUNDRY ==================== -->
+    <div class="slide-container">
+        <div class="slide">
+            <h2>Partnering with The Foundry</h2>
+            <p class="subtext" style="margin-bottom: 24px;">One of the most successful entrepreneurship programs in the country</p>
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="number">261+</div>
+                    <div class="label">entrepreneurs served</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">$5.1M</div>
+                    <div class="label">revenue generated</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">34%</div>
+                    <div class="label">product-market fit</div>
+                </div>
+            </div>
+            <p class="subtext" style="margin-top: 16px; font-size: 11px;">(The Foundry, 2010-2023)</p>
+            <span class="slide-number">7</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>We partnered with The Foundry — one of the most successful entrepreneurship programs in the country.</p>
+            <p>Rob Wuebker has spent 15 years guiding entrepreneurs from vague ideas to validated businesses. His approach is peer-driven: cohorts supporting each other through weekly accountability and structured reflection. It's been tested with diverse entrepreneurs — not just tech founders, but mixed industries and backgrounds.</p>
+            <p>The results: 261 entrepreneurs served, $5.1 million in revenue, 34% achieving product-market fit.</p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 8: THE CHALLENGE ==================== -->
+    <div class="slide-container">
+        <div class="slide statement-slide">
+            <h2>The challenge: it doesn't scale.</h2>
+            <p>~20 students per cohort. In-person facilitation. They've tried.</p>
+            <span class="slide-number">8</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>The challenge: The Foundry reaches about 20 students per cohort. In-person facilitation doesn't scale. They've tried.</p>
+            <p>We're testing whether AI can preserve what works while extending that reach.</p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 9: WHAT WE LEARNED ==================== -->
+    <div class="slide-container">
+        <div class="slide">
+            <h2>What works — from 800+ documents</h2>
+            <p class="subtext" style="margin-bottom: 16px; font-size: 11px;">(WGU Labs analysis of The Foundry archives, 2010-2013)</p>
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <h4>Peer Accountability</h4>
+                    <p>Humans hold humans accountable</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Document Discipline</h4>
+                    <p>Written outputs force clarity</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Weekly Rhythm</h4>
+                    <p>Creates habits and momentum</p>
+                </div>
+                <div class="principle-card">
+                    <h4>Cohort Community</h4>
+                    <p>Reduces isolation, builds trust</p>
+                </div>
+            </div>
+            <span class="slide-number">9</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>We analyzed over 800 documents from The Foundry to understand what actually worked. Four principles stood out.</p>
+            <p>Peer accountability — humans hold humans accountable. Document discipline — written outputs force clarity. Weekly rhythm — it creates habits and momentum. And cohort community — as one participant said, "being part of a group that doesn't think your crazy idea is that crazy."</p>
+            <p>These principles inform everything we're building.</p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 10: THE SYSTEM ==================== -->
+    <div class="slide-container">
+        <div class="slide">
+            <h2>The Vibe System</h2>
+            <div class="system-frame">
+                <span class="peer-label-diagram">👥 Peer Connection</span>
+
+                <div class="main-row">
+                    <div class="agent-box coach">
+                        <div class="agent-icon">🤖</div>
+                        <div class="agent-title">AI Coach</div>
+                        <div class="agent-desc">Shapes & refines<br>the idea</div>
+                        <div class="agent-tag">Current Focus</div>
+                    </div>
+
+                    <div class="center-area">
+                        <div class="learner-circle">
+                            <span class="learner-icon">👤</span>
+                        </div>
+                        <span class="learner-label">Learner</span>
+                        <div class="flow-arrows">
+                            <div class="arrow-left">
+                                <span class="arrow-head">←</span>
+                                <span class="arrow-line"></span>
+                            </div>
+                            <div class="arrow-right">
+                                <span class="arrow-line"></span>
+                                <span class="arrow-head">→</span>
+                            </div>
+                        </div>
+                        <div class="nudge-pill">
+                            <span class="nudge-icon">🔔</span>
+                            <span class="nudge-title">Nudges</span>
+                            <div class="nudge-desc">maintain momentum</div>
+                        </div>
+                    </div>
+
+                    <div class="agent-box admin">
+                        <div class="agent-icon">📋</div>
+                        <div class="agent-title">Admin Agent</div>
+                        <div class="agent-desc">Practical tasks<br>& setup</div>
+                        <div class="agent-tag">Future</div>
+                    </div>
+                </div>
+
+                <div class="capital-row">
+                    <span class="capital-icon">💰</span>
+                    <span class="capital-text"><strong>Capital:</strong> CDFIs & community lending — we help entrepreneurs become capital-ready</span>
+                </div>
+            </div>
+            <span class="slide-number">10</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>This is the Vibe system — designed to preserve what works while making it accessible.</p>
+            <p>Peer connection is the outer layer. It was the highest-rated element from The Foundry, and AI can't replace it. Trust comes from shared experience.</p>
+            <p>Inside that: nudges that maintain the weekly rhythm. The AI Coach — our current focus — structures thinking, challenges vague ideas, clarifies goals. Admin support comes later, reducing friction on legal and marketing tasks.</p>
+            <p>And capital. We acknowledge it explicitly. Vibe doesn't provide capital, but we help entrepreneurs become capital-ready — with clear plans that funders want to see. The capital comes from CDFIs, community lending circles, and local programs.</p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 11: AI DOES / CAN'T ==================== -->
+    <div class="slide-container">
+        <div class="slide">
+            <h2>AI Coach: what it does — and can't</h2>
+            <div class="two-col">
+                <div class="col">
+                    <h4 class="green">AI Does</h4>
+                    <p>Push back on vague ideas</p>
+                    <p>Suggest specific actions</p>
+                    <p>Draw cross-domain examples</p>
+                    <p>Admit limitations upfront</p>
+                    <p>Use plain language</p>
+                </div>
+                <div class="col">
+                    <h4 class="gray">AI Can't</h4>
+                    <p>Replace peer connection</p>
+                    <p>Enforce accountability</p>
+                    <p>Make introductions</p>
+                    <p>Provide cultural context</p>
+                    <p>Build confidence</p>
+                </div>
+            </div>
+            <span class="slide-number">11</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>This is the AI Coach we're building — what we call the 5-7-5 Framework.</p>
+            <p>What AI does: pushes back on vague ideas, suggests specific actions like "talk to 5 potential customers this week," draws cross-domain examples, admits limitations upfront, uses plain language.</p>
+            <p>What AI can't do: replace peer connection, enforce accountability, make introductions, provide cultural context, build confidence. Those require humans.</p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 12: SOUNDBITE ==================== -->
+    <div class="slide-container">
+        <div class="slide quote-slide">
+            <p class="quote">AI should know its limits and say so.</p>
+            <span class="slide-number">12</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>Our design principle: AI should know its limits and say so. When it acknowledges what it can't do, it builds trust — and points users toward human support instead of pretending to have all the answers.</p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 13: MEET DESTINY ==================== -->
+    <div class="slide-container">
+        <div class="slide dark-slide">
+            <h2>Meet Destiny</h2>
+            <div class="persona-card">
+                <div class="persona-icon">👩🏽</div>
+                <div class="persona-details">
+                    <h4 style="color: var(--white);">Home health aide. Single mom. Late 20s.</h4>
+                    <p>Idea: Meal prep business for working parents</p>
+                    <p>Already entrepreneurial. Time-scarce. No safety net.</p>
+                </div>
+            </div>
+            <span class="slide-number">13</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>Meet Destiny. Home health aide, single mom, late 20s. She has an idea for a meal prep business serving working parents in her neighborhood.</p>
+            <p>She's already entrepreneurial — she sees opportunity in her community. She's time-scarce, juggling caregiving and work. Strong community knowledge, limited formal business education.</p>
+            <p>And she doesn't have a financial safety net. If her business fails, she doesn't walk away unharmed. That's why the right support matters.</p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 14: DEMO ==================== -->
+    <div class="slide-container">
+        <div class="slide dark-slide">
+            <h2 style="margin-bottom: 20px;">Destiny's experience with Vibe</h2>
+            <div class="demo-placeholder">
+                ▶ DEMO VIDEO
+            </div>
+            <span class="slide-number">14</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>Let me show you her experience with Vibe.</p>
+            <p><em>[PLAY DEMO VIDEO — ~2 minutes]</em></p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 15: HONEST FRAMING (CONSOLIDATED) ==================== -->
+    <div class="slide-container">
+        <div class="slide">
+            <h2>Where we are — honestly</h2>
+            <div class="honest-grid">
+                <div class="honest-col green">
+                    <h4>We know works</h4>
+                    <p>Peer accountability</p>
+                    <p>Document discipline</p>
+                    <p>Weekly rhythm</p>
+                    <p>Cohort community</p>
+                </div>
+                <div class="honest-col blue">
+                    <h4>We're testing</h4>
+                    <p>Can AI embody coaching?</p>
+                    <p>Will entrepreneurs trust it?</p>
+                    <p>Can we reach them?</p>
+                </div>
+                <div class="honest-col gray">
+                    <h4>We can't solve</h4>
+                    <p>Access to capital</p>
+                    <p>Market demand</p>
+                    <p>Systemic barriers</p>
+                </div>
+            </div>
+            <span class="slide-number">15</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>That's the 5-7-5 framework in action. The AI pushes back, suggests specific actions, and is honest about what it can't do.</p>
+            <p>Now let me be honest about where we are.</p>
+            <p>What we know works — validated from The Foundry: peer accountability, document discipline, weekly rhythm, cohort community.</p>
+            <p>What we're testing: Can AI embody coaching patterns? Will entrepreneurs trust it? Can we reach underserved learners?</p>
+            <p>What we can't solve: access to capital, market demand, systemic barriers. Those are real, and we're not pretending otherwise.</p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 16: SOUNDBITE ==================== -->
+    <div class="slide-container">
+        <div class="slide quote-slide">
+            <p class="quote">We're not claiming this will work. We're testing whether it can.</p>
+            <span class="slide-number">16</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>We're not claiming this will work. We're testing whether it can — and we're committed to learning from whatever we discover.</p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 17: VISION ==================== -->
+    <div class="slide-container">
+        <div class="slide vision-slide">
+            <h2>If this works...</h2>
+            <p class="big-quote">Everyone with an idea worth pursuing has access to what The Foundry provides.</p>
+            <p>20 → 200 → thousands</p>
+            <span class="slide-number">17</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>The bold vision?</p>
+            <p>Today, The Foundry reaches 20 entrepreneurs per cohort. We're testing with 200. The vision is thousands — people who wouldn't otherwise have access.</p>
+            <p>If this works, everyone with an idea worth pursuing gets what The Foundry provides. AI becomes a business partner that helps people navigate the hard parts. Peer community provides what only humans can — trust, accountability, support.</p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 18: CLOSING ==================== -->
+    <div class="slide-container">
+        <div class="slide dark-slide statement-slide">
+            <h2>Not AI replacing human connection.</h2>
+            <p>AI extending reach so more people can build something of their own.</p>
+            <p style="margin-top: 30px; color: var(--bright-azure);">Small businesses. Local businesses. Not just tech.</p>
+            <span class="slide-number">18</span>
+        </div>
+        <div class="script-panel">
+            <h3>Script</h3>
+            <p>Not AI replacing human connection. AI extending reach so more people can build something of their own.</p>
+            <p>Small businesses. Local businesses. Not just tech.</p>
+            <p><strong>Thank you.</strong></p>
+        </div>
+    </div>
+
+</body>
+</html>
