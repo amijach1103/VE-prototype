@@ -310,12 +310,12 @@
 
         .two-box .box.inspiration {
             background: var(--moonshot);
-            border-left: 4px solid var(--checkmark-green);
+            border-left: 4px solid var(--labs-blue);
         }
 
         .two-box .box.challenge {
-            background: rgba(84, 84, 84, 0.08);
-            border-left: 4px solid var(--dark-gray);
+            background: var(--moonshot);
+            border-left: 4px solid var(--labs-blue);
         }
 
         .two-box .box h4 {
@@ -374,21 +374,13 @@
             font-weight: 700;
             padding: 10px 12px;
             border-radius: 4px 4px 0 0;
-        }
-
-        .facilitate-header .col-cant {
-            background: rgba(84, 84, 84, 0.15);
-            color: var(--dark-gray);
-        }
-
-        .facilitate-header .col-can {
-            background: rgba(106, 168, 79, 0.2);
-            color: var(--checkmark-green);
+            background: var(--moonshot);
+            color: var(--night-owl-navy);
         }
 
         .facilitate-header .col-how {
-            background: rgba(18, 128, 176, 0.15);
-            color: var(--labs-blue);
+            background: var(--labs-blue);
+            color: var(--white);
         }
 
         .facilitate-row {
@@ -406,17 +398,18 @@
         }
 
         .facilitate-row .col-cant {
-            color: var(--dark-gray);
+            color: var(--night-owl-navy);
             font-weight: 600;
         }
 
         .facilitate-row .col-can {
-            color: var(--checkmark-green);
+            color: var(--inkwell);
         }
 
         .facilitate-row .col-how {
             color: var(--inkwell);
             font-size: 11px;
+            background: var(--moonshot);
         }
 
         /* ====== SYSTEM DIAGRAM ====== */
@@ -494,8 +487,8 @@
             background: var(--white);
         }
 
-        .agent-box.coach { border-color: var(--checkmark-green); }
-        .agent-box.admin { border-color: var(--labs-blue); }
+        .agent-box.coach { border-color: var(--labs-blue); border-width: 2px; }
+        .agent-box.admin { border-color: var(--bright-azure); }
 
         .agent-icon { font-size: 22px; margin-bottom: 6px; }
         .agent-title {
@@ -517,8 +510,8 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        .coach .agent-tag { color: var(--checkmark-green); }
-        .admin .agent-tag { color: var(--labs-blue); }
+        .coach .agent-tag { color: var(--labs-blue); font-weight: 700; }
+        .admin .agent-tag { color: var(--bright-azure); }
 
         .center-area {
             display: flex;
@@ -634,21 +627,8 @@
             flex: 1;
             padding: 20px;
             border-radius: 8px;
-        }
-
-        .honest-col.green {
-            background: rgba(106, 168, 79, 0.1);
-            border-top: 4px solid var(--checkmark-green);
-        }
-
-        .honest-col.blue {
-            background: rgba(18, 128, 176, 0.1);
+            background: var(--moonshot);
             border-top: 4px solid var(--labs-blue);
-        }
-
-        .honest-col.gray {
-            background: rgba(84, 84, 84, 0.1);
-            border-top: 4px solid var(--dark-gray);
         }
 
         .honest-col h4 {
@@ -661,6 +641,7 @@
         .honest-col p {
             font-size: 14px;
             margin-bottom: 6px;
+            color: var(--inkwell);
         }
 
         /* ====== ROADMAP ====== */
@@ -679,8 +660,26 @@
         }
 
         .roadmap-phase.current {
-            border-top-color: var(--checkmark-green);
-            background: rgba(106, 168, 79, 0.1);
+            border-top: none;
+            background: var(--moonshot);
+            position: relative;
+            padding-top: 0;
+        }
+
+        .roadmap-phase.current::before {
+            content: '';
+            display: block;
+            background: var(--labs-blue);
+            border-radius: 8px 8px 0 0;
+            height: 32px;
+            margin: 0 -20px 12px -20px;
+        }
+
+        .roadmap-phase.current h4 {
+            position: absolute;
+            top: 6px;
+            left: 20px;
+            color: var(--white);
         }
 
         .roadmap-phase h4 {
@@ -717,10 +716,6 @@
             position: absolute;
             left: 0;
             color: var(--labs-blue);
-        }
-
-        .roadmap-phase.current ul li::before {
-            color: var(--checkmark-green);
         }
 
         /* Ask box */
@@ -1078,21 +1073,21 @@
         <div class="slide">
             <h2>What we know, what we're testing, what we need help with</h2>
             <div class="honest-grid">
-                <div class="honest-col green">
+                <div class="honest-col">
                     <h4>We Know Works</h4>
                     <p>Peer accountability</p>
                     <p>Document discipline</p>
                     <p>Weekly rhythm</p>
                     <p>Cohort community</p>
                 </div>
-                <div class="honest-col blue">
+                <div class="honest-col">
                     <h4>We're Testing</h4>
                     <p>Can AI embody coaching patterns?</p>
                     <p>Will entrepreneurs trust AI?</p>
                     <p>Can digital preserve effectiveness?</p>
                     <p>Can AI facilitate (not replace) connection?</p>
                 </div>
-                <div class="honest-col gray">
+                <div class="honest-col">
                     <h4>We Need Help With</h4>
                     <p>Access to capital</p>
                     <p>Reaching underserved learners at scale</p>
