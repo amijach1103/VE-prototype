@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Entrepreneurship Poster — WGU Labs Branded</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* WGU Labs Color Palette */
+        :root {
+            --inkwell: #132A47;
+            --night-owl-navy: #035271;
+            --labs-blue: #1280b0;
+            --bright-azure: #71BDDB;
+            --blue-sky-blue: #B1D6E3;
+            --moonshot: #E4F3F9;
+            --black: #000000;
+            --dark-gray: #545454;
+            --medium-gray: #D9D9D9;
+            --light-gray: #F7F7F7;
+            --white: #FFFFFF;
+            --checkmark-green: #6AA84F;
+            --gold: #E3C364;
+            --x-mark-red: #CD4025;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--light-gray);
+            padding: 20px;
+        }
+
+        .poster {
+            width: 1280px;
+            height: 720px;
+            background: var(--white);
+            margin: 0 auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--night-owl-navy);
+            color: var(--white);
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-family: 'Merriweather', serif;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .logo-wgu {
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--white);
+        }
+
+        .logo-labs {
+            background: var(--white);
+            color: var(--labs-blue);
+            padding: 2px 6px;
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 400;
+            font-size: 16px;
+        }
+
+        /* Content */
+        .content {
+            padding: 14px 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow: hidden;
+        }
+
+        /* Section titles - Merriweather */
+        .section-title {
+            font-family: 'Merriweather', serif;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--labs-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        /* Row 1: Gap + Reality + Hypothesis */
+        .row-1 {
+            display: flex;
+            gap: 12px;
+            flex: 1;
+        }
+
+        /* Thin-line box styling */
+        .thin-box {
+            border: 1px solid var(--bright-azure);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .gap-section {
+            flex: 1;
+            background: var(--white);
+            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid var(--blue-sky-blue);
+        }
+
+        .gap-text {
+            font-size: 13px;
+            color: var(--black);
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .gap-barriers {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .barrier-tag {
+            background: var(--white);
+            border: 1px solid var(--blue-sky-blue);
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            color: var(--inkwell);
+        }
+
+        .reality-section {
+            flex: 1;
+            background: var(--white);
+            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid var(--blue-sky-blue);
+        }
+
+        .reality-text {
+            font-size: 13px;
+            color: var(--black);
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .stat-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .stat-box {
+            flex: 1;
+            background: var(--white);
+            border-radius: 4px;
+            padding: 8px;
+            text-align: center;
+            border: 1px solid var(--blue-sky-blue);
+        }
+
+        .stat-number {
+            font-family: 'Merriweather', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--checkmark-green);
+        }
+
+        .stat-label {
+            font-size: 9px;
+            color: var(--dark-gray);
+            text-transform: uppercase;
+        }
+
+        .hypothesis-section {
+            flex: 1.2;
+            background: var(--white);
+            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid var(--blue-sky-blue);
+        }
+
+        .hypothesis-main {
+            font-size: 13px;
+            color: var(--black);
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .hypothesis-examples {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .example-tag {
+            background: var(--white);
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            color: var(--labs-blue);
+            border: 1px solid var(--bright-azure);
+        }
+
+        /* Quote */
+        .quote-bar {
+            background: var(--blue-sky-blue);
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--inkwell);
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* Row 2: Foundry + System + Framework */
+        .row-2 {
+            display: flex;
+            gap: 12px;
+            flex: 1.2;
+            min-height: 0;
+        }
+
+        .foundry-section {
+            flex: 1;
+            background: var(--white);
+            border-radius: 4px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--blue-sky-blue);
+        }
+
+        .foundry-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .foundry-icon {
+            font-size: 20px;
+        }
+
+        .foundry-info {
+            font-size: 10px;
+            color: var(--black);
+            line-height: 1.3;
+        }
+
+        .foundry-info strong {
+            color: var(--labs-blue);
+            font-family: 'Merriweather', serif;
+        }
+
+        .foundry-stats {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .foundry-stat {
+            flex: 1;
+            background: var(--white);
+            border-radius: 4px;
+            padding: 8px 4px;
+            text-align: center;
+            border: 1px solid var(--blue-sky-blue);
+        }
+
+        .foundry-stat .number {
+            font-family: 'Merriweather', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--labs-blue);
+        }
+
+        .foundry-stat .label {
+            font-size: 8px;
+            color: var(--dark-gray);
+            text-transform: uppercase;
+        }
+
+        .foundry-challenge {
+            background: var(--blue-sky-blue);
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 10px;
+            color: var(--inkwell);
+            text-align: center;
+            margin-top: auto;
+        }
+
+        /* System Section */
+        .system-section {
+            flex: 1;
+            background: var(--white);
+            border-radius: 4px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--blue-sky-blue);
+        }
+
+        .system-frame {
+            flex: 1;
+            padding: 16px 10px 10px;
+            border: 1px solid var(--night-owl-navy);
+            border-radius: 6px;
+            background: var(--moonshot);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .peer-label {
+            position: absolute;
+            top: -9px;
+            right: 10px;
+            background: var(--night-owl-navy);
+            color: var(--white);
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-family: 'Merriweather', serif;
+            font-size: 8px;
+            font-weight: 700;
+        }
+
+        .system-main {
+            display: flex;
+            align-items: stretch;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .system-agent {
+            flex: 1;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px 6px;
+            background: var(--white);
+            border: 1px solid;
+        }
+
+        .system-agent.coach {
+            border-color: var(--checkmark-green);
+        }
+
+        .system-agent.admin {
+            border-color: var(--labs-blue);
+        }
+
+        .system-agent-icon {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .system-agent-title {
+            font-family: 'Merriweather', serif;
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--inkwell);
+            margin-bottom: 2px;
+        }
+
+        .system-agent-desc {
+            font-size: 7px;
+            color: var(--dark-gray);
+        }
+
+        .system-agent-tag {
+            font-size: 7px;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .system-agent.coach .system-agent-tag { color: var(--checkmark-green); }
+        .system-agent.admin .system-agent-tag { color: var(--labs-blue); }
+
+        .system-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+        }
+
+        .system-learner {
+            width: 28px;
+            height: 28px;
+            background: var(--white);
+            border: 2px solid var(--inkwell);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .system-learner-label {
+            font-size: 6px;
+            font-weight: 600;
+            color: var(--inkwell);
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            margin-bottom: 3px;
+        }
+
+        .system-arrows {
+            font-size: 10px;
+            color: var(--bright-azure);
+            margin-bottom: 3px;
+            font-weight: 700;
+        }
+
+        .system-nudge {
+            background: var(--bright-azure);
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-family: 'Merriweather', serif;
+            font-size: 7px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .system-capital {
+            margin-top: 8px;
+            padding: 6px 8px;
+            background: var(--white);
+            border: 1px solid var(--blue-sky-blue);
+            border-radius: 4px;
+            font-size: 8px;
+            color: var(--inkwell);
+            text-align: center;
+        }
+
+        .system-capital strong {
+            font-weight: 700;
+        }
+
+        /* Framework Section */
+        .framework-section {
+            flex: 1.3;
+            background: var(--white);
+            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid var(--blue-sky-blue);
+        }
+
+        .framework-grid {
+            display: flex;
+            gap: 8px;
+            height: calc(100% - 24px);
+        }
+
+        .framework-column {
+            flex: 1;
+            border-radius: 4px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            background: var(--white);
+            border: 1px solid;
+        }
+
+        .framework-column.principles {
+            border-color: var(--labs-blue);
+        }
+
+        .framework-column.patterns {
+            border-color: var(--checkmark-green);
+        }
+
+        .framework-column.boundaries {
+            border-color: var(--x-mark-red);
+        }
+
+        .framework-header {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .framework-number {
+            font-family: 'Merriweather', serif;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .principles .framework-number { color: var(--labs-blue); }
+        .patterns .framework-number { color: var(--checkmark-green); }
+        .boundaries .framework-number { color: var(--x-mark-red); }
+
+        .framework-title {
+            font-size: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .principles .framework-title { color: var(--labs-blue); }
+        .patterns .framework-title { color: var(--checkmark-green); }
+        .boundaries .framework-title { color: var(--x-mark-red); }
+
+        .framework-list {
+            font-size: 8px;
+            color: var(--black);
+            line-height: 1.4;
+            text-align: left;
+        }
+
+        .framework-list div {
+            padding: 1px 0;
+        }
+
+        /* Row 3: Learnings + Honest */
+        .row-3 {
+            display: flex;
+            gap: 12px;
+            flex: 0.8;
+        }
+
+        .learnings-section {
+            flex: 1.5;
+            background: var(--white);
+            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid var(--blue-sky-blue);
+        }
+
+        .signals-grid {
+            display: flex;
+            gap: 10px;
+        }
+
+        .signal-card {
+            flex: 1;
+            background: var(--white);
+            border-radius: 4px;
+            padding: 10px;
+            border-left: 3px solid;
+        }
+
+        .signal-card.working { border-left-color: var(--checkmark-green); }
+        .signal-card.challenging { border-left-color: var(--blue-sky-blue); }
+
+        .signal-title {
+            font-family: 'Merriweather', serif;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .signal-card.working .signal-title { color: var(--checkmark-green); }
+        .signal-card.challenging .signal-title { color: var(--inkwell); }
+
+        .signal-list {
+            list-style: none;
+            font-size: 10px;
+            color: var(--black);
+            line-height: 1.5;
+        }
+
+        .signal-list li::before {
+            content: "•";
+            margin-right: 4px;
+            color: var(--medium-gray);
+        }
+
+        /* Honest Section */
+        .honest-section {
+            flex: 1;
+            background: var(--white);
+            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid var(--blue-sky-blue);
+        }
+
+        .honest-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .honest-row {
+            display: flex;
+            gap: 6px;
+            align-items: flex-start;
+        }
+
+        .honest-label {
+            font-family: 'Merriweather', serif;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            width: 55px;
+            flex-shrink: 0;
+        }
+
+        .honest-label.know { color: var(--checkmark-green); }
+        .honest-label.testing { color: var(--labs-blue); }
+        .honest-label.cant { color: var(--x-mark-red); }
+
+        .honest-content {
+            font-size: 10px;
+            color: var(--black);
+            line-height: 1.4;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--night-owl-navy);
+            color: var(--white);
+            padding: 10px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .footer-text {
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="poster">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1>Vibe Entrepreneurship: AI as a Business Partner</h1>
+                <div class="subtitle">Scaling support for underserved entrepreneurs</div>
+            </div>
+            <div class="logo">
+                <span class="logo-wgu">wgu</span><span class="logo-labs">labs</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Row 1: Gap + Reality + Hypothesis -->
+            <div class="row-1">
+                <div class="gap-section">
+                    <div class="section-title">The gap</div>
+                    <div class="gap-text">
+                        Plenty of entrepreneurship education exists — but none reaches underserved learners.
+                    </div>
+                    <div class="gap-barriers">
+                        <span class="barrier-tag">No time</span>
+                        <span class="barrier-tag">No capital</span>
+                        <span class="barrier-tag">No networks</span>
+                        <span class="barrier-tag">No safety net</span>
+                    </div>
+                </div>
+
+                <div class="reality-section">
+                    <div class="section-title">The reality</div>
+                    <div class="reality-text">
+                        They're already entrepreneurial. They don't need convincing.
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-box">
+                            <div class="stat-number">5.4M</div>
+                            <div class="stat-label">Apps 2021</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number">+60%</div>
+                            <div class="stat-label">Black ownership</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number">1 in 5</div>
+                            <div class="stat-label">Fail year 1</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hypothesis-section">
+                    <div class="section-title">Our hypothesis</div>
+                    <div class="hypothesis-main">AI can be a business partner — helping grow ideas into profitable businesses.</div>
+                    <div class="hypothesis-examples">
+                        <span class="example-tag">Meal prep</span>
+                        <span class="example-tag">Cleaning</span>
+                        <span class="example-tag">Childcare</span>
+                        <span class="example-tag">Crafts</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quote -->
+            <div class="quote-bar">
+                For those without a financial safety net, the consequences of failure aren't just disappointing — they're devastating.
+            </div>
+
+            <!-- Row 2: Foundry + System + Framework -->
+            <div class="row-2">
+                <div class="foundry-section">
+                    <div class="section-title">Our foundation</div>
+                    <div class="foundry-header">
+                        <span class="foundry-icon">🏛️</span>
+                        <div class="foundry-info">
+                            <strong>The Foundry</strong><br>
+                            Rob Wuebker — 15+ years
+                        </div>
+                    </div>
+                    <div class="foundry-stats">
+                        <div class="foundry-stat">
+                            <div class="number">261+</div>
+                            <div class="label">Entrepreneurs</div>
+                        </div>
+                        <div class="foundry-stat">
+                            <div class="number">$5.1M</div>
+                            <div class="label">Revenue</div>
+                        </div>
+                        <div class="foundry-stat">
+                            <div class="number">34%</div>
+                            <div class="label">PMF</div>
+                        </div>
+                    </div>
+                    <div class="foundry-challenge">
+                        ~20 per cohort. In-person doesn't scale.
+                    </div>
+                </div>
+
+                <div class="system-section">
+                    <div class="section-title">The Vibe system</div>
+                    <div class="system-frame">
+                        <span class="peer-label">👥 Peer Connection</span>
+
+                        <div class="system-main">
+                            <div class="system-agent coach">
+                                <div class="system-agent-icon">🤖</div>
+                                <span class="system-agent-title">AI Coach</span>
+                                <span class="system-agent-desc">Shape the idea</span>
+                                <span class="system-agent-tag">Current Focus</span>
+                            </div>
+
+                            <div class="system-center">
+                                <div class="system-learner">👤</div>
+                                <span class="system-learner-label">Learner</span>
+                                <div class="system-arrows">← →</div>
+                                <div class="system-nudge">🔔 Nudges</div>
+                            </div>
+
+                            <div class="system-agent admin">
+                                <div class="system-agent-icon">📋</div>
+                                <span class="system-agent-title">Admin Agent</span>
+                                <span class="system-agent-desc">Practical tasks</span>
+                                <span class="system-agent-tag">Future</span>
+                            </div>
+                        </div>
+
+                        <div class="system-capital">💰 <strong>Capital:</strong> CDFIs & community lending</div>
+                    </div>
+                </div>
+
+                <div class="framework-section">
+                    <div class="section-title">5-7-5 Framework</div>
+                    <div class="framework-grid">
+                        <div class="framework-column principles">
+                            <div class="framework-header">
+                                <span class="framework-number">5</span>
+                                <span class="framework-title">Principles</span>
+                            </div>
+                            <div class="framework-list">
+                                <div>Flexibility</div>
+                                <div>Facilitate clarity</div>
+                                <div>Support peers</div>
+                                <div>Protect resources</div>
+                                <div>Measure impact</div>
+                            </div>
+                        </div>
+                        <div class="framework-column patterns">
+                            <div class="framework-header">
+                                <span class="framework-number">7</span>
+                                <span class="framework-title">AI does</span>
+                            </div>
+                            <div class="framework-list">
+                                <div>Push back</div>
+                                <div>Specific actions</div>
+                                <div>Cross-domain examples</div>
+                                <div>Dialogue</div>
+                                <div>Admit limitations</div>
+                                <div>Plain language</div>
+                                <div>Cultural humility</div>
+                            </div>
+                        </div>
+                        <div class="framework-column boundaries">
+                            <div class="framework-header">
+                                <span class="framework-number">5</span>
+                                <span class="framework-title">AI can't</span>
+                            </div>
+                            <div class="framework-list">
+                                <div>Peer connection</div>
+                                <div>Accountability</div>
+                                <div>Introductions</div>
+                                <div>Cultural context</div>
+                                <div>Build confidence</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3: Learnings + Honest -->
+            <div class="row-3">
+                <div class="learnings-section">
+                    <div class="section-title">What we're learning</div>
+                    <div class="signals-grid">
+                        <div class="signal-card working">
+                            <div class="signal-title">✓ Working</div>
+                            <ul class="signal-list">
+                                <li>Structure helps — users complete full flow</li>
+                                <li>Cross-domain examples resonate</li>
+                                <li>Specific prompts outperform open-ended</li>
+                            </ul>
+                        </div>
+                        <div class="signal-card challenging">
+                            <div class="signal-title">! Challenging</div>
+                            <ul class="signal-list">
+                                <li>Users wanted dialogue, not feedback</li>
+                                <li>Generic responses don't land</li>
+                                <li>Methodology fidelity needs careful design</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="honest-section">
+                    <div class="section-title">Honest framing</div>
+                    <div class="honest-grid">
+                        <div class="honest-row">
+                            <div class="honest-label know">Know</div>
+                            <div class="honest-content">Peer accountability, document discipline, weekly rhythm work.</div>
+                        </div>
+                        <div class="honest-row">
+                            <div class="honest-label testing">Testing</div>
+                            <div class="honest-content">Can AI embody coaching? Will they trust it?</div>
+                        </div>
+                        <div class="honest-row">
+                            <div class="honest-label cant">Can't solve</div>
+                            <div class="honest-content">Capital access, market demand, systemic barriers.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-text">We're not claiming this will work. We're testing whether it can.</div>
+            <div class="logo">
+                <span class="logo-wgu">wgu</span><span class="logo-labs">labs</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
