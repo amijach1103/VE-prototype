@@ -610,6 +610,9 @@
             }
         }
 
+        // Track recent AI responses to prevent loops
+        const recentAiResponses = [];
+
         function generateResponse(userMessage) {
             showTyping();
 
@@ -631,8 +634,12 @@
                 }
 
                 // Check if user is sharing their idea (not a question)
-                const isQuestion = messageLower.includes('?') || messageLower.includes('example') || messageLower.includes('help') || messageLower.includes('how');
-                const looksLikeIdea = messageLower.includes('i want to') || messageLower.includes('i\'m thinking') || messageLower.includes('my idea') || messageLower.includes('start a') || messageLower.includes('sell') || messageLower.includes('offer') || messageLower.includes('business');
+                // Only treat as question if it starts with a question word or ends with ?
+                const isQuestion = messageLower.includes('?') || messageLower.includes('example') ||
+                    /^(how|what|where|when|why|can you|do you|should i|is there)\b/.test(messageLower);
+                const looksLikeIdea = messageLower.includes('i want to') || messageLower.includes('i\'m thinking') || messageLower.includes('my idea') || messageLower.includes('start a') || messageLower.includes('sell') || messageLower.includes('offer') || messageLower.includes('business') ||
+                    messageLower.includes('i make') || messageLower.includes('i do') || messageLower.includes('i create') ||
+                    messageLower.includes('t-shirt') || messageLower.includes('tshirt') || messageLower.includes('custom');
 
                 if (looksLikeIdea && !isQuestion) {
                     // User shared their idea - capture it and show summary
@@ -645,6 +652,7 @@
                         `<strong>Tell me more.</strong> Who specifically would you serve? "Busy people" is too broad — a meal prep business for working parents looks very different from one for elderly folks or gym-goers.<br><br>` +
                         `<strong>Who's your ONE person?</strong> Describe them to me.`;
                     addMessageToChat('assistant', response);
+                    recentAiResponses.push(response);
                     return;
                 }
 
@@ -674,9 +682,23 @@
                     return;
                 }
 
-                // Check if user is describing their target customer
-                const describingCustomer = messageLower.includes('parent') || messageLower.includes('mom') || messageLower.includes('dad') || messageLower.includes('working') || messageLower.includes('busy') || messageLower.includes('elderly') || messageLower.includes('senior') || messageLower.includes('families') || messageLower.includes('people who');
+                // Check for vague customer description — "everyone", "anybody", etc.
+                const vagueCustomer = /\b(everyone|everybody|anyone|anybody|all people|all kinds|any age|any person)\b/.test(messageLower);
                 const hasIdea = document.getElementById('idea').value.trim();
+
+                if (vagueCustomer && hasIdea) {
+                    response = `I get it — you want to serve as many people as possible. That's a good instinct.<br><br>` +
+                        `But here's what I've seen work: <strong>the businesses that grow fastest start by being specific.</strong><br><br>` +
+                        `You don't have to limit yourself forever. But right now, think about your <strong>best customer so far</strong> — the one who was happiest, or the one who came back.<br><br>` +
+                        `<strong>Who was that person?</strong> What were they like? Why did THEY buy from you?<br><br>` +
+                        `If you haven't had a customer yet, that's fine too — who do you PICTURE buying from you first?`;
+                    addMessageToChat('assistant', response);
+                    recentAiResponses.push(response);
+                    return;
+                }
+
+                // Check if user is describing their target customer (expanded keywords)
+                const describingCustomer = messageLower.includes('parent') || messageLower.includes('mom') || messageLower.includes('dad') || messageLower.includes('working') || messageLower.includes('busy') || messageLower.includes('elderly') || messageLower.includes('senior') || messageLower.includes('families') || messageLower.includes('people who') || messageLower.includes('church') || messageLower.includes('neighbor') || messageLower.includes('friend') || messageLower.includes('coworker') || messageLower.includes('woman') || messageLower.includes('women') || messageLower.includes('kid') || messageLower.includes('teen') || messageLower.includes('student');
 
                 if (describingCustomer && hasIdea) {
                     // They're refining their customer - update idea and give validation + next push
@@ -752,6 +774,25 @@
                     response = "I'm here to help! Try writing your business idea in the text box above, then ask me questions about it. Or ask me for examples if you're still brainstorming.";
                 }
 
+                // Anti-loop: if we're about to repeat ourselves, pivot to a different question
+                if (recentAiResponses.includes(response)) {
+                    const pivots = [
+                        "I hear you — let me try a different angle.<br><br>" +
+                        "<strong>Instead of answering my questions, tell me this:</strong> What's the ONE thing that's stopping you from moving forward right now? Not what you think I want to hear — what's actually in your way?",
+
+                        "Good — you're thinking about this. Let me step back.<br><br>" +
+                        "<strong>Forget my questions for a second.</strong> If you had to describe your business in one sentence to a stranger at a bus stop, what would you say?",
+
+                        "I think I'm asking the wrong question. Let me try again.<br><br>" +
+                        "<strong>What does success look like for you in 3 months?</strong> Not the business — for YOU. What changes in your life if this works?",
+
+                        "I notice we might be going in circles. That's on me, not you.<br><br>" +
+                        "<strong>Let's try something concrete:</strong> Name one person you know who might actually buy what you're offering. Just one. A neighbor, a friend, someone from church — anyone."
+                    ];
+                    response = pivots[recentAiResponses.length % pivots.length];
+                }
+
+                recentAiResponses.push(response);
                 addMessageToChat('assistant', response);
             }, 1000 + Math.random() * 500);
         }
