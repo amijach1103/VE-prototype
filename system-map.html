@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe — The Full System Experience</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --primary: #2563eb;
+            --primary-light: #dbeafe;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --layer1: #8b5cf6;
+            --layer1-light: #ede9fe;
+            --layer2: #f59e0b;
+            --layer2-light: #fef3c7;
+            --layer3: #2563eb;
+            --layer3-light: #dbeafe;
+            --layer4: #10b981;
+            --layer4-light: #d1fae5;
+            --layer5: #ef4444;
+            --layer5-light: #fee2e2;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --card-inner: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #475569;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* ── Slide Container ─────────────── */
+
+        .deck {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Top Bar ─────────────────────── */
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            flex-shrink: 0;
+        }
+        .top-bar-brand {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            opacity: 0.6;
+        }
+        .slide-counter {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-variant-numeric: tabular-nums;
+        }
+        .progress-dots {
+            display: flex;
+            gap: 6px;
+        }
+        .progress-dots .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .progress-dots .dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+        .progress-dots .dot:hover {
+            background: rgba(255,255,255,0.4);
+        }
+
+        /* ── Slide Area ──────────────────── */
+
+        .slide-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+            opacity: 0;
+            transform: translateX(60px);
+            transition: opacity 0.4s, transform 0.4s;
+            pointer-events: none;
+        }
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+        .slide.exit-left {
+            opacity: 0;
+            transform: translateX(-60px);
+        }
+
+        .slide-inner {
+            max-width: 960px;
+            width: 100%;
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        /* ── Left: Text Column ───────────── */
+
+        .slide-text {
+            flex: 1;
+            min-width: 280px;
+        }
+        .slide-phase {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .slide-title {
+            font-size: 36px;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 12px;
+        }
+        .slide-timing {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+        .slide-desc {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        .slide-layers {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .layer-tag {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 12px;
+            color: white;
+        }
+
+        /* ── Right: Screen Mockup ────────── */
+
+        .slide-screen {
+            width: 320px;
+            flex-shrink: 0;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            color: #1e293b;
+            max-height: calc(100vh - 160px);
+            overflow-y: auto;
+        }
+        .slide-screen::-webkit-scrollbar { width: 0; }
+
+        .screen-bar {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        .screen-layer-tag {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+        }
+        .screen-body {
+            padding: 16px;
+        }
+        .screen-note {
+            font-size: 11px;
+            color: #64748b;
+            font-style: italic;
+            padding: 10px 16px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* Layer-colored bars */
+        .bar-l1 { background: var(--layer1-light); color: var(--layer1); }
+        .bar-l1 .screen-layer-tag { background: var(--layer1); }
+        .bar-l2 { background: var(--layer2-light); color: #92400e; }
+        .bar-l2 .screen-layer-tag { background: var(--layer2); }
+        .bar-l3 { background: var(--layer3-light); color: var(--layer3); }
+        .bar-l3 .screen-layer-tag { background: var(--layer3); }
+        .bar-l4 { background: var(--layer4-light); color: #065f46; }
+        .bar-l4 .screen-layer-tag { background: var(--layer4); }
+        .bar-l5 { background: var(--layer5-light); color: var(--layer5); }
+        .bar-l5 .screen-layer-tag { background: var(--layer5); }
+
+        /* ── Mock UI Elements ────────────── */
+
+        .m-chat { display: flex; flex-direction: column; gap: 8px; }
+        .m-bubble {
+            padding: 9px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            line-height: 1.5;
+            max-width: 88%;
+        }
+        .m-bubble.ai { background: #f0f9ff; border: 1px solid #bae6fd; align-self: flex-start; }
+        .m-bubble.user { background: #eff6ff; border: 1px solid #93c5fd; align-self: flex-end; }
+        .m-bubble.peer { background: var(--layer1-light); border: 1px solid #c4b5fd; align-self: flex-start; }
+        .m-bubble .name { font-weight: 600; font-size: 10px; margin-bottom: 3px; }
+        .m-bubble.ai .name { color: var(--layer3); }
+        .m-bubble.peer .name { color: var(--layer1); }
+
+        .m-input {
+            display: flex; gap: 6px; margin-top: 8px;
+        }
+        .m-input input {
+            flex: 1; padding: 7px 10px; border: 1px solid #e2e8f0;
+            border-radius: 16px; font-size: 11px; background: #f8fafc; color: #64748b;
+        }
+        .m-input button {
+            width: 28px; height: 28px; border-radius: 50%;
+            border: none; background: var(--primary); color: white; font-size: 12px;
+        }
+
+        .m-card {
+            background: #f8fafc; border: 1px solid #e2e8f0;
+            border-radius: 10px; padding: 10px 12px; margin-bottom: 6px; font-size: 12px;
+        }
+        .m-card h4 { font-size: 12px; margin-bottom: 3px; color: #1e293b; }
+        .m-card p { color: #64748b; font-size: 11px; margin: 0; line-height: 1.5; }
+
+        .m-field {
+            border: 1px solid #e2e8f0; border-radius: 8px;
+            padding: 7px 10px; font-size: 11px; color: #334155; background: white;
+            margin-bottom: 6px; line-height: 1.5;
+        }
+
+        .m-badge {
+            display: inline-block; padding: 2px 7px; border-radius: 8px;
+            font-size: 10px; font-weight: 600;
+        }
+        .m-badge.resolved { background: #d1fae5; color: #065f46; }
+        .m-badge.open { background: #fef3c7; color: #92400e; }
+        .m-badge.new { background: #dbeafe; color: #2563eb; }
+
+        .m-progress { display: flex; gap: 3px; margin-bottom: 10px; }
+        .m-progress span { flex: 1; height: 3px; border-radius: 2px; background: #e2e8f0; }
+        .m-progress span.done { background: #10b981; }
+        .m-progress span.cur { background: #2563eb; }
+
+        .m-avatar {
+            width: 24px; height: 24px; border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 600; color: white; flex-shrink: 0;
+        }
+
+        .m-row {
+            display: flex; align-items: center; gap: 8px;
+            padding: 6px 0; border-bottom: 1px solid #e2e8f0; font-size: 12px;
+        }
+        .m-row:last-child { border-bottom: none; }
+
+        .m-btn {
+            display: inline-block; padding: 5px 12px; border-radius: 8px;
+            font-size: 11px; font-weight: 600; border: none;
+        }
+        .m-btn.primary { background: #2563eb; color: white; }
+        .m-btn.secondary { background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; }
+
+        .m-stat {
+            text-align: center; padding: 8px 4px;
+        }
+        .m-stat-val { font-size: 20px; font-weight: 700; }
+        .m-stat-label { font-size: 10px; color: #64748b; }
+
+        .testing-badge {
+            display: inline-block; background: var(--primary); color: white;
+            font-size: 9px; font-weight: 700; padding: 2px 7px;
+            border-radius: 4px; letter-spacing: 0.5px; margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        /* ── Nav Arrows ──────────────────── */
+
+        .nav-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: white;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            z-index: 20;
+        }
+        .nav-arrow:hover { background: rgba(255,255,255,0.15); }
+        .nav-arrow.left { left: 16px; }
+        .nav-arrow.right { right: 16px; }
+        .nav-arrow.hidden { opacity: 0; pointer-events: none; }
+
+        /* ── Bottom Hint ─────────────────── */
+
+        .bottom-hint {
+            text-align: center;
+            padding: 10px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.25);
+            flex-shrink: 0;
+        }
+
+        /* ── Responsive ──────────────────── */
+
+        @media (max-width: 768px) {
+            .slide-inner {
+                flex-direction: column;
+                gap: 24px;
+            }
+            .slide-text { min-width: unset; }
+            .slide-screen { width: 100%; max-width: 320px; }
+            .slide-title { font-size: 26px; }
+            .slide { padding: 20px 16px; }
+            .nav-arrow { display: none; }
+        }
+
+        /* ── Title slide special ─────────── */
+
+        .slide-inner.centered {
+            flex-direction: column;
+            text-align: center;
+            gap: 24px;
+        }
+        .centered .slide-text { min-width: unset; }
+        .centered .slide-desc { max-width: 520px; margin-left: auto; margin-right: auto; }
+        .centered .slide-layers { justify-content: center; }
+
+        .system-diagram {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 500px;
+        }
+        .sys-layer-card {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            min-width: 140px;
+            text-align: center;
+        }
+        .sys-layer-card .num {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-bottom: 2px;
+        }
+
+        /* Two-screen layout */
+        .dual-screens {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 320px;
+            flex-shrink: 0;
+        }
+        .dual-screens .slide-screen {
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .dual-screens { width: 100%; max-width: 320px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="deck">
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="top-bar-brand">VIBE</div>
+        <div class="progress-dots" id="dots"></div>
+        <div class="slide-counter" id="counter">1 / 8</div>
+    </div>
+
+    <!-- Slides -->
+    <div class="slide-area" id="slideArea">
+
+        <!-- ═══ SLIDE 0: Title ═══════════════════════════════════════════ -->
+        <div class="slide active" data-slide="0">
+            <div class="slide-inner centered">
+                <div class="slide-text">
+                    <div class="slide-title" style="font-size: 42px;">Vibe Entrepreneurship</div>
+                    <div class="slide-desc" style="font-size: 17px;">
+                        A 5-layer system that guides aspiring entrepreneurs from first idea to sustained business — with AI coaching, peer accountability, and community support.
+                    </div>
+                    <div class="system-diagram">
+                        <div class="sys-layer-card" style="background: var(--layer1);"><div class="num">Layer 1</div>Peer Connection</div>
+                        <div class="sys-layer-card" style="background: var(--layer2);"><div class="num">Layer 2</div>Weekly Rhythm</div>
+                        <div class="sys-layer-card" style="background: var(--layer3);"><div class="num">Layer 3</div>AI Planning</div>
+                        <div class="sys-layer-card" style="background: var(--layer4);"><div class="num">Layer 4</div>Admin Support</div>
+                        <div class="sys-layer-card" style="background: var(--layer5);"><div class="num">Layer 5</div>Capital Readiness</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 1: Discovery ═══════════════════════════════════════ -->
+        <div class="slide" data-slide="1">
+            <div class="slide-inner">
+                <div class="slide-text">
+                    <div class="slide-phase" style="color: var(--layer1);">Phase 1</div>
+                    <div class="slide-title">Discovery</div>
+                    <div class="slide-timing">Day 1 — Sign up and get matched</div>
+                    <div class="slide-desc">
+                        A new user finds Vibe, signs up, and gets placed in a cohort of 5-8 entrepreneurs with complementary skills. Different industries create cross-pollination — a beekeeper's problem gets solved by a countertop manufacturer.
+                    </div>
+                    <div class="slide-layers">
+                        <div class="layer-tag" style="background: var(--layer1);">Peer Connection</div>
+                        <div class="layer-tag" style="background: var(--layer3);">AI Planning</div>
+                    </div>
+                </div>
+                <div class="slide-screen">
+                    <div class="screen-bar bar-l1">
+                        <span class="screen-layer-tag">L1</span>
+                        Your Cohort
+                    </div>
+                    <div class="screen-body">
+                        <div style="font-size: 13px; font-weight: 600; margin-bottom: 4px;">Cohort 12 is ready</div>
+                        <div style="font-size: 11px; color: #64748b; margin-bottom: 10px;">Matched by complementary skills and experience</div>
+                        <div class="m-row">
+                            <div class="m-avatar" style="background: var(--layer1);">MR</div>
+                            <div><strong>Maria R.</strong> <span style="color:#64748b;font-size:11px;">— Meal prep</span></div>
+                        </div>
+                        <div class="m-row">
+                            <div class="m-avatar" style="background: #7c3aed;">JT</div>
+                            <div><strong>James T.</strong> <span style="color:#64748b;font-size:11px;">— Car detailing</span></div>
+                        </div>
+                        <div class="m-row">
+                            <div class="m-avatar" style="background: #db2777;">SK</div>
+                            <div><strong>Sofia K.</strong> <span style="color:#64748b;font-size:11px;">— Tutoring</span></div>
+                        </div>
+                        <div class="m-row">
+                            <div class="m-avatar" style="background: #ea580c;">DL</div>
+                            <div><strong>David L.</strong> <span style="color:#64748b;font-size:11px;">— Lawn care</span></div>
+                        </div>
+                        <div class="m-row">
+                            <div class="m-avatar" style="background: #0891b2;">AP</div>
+                            <div><strong>Aisha P.</strong> <span style="color:#64748b;font-size:11px;">— Custom crafts</span></div>
+                        </div>
+                    </div>
+                    <div class="screen-note">Heterogeneous cohorts — different industries, shared drive</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 2: Build Your Plan ═════════════════════════════════ -->
+        <div class="slide" data-slide="2">
+            <div class="slide-inner">
+                <div class="slide-text">
+                    <div class="slide-phase" style="color: var(--layer3);">Phase 2 <span class="testing-badge">TESTING NOW</span></div>
+                    <div class="slide-title">Build Your Plan</div>
+                    <div class="slide-timing">Week 1 — 30-45 min with AI Coach</div>
+                    <div class="slide-desc">
+                        5 moments: Idea, Mission, Goals, Actions, Plan. The AI Coach challenges vague thinking, pushes for specificity, and is honest about what it can't do. At the end, you have an actionable business plan — and a nudge toward the humans you actually need.
+                    </div>
+                    <div class="slide-layers">
+                        <div class="layer-tag" style="background: var(--layer3);">AI Planning</div>
+                    </div>
+                </div>
+                <div class="slide-screen">
+                    <div class="screen-bar bar-l3">
+                        <span class="screen-layer-tag">L3</span>
+                        Moment 1: Your Idea
+                    </div>
+                    <div class="screen-body">
+                        <div class="m-progress">
+                            <span class="cur"></span><span></span><span></span><span></span><span></span>
+                        </div>
+                        <div class="m-chat">
+                            <div class="m-bubble ai">
+                                <div class="name">AI Coach</div>
+                                What's the business you're thinking about? Tell me — I'll push back if something doesn't add up.
+                            </div>
+                            <div class="m-bubble user">
+                                I want to cook meals for busy parents in my neighborhood
+                            </div>
+                            <div class="m-bubble ai">
+                                <div class="name">AI Coach</div>
+                                Who specifically? "Busy parents" is too broad. A meal prep business for working moms looks different from one for elderly folks. <strong>Who's your ONE person?</strong>
+                            </div>
+                        </div>
+                        <div class="m-input">
+                            <input type="text" value="Tell me your idea..." disabled>
+                            <button>&uarr;</button>
+                        </div>
+                    </div>
+                    <div class="screen-note">Challenges assumptions, pushes for customer specificity, doesn't write the plan for you</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 3: Plan Complete ═══════════════════════════════════ -->
+        <div class="slide" data-slide="3">
+            <div class="slide-inner">
+                <div class="slide-text">
+                    <div class="slide-phase" style="color: var(--layer3);">Phase 2 (cont.) <span class="testing-badge">TESTING NOW</span></div>
+                    <div class="slide-title">Plan Complete</div>
+                    <div class="slide-timing">End of Week 1 — The handoff to humans</div>
+                    <div class="slide-desc">
+                        The AI Coach is honest about its limits: "I helped you build the plan. Now you need people — peer connection, accountability, introductions, cultural context. That's something I genuinely cannot provide." This is where the other layers activate.
+                    </div>
+                    <div class="slide-layers">
+                        <div class="layer-tag" style="background: var(--layer3);">AI Planning</div>
+                    </div>
+                </div>
+                <div class="slide-screen">
+                    <div class="screen-bar bar-l3">
+                        <span class="screen-layer-tag">L3</span>
+                        Moment 5: Your Plan
+                    </div>
+                    <div class="screen-body">
+                        <div class="m-progress">
+                            <span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span>
+                        </div>
+                        <div class="m-card">
+                            <h4>Mission</h4>
+                            <p>"I help working parents eat healthier by preparing affordable meals they pick up weekly"</p>
+                        </div>
+                        <div class="m-card">
+                            <h4>Goal 1: 5 paying customers in 4 weeks</h4>
+                            <p>Ask 10 neighbors this week</p>
+                        </div>
+                        <div class="m-card">
+                            <h4>Goal 2: Perfect 10 profitable recipes</h4>
+                            <p>Test 3 with family by Friday</p>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 12px; font-weight: 600; margin-bottom: 6px;">First step (next 48 hours):</div>
+                        <div class="m-field">Ask 3 neighbors about meal prep Saturday morning</div>
+                        <div style="display: flex; gap: 6px; margin-top: 8px;">
+                            <div class="m-btn primary">Export Plan</div>
+                            <div class="m-btn secondary">Share with Cohort</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 4: Weekly Report ═══════════════════════════════════ -->
+        <div class="slide" data-slide="4">
+            <div class="slide-inner">
+                <div class="slide-text">
+                    <div class="slide-phase" style="color: var(--layer2);">Phase 3 — Weekly Rhythm</div>
+                    <div class="slide-title">Saturday Report</div>
+                    <div class="slide-timing">Weeks 2-12 — Reflect on your week</div>
+                    <div class="slide-desc">
+                        Every Saturday, you write a short management report: what you said you'd do, what you actually did, where you're stuck, and what's next. The Participant Bot auto-creates it from last week's commitments and tracks your changes over time.
+                    </div>
+                    <div class="slide-layers">
+                        <div class="layer-tag" style="background: var(--layer2);">Weekly Rhythm</div>
+                    </div>
+                </div>
+                <div class="slide-screen">
+                    <div class="screen-bar bar-l2">
+                        <span class="screen-layer-tag">L2</span>
+                        Maria's Report — Week 3
+                    </div>
+                    <div class="screen-body">
+                        <div class="m-card">
+                            <h4>What I said I'd do</h4>
+                            <p>Ask 10 neighbors about meal prep interest</p>
+                        </div>
+                        <div class="m-card">
+                            <h4>What I actually did</h4>
+                            <div class="m-field">Talked to 7 neighbors. 4 interested! 2 said they'd pay $60/week. 1 wanted vegetarian options I hadn't planned for.</div>
+                        </div>
+                        <div class="m-card" style="display:flex;justify-content:space-between;align-items:center;">
+                            <div><h4>Problem</h4><p>Don't know how to price meals profitably</p></div>
+                            <span class="m-badge open">Open</span>
+                        </div>
+                        <div class="m-card">
+                            <h4>Next week</h4>
+                            <div class="m-field">Get 3 people to commit to paid trial. Figure out food costs per meal.</div>
+                        </div>
+                    </div>
+                    <div class="screen-note">Auto-created from last week's "next week" — tracks versions, marks problems resolved/open</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 5: Peer Feedback ═══════════════════════════════════ -->
+        <div class="slide" data-slide="5">
+            <div class="slide-inner">
+                <div class="slide-text">
+                    <div class="slide-phase" style="color: var(--layer1);">Phase 3 — Weekly Rhythm</div>
+                    <div class="slide-title">Peer Feedback</div>
+                    <div class="slide-timing">Sunday — Your cohort responds</div>
+                    <div class="slide-desc">
+                        Cohort members read each other's reports and respond with real experience — not theory. A car detailer's pricing strategy helps a meal prep entrepreneur. This is the cross-pollination AI can't replicate. The AI Coach references this feedback midweek.
+                    </div>
+                    <div class="slide-layers">
+                        <div class="layer-tag" style="background: var(--layer1);">Peer Connection</div>
+                        <div class="layer-tag" style="background: var(--layer3);">AI Planning</div>
+                    </div>
+                </div>
+                <div class="dual-screens">
+                    <div class="slide-screen">
+                        <div class="screen-bar bar-l1">
+                            <span class="screen-layer-tag">L1</span>
+                            Peer Review
+                        </div>
+                        <div class="screen-body">
+                            <div class="m-chat">
+                                <div class="m-bubble peer">
+                                    <div class="name" style="color:#7c3aed;">James T.</div>
+                                    Pricing: I made the same mistake. Cost per meal + your time at $15/hr minimum. Add 40% margin. That's your floor.
+                                </div>
+                                <div class="m-bubble peer">
+                                    <div class="name" style="color:#db2777;">Sofia K.</div>
+                                    7 out of 10 is great! The vegetarian request is a signal — could be a whole separate tier.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-screen">
+                        <div class="screen-bar bar-l3">
+                            <span class="screen-layer-tag">L3</span>
+                            Midweek Check-in
+                        </div>
+                        <div class="screen-body">
+                            <div class="m-chat">
+                                <div class="m-bubble ai">
+                                    <div class="name">AI Coach</div>
+                                    James gave you solid pricing advice. Have you calculated your actual cost per meal yet? <strong>Do that before your third customer conversation.</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="screen-note">AI references peer feedback — connects the layers</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 6: Monday Meeting ══════════════════════════════════ -->
+        <div class="slide" data-slide="6">
+            <div class="slide-inner">
+                <div class="slide-text">
+                    <div class="slide-phase" style="color: var(--layer4);">Phase 3 — Weekly Rhythm</div>
+                    <div class="slide-title">Monday Meeting</div>
+                    <div class="slide-timing">Monday — Cohort accountability</div>
+                    <div class="slide-desc">
+                        The Facilitator Bot builds the meeting agenda from everyone's unresolved problems. Groups by topic, ensures everyone gets airtime over time. The meeting itself is human — live accountability that AI can't replicate.
+                    </div>
+                    <div class="slide-layers">
+                        <div class="layer-tag" style="background: var(--layer4);">Admin Support</div>
+                        <div class="layer-tag" style="background: var(--layer1);">Peer Connection</div>
+                    </div>
+                </div>
+                <div class="slide-screen">
+                    <div class="screen-bar bar-l4">
+                        <span class="screen-layer-tag">L4</span>
+                        Week 3 Agenda
+                    </div>
+                    <div class="screen-body">
+                        <div style="font-size: 11px; color: #64748b; margin-bottom: 10px;">Auto-generated from unresolved problems</div>
+                        <div class="m-card">
+                            <div style="display:flex;justify-content:space-between;align-items:start;">
+                                <div><h4>1. Pricing & profitability</h4><p>Maria, James — both flagged pricing</p></div>
+                                <span class="m-badge open">2 open</span>
+                            </div>
+                        </div>
+                        <div class="m-card">
+                            <div style="display:flex;justify-content:space-between;align-items:start;">
+                                <div><h4>2. First customer acquisition</h4><p>David, Aisha — strategies for first 5</p></div>
+                                <span class="m-badge new">New</span>
+                            </div>
+                        </div>
+                        <div class="m-card">
+                            <div style="display:flex;justify-content:space-between;align-items:start;">
+                                <div><h4>3. Sofia's school partnership</h4><p>Follow-up from last week</p></div>
+                                <span class="m-badge resolved">Resolved</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="screen-note">Facilitator Bot groups by topic, tracks resolution, balances airtime across weeks</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 7: Growth ══════════════════════════════════════════ -->
+        <div class="slide" data-slide="7">
+            <div class="slide-inner">
+                <div class="slide-text">
+                    <div class="slide-phase" style="color: var(--layer5);">Phase 4</div>
+                    <div class="slide-title">Growth</div>
+                    <div class="slide-timing">Months 2-3 — From plan to real business</div>
+                    <div class="slide-desc">
+                        As businesses mature, the Meta Facilitator connects entrepreneurs to the best-fit peer or alumni who's solved their exact problem. Project reviews go deeper. When the fundamentals are solid, capital pathways open up.
+                    </div>
+                    <div class="slide-layers">
+                        <div class="layer-tag" style="background: var(--layer1);">Peer Connection</div>
+                        <div class="layer-tag" style="background: var(--layer4);">Admin Support</div>
+                        <div class="layer-tag" style="background: var(--layer5);">Capital Readiness</div>
+                    </div>
+                </div>
+                <div class="dual-screens">
+                    <div class="slide-screen">
+                        <div class="screen-bar bar-l1">
+                            <span class="screen-layer-tag">L1</span>
+                            Smart Peer Match
+                        </div>
+                        <div class="screen-body">
+                            <div class="m-card">
+                                <h4>From alumni (Cohort 8)</h4>
+                                <p><strong>Rosa M.</strong> ran a catering business, scaled from 5 to 40 weekly customers. Navigated food licensing in your state.</p>
+                            </div>
+                            <div class="m-card">
+                                <h4>Suggested question</h4>
+                                <p>"What did you wish you knew about food licensing before you started?"</p>
+                            </div>
+                        </div>
+                        <div class="screen-note">Meta Facilitator matches problems to best-fit peers or alumni</div>
+                    </div>
+                    <div class="slide-screen">
+                        <div class="screen-bar bar-l5">
+                            <span class="screen-layer-tag">L5</span>
+                            Business Health
+                        </div>
+                        <div class="screen-body">
+                            <div style="display: flex; gap: 4px;">
+                                <div class="m-card" style="flex:1;"><div class="m-stat"><div class="m-stat-val" style="color:var(--success);">12</div><div class="m-stat-label">Customers</div></div></div>
+                                <div class="m-card" style="flex:1;"><div class="m-stat"><div class="m-stat-val" style="color:var(--success);">$720</div><div class="m-stat-label">Weekly rev</div></div></div>
+                                <div class="m-card" style="flex:1;"><div class="m-stat"><div class="m-stat-val" style="color:var(--warning);">35%</div><div class="m-stat-label">Margin</div></div></div>
+                            </div>
+                            <div class="m-card" style="margin-top: 4px;">
+                                <p>12 weeks consistent revenue. Clear growth path. Ready to explore microfinance.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 8: Give Back ═══════════════════════════════════════ -->
+        <div class="slide" data-slide="8">
+            <div class="slide-inner">
+                <div class="slide-text">
+                    <div class="slide-phase" style="color: var(--layer1);">Phase 5</div>
+                    <div class="slide-title">Give Back</div>
+                    <div class="slide-timing">After graduation — The cycle continues</div>
+                    <div class="slide-desc">
+                        Graduates become alumni mentors. The system connects them to new entrepreneurs facing problems they've already solved. One conversation from someone who's done it is worth more than hours with AI. The community grows stronger with every cohort.
+                    </div>
+                    <div class="slide-layers">
+                        <div class="layer-tag" style="background: var(--layer1);">Peer Connection</div>
+                    </div>
+                    <div style="margin-top: 24px; padding: 16px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;">
+                        <div style="font-size: 13px; color: var(--text-muted); font-style: italic;">
+                            "Did you have a serious impact in somebody's life?"
+                        </div>
+                        <div style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 4px;">— Ken Krull, Quatere</div>
+                    </div>
+                </div>
+                <div class="slide-screen">
+                    <div class="screen-bar bar-l1">
+                        <span class="screen-layer-tag">L1</span>
+                        Alumni Connection
+                    </div>
+                    <div class="screen-body">
+                        <div class="m-chat">
+                            <div class="m-bubble ai">
+                                <div class="name">AI Coach</div>
+                                Maria, someone in Cohort 15 is starting a meal prep business and struggling with food licensing. You navigated that in Week 6. Would you be open to a 15-minute call?
+                            </div>
+                            <div class="m-bubble user">
+                                Yes! I remember how confusing that was. Happy to help.
+                            </div>
+                            <div class="m-bubble ai">
+                                <div class="name">AI Coach</div>
+                                Connected. She'll reach out this week. One conversation from someone who's done it is worth more than hours with me.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="screen-note">This is how the system scales impact — every graduate makes the next cohort stronger</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navigation Arrows -->
+    <div class="nav-arrow left hidden" id="prevBtn" onclick="navigate(-1)">&#8592;</div>
+    <div class="nav-arrow right" id="nextBtn" onclick="navigate(1)">&#8594;</div>
+
+    <!-- Bottom -->
+    <div class="bottom-hint">Arrow keys or click to navigate</div>
+
+</div>
+
+<script>
+    let current = 0;
+    const total = document.querySelectorAll('.slide').length;
+    const slides = document.querySelectorAll('.slide');
+
+    // Build dots
+    const dotsContainer = document.getElementById('dots');
+    for (let i = 0; i < total; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'dot' + (i === 0 ? ' active' : '');
+        dot.onclick = () => goTo(i);
+        dotsContainer.appendChild(dot);
+    }
+
+    function goTo(n) {
+        if (n < 0 || n >= total || n === current) return;
+        const direction = n > current ? 1 : -1;
+
+        slides[current].classList.remove('active');
+        slides[current].classList.add(direction > 0 ? 'exit-left' : '');
+
+        setTimeout(() => {
+            slides[current].classList.remove('exit-left');
+            slides[current].style.transform = direction > 0 ? 'translateX(60px)' : 'translateX(-60px)';
+            current = n;
+            slides[current].style.transform = direction > 0 ? 'translateX(60px)' : 'translateX(-60px)';
+
+            requestAnimationFrame(() => {
+                slides[current].classList.add('active');
+                slides[current].style.transform = '';
+            });
+
+            updateUI();
+        }, 100);
+    }
+
+    function navigate(dir) {
+        goTo(current + dir);
+    }
+
+    function updateUI() {
+        document.getElementById('counter').textContent = `${current + 1} / ${total}`;
+        document.getElementById('prevBtn').classList.toggle('hidden', current === 0);
+        document.getElementById('nextBtn').classList.toggle('hidden', current === total - 1);
+
+        dotsContainer.querySelectorAll('.dot').forEach((d, i) => {
+            d.classList.toggle('active', i === current);
+        });
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); navigate(1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); navigate(-1); }
+    });
+
+    // Touch/swipe
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+    document.addEventListener('touchend', (e) => {
+        const diff = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 50) navigate(diff > 0 ? 1 : -1);
+    });
+</script>
+
+</body>
+</html>
