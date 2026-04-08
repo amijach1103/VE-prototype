@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seedwork — The 90-Day Cohort Experience</title>
+<style>
+  :root {
+    --black: #1A1A1A;
+    --dark: #333;
+    --mid: #666;
+    --light: #999;
+    --border: #DDD;
+    --bg: #FAFAFA;
+    --card-bg: #FFF;
+    --labs-blue: #1280b0;
+    --blue-light: #E4F3F9;
+    --amber: #D4A843;
+    --amber-light: #FFF8E7;
+    --ai-green: #2D8659;
+    --ai-green-light: #EDF7F1;
+    --ai-assist: #5BA06E;
+    --ai-assist-light: #F2F9F4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--dark);
+    padding: 48px 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  header { text-align: center; margin-bottom: 48px; }
+
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 34px;
+    color: var(--black);
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle { font-size: 15px; color: var(--mid); margin-bottom: 4px; }
+  .meta { font-size: 12px; color: var(--light); }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 48px;
+  }
+
+  .controls button {
+    padding: 8px 20px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    font-size: 13px;
+    color: var(--mid);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .controls button:hover { border-color: var(--dark); color: var(--dark); }
+  .controls button.active { background: var(--black); color: white; border-color: var(--black); }
+
+  /* ===== ARC SECTION ===== */
+  .arc-section { margin-bottom: 56px; }
+
+  .arc-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 8px;
+    padding-left: 2px;
+  }
+
+  .arc-number {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--border);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 48px;
+    text-align: right;
+  }
+
+  .arc-title-group { padding-top: 8px; }
+
+  .arc-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--black);
+  }
+
+  .arc-timing {
+    font-size: 12px;
+    color: var(--light);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .arc-desc {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--mid);
+    margin: 12px 0 20px 62px;
+    max-width: 700px;
+  }
+
+  /* ===== MOMENT CARDS ===== */
+  .moments-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-left: 62px;
+  }
+
+  .moment {
+    position: relative;
+    padding: 16px 18px;
+    border-radius: 6px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 220px;
+    max-width: 340px;
+  }
+
+  .moment-title {
+    font-weight: 600;
+    color: var(--black);
+    font-size: 14px;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .moment-desc {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--mid);
+  }
+
+  .moment-data {
+    font-size: 11.5px;
+    color: var(--light);
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #EEE;
+  }
+
+  .moment-data strong { color: var(--mid); }
+
+  /* System tags — invisible by default, appear in build mode */
+  .system-strip {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .system-tag {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    background: #F0F0F0;
+    color: var(--light);
+    transition: all 0.3s;
+  }
+
+  /* ===== WEEKLY CYCLE ===== */
+  .weekly-wrapper { margin-left: 62px; }
+
+  .week-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 12px;
+  }
+
+  .week-label {
+    width: 80px;
+    flex-shrink: 0;
+    text-align: right;
+    padding-top: 16px;
+  }
+
+  .week-day {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--black);
+  }
+
+  .week-name {
+    font-size: 11px;
+    color: var(--light);
+    margin-top: 1px;
+  }
+
+  .week-moments {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    padding-left: 24px;
+  }
+
+  /* Vertical line for weekly flow */
+  .week-moments::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: var(--border);
+  }
+
+  /* Dot on the line */
+  .week-moments .moment::before {
+    content: '';
+    position: absolute;
+    left: -19px;
+    top: 20px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .week-moments .moment { max-width: none; }
+
+  .week-connector {
+    margin: 6px 0 6px 166px;
+    padding-left: 24px;
+  }
+
+  /* Cycle return */
+  .cycle-bracket {
+    margin: 20px 0 0 62px;
+  }
+
+  .cycle-note {
+    display: inline-block;
+    padding: 10px 20px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--mid);
+    background: var(--card-bg);
+  }
+
+  .cycle-note strong { color: var(--black); }
+
+  /* Divider between arcs */
+  .arc-divider {
+    width: 1px;
+    height: 32px;
+    background: var(--border);
+    margin: 0 0 0 85px;
+  }
+
+  /* ===== HIGHLIGHT MODE ===== */
+  body.highlight-mode .moment {
+    opacity: 0.2;
+    border-color: #EEE;
+  }
+
+  body.highlight-mode .moment.has-automation {
+    opacity: 1;
+    border-color: var(--labs-blue);
+    border-width: 2px;
+    background: var(--blue-light);
+  }
+
+  body.highlight-mode .moment.has-automation::before {
+    background: var(--labs-blue);
+    border-color: var(--labs-blue);
+    width: 9px;
+    height: 9px;
+    left: -20px;
+    top: 19px;
+  }
+
+  body.highlight-mode .moment.has-pipeline {
+    opacity: 0.6;
+    border-color: var(--amber);
+    border-style: dashed;
+    background: var(--amber-light);
+  }
+
+  .automation-label {
+    display: none;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--labs-blue);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  .pipeline-label {
+    display: none;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  body.highlight-mode .moment.has-automation .automation-label { display: block; }
+  body.highlight-mode .moment.has-pipeline .pipeline-label { display: block; }
+
+  body.highlight-mode .system-tag.week1 {
+    background: var(--labs-blue);
+    color: white;
+    font-weight: 600;
+  }
+
+  body.highlight-mode .system-tag.pipeline-tag {
+    background: var(--amber);
+    color: white;
+    font-weight: 600;
+  }
+
+  /* ===== AI MODE ===== */
+  body.ai-mode .moment {
+    opacity: 1;
+    border-color: var(--border);
+  }
+
+  body.ai-mode .moment[data-ai="human"] {
+    border-color: var(--border);
+  }
+
+  body.ai-mode .moment[data-ai="operated"] {
+    border-color: var(--ai-green);
+    border-width: 2px;
+    background: var(--ai-green-light);
+  }
+
+  body.ai-mode .moment[data-ai="operated"]::before {
+    background: var(--ai-green);
+    border-color: var(--ai-green);
+    width: 9px;
+    height: 9px;
+    left: -20px;
+    top: 19px;
+  }
+
+  body.ai-mode .moment[data-ai="assisted"] {
+    border-color: var(--ai-assist);
+    border-width: 2px;
+    border-style: dashed;
+    background: var(--ai-assist-light);
+  }
+
+  body.ai-mode .moment[data-ai="assisted"]::before {
+    background: var(--ai-assist);
+    border-color: var(--ai-assist);
+    width: 9px;
+    height: 9px;
+    left: -20px;
+    top: 19px;
+  }
+
+  .ai-label {
+    display: none;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  .ai-label.human-label { color: var(--light); }
+  .ai-label.operated-label { color: var(--ai-green); }
+  .ai-label.assisted-label { color: var(--ai-assist); }
+  .ai-label.opportunity-label { color: var(--ai-assist); }
+
+  body.ai-mode .ai-label { display: block; }
+
+  /* AI opportunity — human today, AI potential */
+  body.ai-mode .moment[data-ai="opportunity"] {
+    border-color: var(--ai-assist);
+    border-width: 1px;
+    border-style: dotted;
+  }
+
+  body.ai-mode .moment[data-ai="opportunity"]::before {
+    border: 2px dotted var(--ai-assist);
+    background: white;
+  }
+
+  .ai-opportunity-desc {
+    display: none;
+    font-size: 11px;
+    color: var(--ai-assist);
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dotted var(--ai-assist);
+    line-height: 1.5;
+  }
+
+  body.ai-mode .moment[data-ai="opportunity"] .ai-opportunity-desc { display: block; }
+
+  /* AI legend */
+  .ai-legend {
+    display: none;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  body.ai-mode .ai-legend { display: flex; }
+
+  /* AI summary */
+  .ai-summary {
+    display: none;
+    margin: 40px 0 0 62px;
+    padding: 24px;
+    background: var(--card-bg);
+    border: 2px solid var(--ai-green);
+    border-radius: 6px;
+    max-width: 700px;
+  }
+
+  body.ai-mode .ai-summary { display: block; }
+
+  .ai-summary h3 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 16px;
+    color: var(--black);
+    margin-bottom: 16px;
+  }
+
+  .ai-stats {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .ai-stat-number {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .ai-stat-number.human-num { color: var(--dark); }
+  .ai-stat-number.operated-num { color: var(--ai-green); }
+  .ai-stat-number.assisted-num { color: var(--ai-assist); }
+
+  .ai-stat-label {
+    font-size: 11px;
+    color: var(--light);
+    margin-top: 2px;
+  }
+
+  .ai-insight {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--mid);
+    padding-top: 16px;
+    border-top: 1px solid #EEE;
+  }
+
+  .ai-insight strong { color: var(--black); }
+
+  /* Build summary */
+  .build-summary {
+    display: none;
+    margin: 40px 0 0 62px;
+    padding: 24px;
+    background: var(--card-bg);
+    border: 2px solid var(--labs-blue);
+    border-radius: 6px;
+    max-width: 700px;
+  }
+
+  body.highlight-mode .build-summary { display: block; }
+
+  .build-summary h3 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 16px;
+    color: var(--black);
+    margin-bottom: 16px;
+  }
+
+  .build-columns { display: flex; gap: 40px; flex-wrap: wrap; }
+
+  .build-col h4 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+
+  .build-col.shipped h4 { color: var(--labs-blue); }
+  .build-col.next h4 { color: var(--amber); }
+
+  .build-col ul { list-style: none; font-size: 12.5px; line-height: 2; }
+
+  .build-col.shipped li::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--labs-blue);
+    margin-right: 8px;
+  }
+
+  .build-col.next li::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    border: 2px solid var(--amber);
+    margin-right: 8px;
+  }
+
+  .build-note {
+    font-size: 12px;
+    color: var(--light);
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #EEE;
+    font-style: italic;
+  }
+
+  /* Legend — only in build mode */
+  .build-legend {
+    display: none;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  body.highlight-mode .build-legend { display: flex; }
+
+  .bl-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--mid); }
+
+  .bl-swatch {
+    width: 24px; height: 12px; border-radius: 3px;
+  }
+
+  .bl-swatch.shipped { background: var(--blue-light); border: 2px solid var(--labs-blue); }
+  .bl-swatch.next { background: var(--amber-light); border: 2px dashed var(--amber); }
+  .bl-swatch.rest { background: #F5F5F5; border: 1px solid #EEE; }
+
+  footer {
+    margin-top: 56px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--light);
+  }
+
+  @media (max-width: 768px) {
+    .moments-grid, .arc-desc, .weekly-wrapper, .cycle-bracket, .build-summary { margin-left: 20px; }
+    .moments-grid { flex-direction: column; }
+    .moment { max-width: none; }
+    .week-row { flex-direction: column; gap: 4px; }
+    .week-label { width: auto; text-align: left; padding-top: 0; }
+  }
+
+  @media print {
+    body { padding: 20px; background: white; }
+    .controls { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The 90-Day Cohort Experience</h1>
+  <div class="subtitle">What it looks like to build something with people who get it</div>
+  <div class="meta">Seedwork Alumni Cohort &middot; 28 touchpoints &middot; April 2026</div>
+</header>
+
+<div class="controls">
+  <button class="active" onclick="showAll()">The Full Experience</button>
+  <button id="btn-build" onclick="showBuild()">What We're Building</button>
+  <button id="btn-ai" onclick="showAI()">Human vs AI</button>
+</div>
+
+<div class="ai-legend">
+  <div class="bl-item"><div class="bl-swatch" style="background:white;border:1px solid var(--border);"></div> Human-essential</div>
+  <div class="bl-item"><div class="bl-swatch" style="background:white;border:1px dotted var(--ai-assist);"></div> AI opportunity</div>
+  <div class="bl-item"><div class="bl-swatch" style="background:var(--ai-assist-light);border:2px dashed var(--ai-assist);"></div> AI-assisted today</div>
+  <div class="bl-item"><div class="bl-swatch" style="background:var(--ai-green-light);border:2px solid var(--ai-green);"></div> AI-operated today</div>
+</div>
+
+<div class="build-legend">
+  <div class="bl-item"><div class="bl-swatch shipped"></div> Shipped this week</div>
+  <div class="bl-item"><div class="bl-swatch next"></div> Pipeline</div>
+  <div class="bl-item"><div class="bl-swatch rest"></div> Not automated (human-essential or future)</div>
+</div>
+
+<!-- ========================================= -->
+<!--         1. JOIN THE COHORT                -->
+<!-- ========================================= -->
+
+<div class="arc-section">
+  <div class="arc-header">
+    <div class="arc-number">1</div>
+    <div class="arc-title-group">
+      <div class="arc-title">Join the Cohort</div>
+      <div class="arc-timing">Week 0 &mdash; Before the first session</div>
+    </div>
+  </div>
+
+  <div class="arc-desc">
+    You said yes to 90 days. Now you make it real. You define your mission, set audacious objectives, and put yourself on the record with a group of people who will hold you to it. There's no instructor — just peers who've done this before and are doing it again.
+  </div>
+
+  <div class="moments-grid">
+    <div class="moment" data-ai="opportunity">
+      <div class="ai-label opportunity-label">AI opportunity</div>
+      <div class="moment-title">Complete the entrance survey</div>
+      <div class="moment-desc">Where are you starting? What are you building? What do you need from this experience?</div>
+      <div class="ai-opportunity-desc">AI could tailor onboarding based on your industry, stage, and goals — surfacing relevant resources and connecting you with peers working on similar problems.</div>
+    </div>
+
+    <div class="moment" data-ai="opportunity">
+      <div class="ai-label opportunity-label">AI opportunity</div>
+      <div class="moment-title">Write your MOKR v1</div>
+      <div class="moment-desc">Mission, Objectives, Key Results. 90 days, audacious goals, binary outcomes. This is your contract with yourself — the group is taking you seriously.</div>
+      <div class="moment-data"><strong>6 of 7</strong> submitted MOKRs. One hasn't after 3 weeks.</div>
+      <div class="ai-opportunity-desc">AI could surface industry-specific benchmarks and best practices — what "good" looks like for a medical device startup vs. a food business — without writing your key results for you.</div>
+    </div>
+
+    <div class="moment" data-ai="human">
+      <div class="ai-label human-label">Human-essential</div>
+      <div class="moment-title">Attend the kickoff</div>
+      <div class="moment-desc">Meet everyone. Share what you're working on. Learn the rhythm — reports Monday, reviews Tuesday, sessions Wednesday.</div>
+      <div class="moment-data"><strong>9 attended</strong> kickoff. Energy was high.</div>
+    </div>
+
+    <div class="moment" data-ai="opportunity">
+      <div class="ai-label opportunity-label">AI opportunity</div>
+      <div class="moment-title">Read everyone's MOKR</div>
+      <div class="moment-desc">Before the first meeting, understand what each person is building, what they're risking, what they need. This is how the group starts to care about each other's work.</div>
+      <div class="moment-data"><strong>3 of 8</strong> left MOKR comments. Most read but didn't comment.</div>
+      <div class="ai-opportunity-desc">AI could generate a brief on each peer — industry context, key assumptions, what kind of feedback would be most useful — so you read with sharper eyes.</div>
+    </div>
+  </div>
+</div>
+
+<div class="arc-divider"></div>
+
+<!-- ========================================= -->
+<!--         2. THE WEEKLY CYCLE                -->
+<!-- ========================================= -->
+
+<div class="arc-section">
+  <div class="arc-header">
+    <div class="arc-number">2</div>
+    <div class="arc-title-group">
+      <div class="arc-title">The Weekly Cycle</div>
+      <div class="arc-timing">Weeks 1–12 &mdash; Repeats every week for 90 days</div>
+    </div>
+  </div>
+
+  <div class="arc-desc">
+    Every week follows the same rhythm. You do the work, share it, get feedback, come together, and follow through. The repetition is the point — it's the discipline that turns ideas into progress.
+  </div>
+
+  <div class="weekly-wrapper">
+
+    <!-- MONDAY -->
+    <div class="week-row">
+      <div class="week-label">
+        <div class="week-day">Monday</div>
+        <div class="week-name">Do the Work</div>
+      </div>
+      <div class="week-moments">
+        <div class="moment" data-ai="opportunity">
+          <div class="ai-label opportunity-label">AI opportunity</div>
+          <div class="moment-title">Reflect on your week and write your management report</div>
+          <div class="moment-desc">Open your MOKR. What moved? What didn't? Why? Plans, progress, problems, priorities — write it honestly. You show up to yourself before you show up to the group.</div>
+          <div class="moment-data"><strong>4 of 7</strong> submitted reports last week.</div>
+          <div class="ai-opportunity-desc">AI could prompt reflection questions based on your MOKR, pre-fill activity from Slack and Drive, and flag misalignment between what you planned and what you did.</div>
+        </div>
+        <div class="moment has-automation" data-ai="operated">
+          <div class="ai-label operated-label">AI-operated</div>
+          <div class="automation-label">&#9679; Built: /mr-nudge</div>
+          <div class="moment-title">Save your report and share it</div>
+          <div class="moment-desc">Save to the weekly Drive folder, post in Slack. Most save to Drive and skip Slack — peers don't know a report is ready.</div>
+          <div class="system-strip">
+            <span class="system-tag week1">Bot names who submitted and who hasn't</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-connector"></div>
+
+    <!-- TUESDAY -->
+    <div class="week-row">
+      <div class="week-label">
+        <div class="week-day">Tuesday</div>
+        <div class="week-name">Learn from<br>Each Other</div>
+      </div>
+      <div class="week-moments">
+        <div class="moment has-automation" data-ai="assisted">
+          <div class="ai-label assisted-label">AI-assisted &mdash; AI surfaces what's ready, human reads and absorbs</div>
+          <div class="automation-label">&#9679; Built: /review-preview</div>
+          <div class="moment-title">Read your peers' management reports</div>
+          <div class="moment-desc">Open each report. Read what they're building, what's stuck, what they're learning. This is where the cohort becomes more than a group chat.</div>
+          <div class="moment-data"><strong>30-45 min</strong> for 6-7 reports. Only <strong>2 of 7</strong> left comments last week.</div>
+          <div class="system-strip">
+            <span class="system-tag week1">Bot sends preview of whose reports are ready + links</span>
+          </div>
+        </div>
+        <div class="moment has-automation" data-ai="assisted">
+          <div class="ai-label assisted-label">AI-assisted &mdash; AI provides scaffolding, human writes the feedback</div>
+          <div class="automation-label">&#9679; Built: /peer-review</div>
+          <div class="moment-title">Leave comments — be honest, be helpful</div>
+          <div class="moment-desc">Comment in Google Docs. Is the objective <em>clear</em>? What <em>blind spots</em>? What's <em>distracting</em> from the main goal? What <em>resources</em> could help?</div>
+          <div class="moment-data">Andrew left <strong>24 comments</strong>, Nick left 5. Everyone else: <strong>zero</strong>. The most active reviewer got zero reviews on his own report.</div>
+          <div class="system-strip">
+            <span class="system-tag week1">Bot sends scaffolding prompts + routes to zero-comment reports</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-connector"></div>
+
+    <!-- WEDNESDAY -->
+    <div class="week-row">
+      <div class="week-label">
+        <div class="week-day">Wednesday</div>
+        <div class="week-name">Come Together</div>
+      </div>
+      <div class="week-moments">
+        <div class="moment" data-ai="opportunity">
+          <div class="ai-label opportunity-label">AI opportunity</div>
+          <div class="moment-title">Review the comments you received</div>
+          <div class="moment-desc">Before the session, read what peers said about your report. Come ready to discuss the hard parts, not re-explain what you already wrote.</div>
+          <div class="ai-opportunity-desc">AI could synthesize themes across all comments — "3 peers flagged your timeline as aggressive" — so you walk into the session knowing what to address.</div>
+        </div>
+        <div class="moment" data-ai="human">
+          <div class="ai-label human-label">Human-essential</div>
+          <div class="moment-title">Live session — 60 minutes that matter</div>
+          <div class="moment-desc">The anchor of the whole week. You don't report — you already did that in writing. This time is for the problems you can't solve alone. The group helps you think, challenges your assumptions, shares what worked.</div>
+          <div class="moment-data">Session 3 had <strong>4 of 7</strong>. Deep MR structure dive, a pivot workshop, accountability norms. The energy comes from real conversation.</div>
+        </div>
+        <div class="moment has-automation has-pipeline" data-ai="operated">
+          <div class="ai-label operated-label">AI-operated</div>
+          <div class="automation-label">&#9679; Built: /attendance-log</div>
+          <div class="pipeline-label">&#9675; Pipeline: auto session notes</div>
+          <div class="moment-title">Session captured and shared</div>
+          <div class="moment-desc">Notes go out after — what was discussed, decisions made, commitments. Miss a session? Catch up without asking someone to re-explain.</div>
+          <div class="system-strip">
+            <span class="system-tag week1">Bot posts attendance record</span>
+            <span class="system-tag pipeline-tag">Next: auto-generated notes from transcript</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-connector"></div>
+
+    <!-- THU–SUN -->
+    <div class="week-row">
+      <div class="week-label">
+        <div class="week-day">Thu–Sun</div>
+        <div class="week-name">Follow Through</div>
+      </div>
+      <div class="week-moments">
+        <div class="moment" data-ai="opportunity">
+          <div class="ai-label opportunity-label">AI opportunity</div>
+          <div class="moment-title">Act on what you committed to</div>
+          <div class="moment-desc">You said you'd do something. Now do it. Update your MOKR if your direction changed. The real progress happens between sessions, not during them.</div>
+          <div class="ai-opportunity-desc">AI could track commitments from session notes, send personalized reminders, and flag overdue items — making it harder to let things slip.</div>
+        </div>
+        <div class="moment" data-ai="human">
+          <div class="ai-label human-label">Human-essential</div>
+          <div class="moment-title">Keep the conversation going</div>
+          <div class="moment-desc">Share a win. Ask a question. Respond to someone's post. The best moments happen when someone shares a breakthrough or asks for help between sessions.</div>
+          <div class="moment-data">Daily async activity from <strong>3-4 core members</strong>. One person drives the engagement culture for the whole group.</div>
+        </div>
+        <div class="moment" data-ai="opportunity">
+          <div class="ai-label opportunity-label">AI opportunity</div>
+          <div class="moment-title">Learn from people who've been here before</div>
+          <div class="moment-desc">Experienced members share what worked, how to frame objectives, when to pivot. This mentorship emerges naturally — nobody assigns it.</div>
+          <div class="ai-opportunity-desc">AI could supplement human mentorship with industry-specific intelligence — regulatory timelines for medical devices, unit economics for food businesses, market sizing frameworks — so every member gets contextual guidance even when no peer shares their industry.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cycle-bracket">
+      <div class="cycle-note">
+        &#8635;&ensp;This cycle repeats <strong>every week for 12 weeks</strong>. The repetition compounds.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="arc-divider"></div>
+
+<!-- ========================================= -->
+<!--         3. MILESTONES                      -->
+<!-- ========================================= -->
+
+<div class="arc-section">
+  <div class="arc-header">
+    <div class="arc-number">3</div>
+    <div class="arc-title-group">
+      <div class="arc-title">Milestones Along the Way</div>
+      <div class="arc-timing">Weeks 4, 8, 12 &mdash; Moments of elevation</div>
+    </div>
+  </div>
+
+  <div class="arc-desc">
+    The weekly cycle builds momentum. Milestones create punctuation — step back, look at the bigger picture, get outside perspective. These aren't interruptions; they're what give the rhythm meaning.
+  </div>
+
+  <div class="moments-grid">
+    <div class="moment" data-ai="opportunity">
+      <div class="ai-label opportunity-label">AI opportunity</div>
+      <div class="moment-title">30-Day Project Review</div>
+      <div class="moment-desc">Board-meeting format. Present your MOKR progress to peers, mentors, your informal advisory board. Focus on questions, problems, obstacles — not a show. 90 min max.</div>
+      <div class="moment-data">Schedule within <strong>30 days</strong>. Share materials 24 hrs ahead. Check your ego at the door.</div>
+      <div class="ai-opportunity-desc">AI could prepare a progress summary from 4 weeks of reports — what moved, what stalled, patterns in your problems — so you present data, not memory.</div>
+    </div>
+
+    <div class="moment" data-ai="opportunity">
+      <div class="ai-label opportunity-label">AI opportunity</div>
+      <div class="moment-title">MOKR Evolution</div>
+      <div class="moment-desc">Your objectives aren't static. As you learn, your MOKR evolves. A pivot isn't failure — it's the methodology working.</div>
+      <div class="moment-data">Daelin pivoted from hydroponics to plant pods. Agueda rewrote objectives <strong>3 times</strong>.</div>
+      <div class="ai-opportunity-desc">AI could flag when your weekly progress data diverges from your objectives — "You've mentioned pricing 6 times in reports but have no KR for it" — prompting intentional evolution.</div>
+    </div>
+
+    <div class="moment" data-ai="opportunity">
+      <div class="ai-label opportunity-label">AI opportunity</div>
+      <div class="moment-title">Community Education Events</div>
+      <div class="moment-desc">The cohort proposes topics. Someone teaches. Topics emerge from the problems people are actually facing — not a pre-set curriculum.</div>
+      <div class="moment-data">"What you get out is proportional to what you put in."</div>
+      <div class="ai-opportunity-desc">AI could identify knowledge gaps across the cohort from report patterns and suggest targeted topics — "3 members are stuck on pricing, here's a speaker who specializes in early-stage pricing models."</div>
+    </div>
+  </div>
+</div>
+
+<div class="arc-divider"></div>
+
+<!-- ========================================= -->
+<!--         4. CLOSE THE LOOP                  -->
+<!-- ========================================= -->
+
+<div class="arc-section">
+  <div class="arc-header">
+    <div class="arc-number">4</div>
+    <div class="arc-title-group">
+      <div class="arc-title">Close the Loop</div>
+      <div class="arc-timing">Week 13 &mdash; The 90 days are done. The work isn't.</div>
+    </div>
+  </div>
+
+  <div class="arc-desc">
+    The program ends, but the relationships and the discipline don't have to. You reflect on what you built, what you learned about yourself as a builder, and what comes next. Some people keep going. Some come back.
+  </div>
+
+  <div class="moments-grid">
+    <div class="moment" data-ai="human">
+      <div class="ai-label human-label">Human-essential</div>
+      <div class="moment-title">Final project review</div>
+      <div class="moment-desc">Present where you ended up — not just what you built, but what you learned. The group gives final feedback. This is your capstone, not a graduation ceremony.</div>
+    </div>
+
+    <div class="moment" data-ai="human">
+      <div class="ai-label human-label">Human-essential</div>
+      <div class="moment-title">Exit survey and reflection</div>
+      <div class="moment-desc">What worked? What didn't? What would you change? Your honest feedback shapes the next cohort.</div>
+    </div>
+
+    <div class="moment" data-ai="human">
+      <div class="ai-label human-label">Human-essential</div>
+      <div class="moment-title">Stay connected</div>
+      <div class="moment-desc">The Slack stays open. The relationships are real. Some alumni become mentors for the next cohort.</div>
+      <div class="moment-data">This cohort exists because people <strong>wanted to come back</strong>. One member returned after <strong>6 years</strong> just to give back.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== AI SUMMARY ===== -->
+<div class="ai-summary">
+  <h3>The Product Thesis</h3>
+  <div class="ai-stats">
+    <div><div class="ai-stat-number human-num">5</div><div class="ai-stat-label">Always human</div></div>
+    <div><div class="ai-stat-number" style="color:var(--ai-assist);">10</div><div class="ai-stat-label">AI opportunity</div></div>
+    <div><div class="ai-stat-number assisted-num">2</div><div class="ai-stat-label">AI-assisted today</div></div>
+    <div><div class="ai-stat-number operated-num">2</div><div class="ai-stat-label">AI-operated today</div></div>
+  </div>
+  <div class="ai-insight">
+    <strong>The value is in the human moments.</strong> Writing your report, reading a peer's struggles, giving honest feedback, showing up on Wednesday. AI doesn't replace any of that.<br><br>
+    <strong>AI removes friction today.</strong> Reminders, attendance tracking, surfacing what's ready for review. The operational layer that takes ~2 hours/week of manual work. Plus scaffolding for the hardest human moment — peer review, where 5 of 7 people currently do nothing.<br><br>
+    <strong>The long runway: contextual intelligence.</strong> 10 moments have untapped AI potential. The biggest opportunity — surfaced by a cohort member — is industry-specific knowledge. Someone building a medical device needs different benchmarks than someone in food. AI can provide that context without writing your key results for you: regulatory timelines, unit economics, market sizing, competitive benchmarks. Every member gets a knowledgeable advisor that understands their industry, even when no peer in the room shares it.<br><br>
+    <strong>The pattern:</strong> AI gets smarter about you over time — your industry, your stage, your patterns — and the human experience gets richer because of it. The humans do the hard, valuable work. AI makes sure they have what they need to do it well.
+  </div>
+</div>
+
+<!-- ===== BUILD SUMMARY ===== -->
+<div class="build-summary">
+  <h3>Sprint 8, Week 1 — What We Shipped</h3>
+  <div class="build-columns">
+    <div class="build-col shipped">
+      <h4>Shipped (4 automations)</h4>
+      <ul>
+        <li><strong>/mr-nudge</strong> &mdash; Monday PM. Names who submitted, who hasn't.</li>
+        <li><strong>/review-preview</strong> &mdash; Tuesday AM. Links to reports ready for review.</li>
+        <li><strong>/peer-review</strong> &mdash; Tuesday 6 PM. Scaffolding prompts + zero-comment routing.</li>
+        <li><strong>/attendance-log</strong> &mdash; Wednesday 9 PM. Post-session attendance.</li>
+      </ul>
+    </div>
+    <div class="build-col next">
+      <h4>Pipeline</h4>
+      <ul>
+        <li><strong>Auto session notes</strong> &mdash; Generate from transcript.</li>
+        <li><strong>Drive folder creation</strong> &mdash; Weekly folder on Sunday.</li>
+        <li><strong>Auto-post report links</strong> &mdash; Detect saves, post to Slack.</li>
+        <li><strong>Action item extraction</strong> &mdash; Parse commitments.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="build-note">Session 4 (Wednesday April 8) is the test: did any of this change behavior?</div>
+</div>
+
+<footer>
+  Seedwork &middot; WGU Labs &middot; The Foundry methodology, adapted for alumni &middot; April 2026
+</footer>
+
+<script>
+  function clearModes() {
+    document.body.classList.remove('highlight-mode', 'ai-mode');
+    document.querySelectorAll('.controls button').forEach(b => b.classList.remove('active'));
+  }
+
+  function showAll() {
+    clearModes();
+    document.querySelector('.controls button:first-child').classList.add('active');
+  }
+
+  function showBuild() {
+    clearModes();
+    document.body.classList.add('highlight-mode');
+    document.getElementById('btn-build').classList.add('active');
+  }
+
+  function showAI() {
+    clearModes();
+    document.body.classList.add('ai-mode');
+    document.getElementById('btn-ai').classList.add('active');
+  }
+</script>
+
+</body>
+</html>
